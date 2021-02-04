@@ -9,8 +9,7 @@
 // DON'T WORRY ABOUT THIS CLASS UNTIL ASSIGNMENT 3
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-class AISystem
-{
-public:
-	void step(float elapsed_ms, vec2 window_size_in_game_units);
+// Data structure for pebble-specific information
+struct Pebble {
+	static ECS::Entity createPebble(vec2 position, vec2 size);
 };

@@ -14,10 +14,7 @@ vec2 distort(vec2 uv)
 	// HANDLE THE WATER WAVE DISTORTION HERE (you may want to try sin/cos)
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
-	// vec2 coord = uv.xy + vec2(sin(time), cos(time))/200;
-	vec2 coord = vec2(uv.x - abs(uv.x * sin(time/40)/10), uv.y - abs(uv.y * sin(time/40)/10)/5);
-	// vec2 coord = vec2(uv.x + sin(uv.x * sin(time/40)/10)k, uv.y);
-
+	vec2 coord = uv.xy;
     return coord;
 }
 
@@ -28,11 +25,6 @@ vec4 color_shift(vec4 in_color)
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 	vec4 color = in_color;
-	float b = color.z;
-	b += 0.2;
-	if(0.2 > 1)
-		b = 1;
-	color.z = b;
 	return color;
 }
 
