@@ -71,6 +71,7 @@ struct TexturedVertex
 	vec2 texcoord;
 };
 
+
 // Texture wrapper
 struct Texture
 {
@@ -144,9 +145,8 @@ struct DeathTimer
 	float counter_ms = 1000;
 };
 
-// A1: create a new struct called LightUp in render_components.hpp
-// A timer to control lit-up of the salmon (when in collisions with fish)
-struct LightUp
-{
-    float counter_ms = 600;
+// A1 LightUp
+struct LightUp {
+	float counter_ms = 1000;
 };
+
