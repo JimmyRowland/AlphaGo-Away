@@ -1,0 +1,3 @@
+/Users/user/Desktop/CPSC/CPSC 427/AIphaGo Away/build/CMakeFiles/rebuild_cache.dir
+/Users/user/Desktop/CPSC/CPSC 427/AIphaGo Away/build/CMakeFiles/edit_cache.dir
+/Users/user/Desktop/CPSC/CPSC 427/AIphaGo Away/build/CMakeFiles/salmon.dir
