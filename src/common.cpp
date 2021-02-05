@@ -1,4 +1,5 @@
 #include "common.hpp"
+#include <iostream>
 
 // Note, we could also use the functions from GLM but we write the transformations here to show the uderlying math
 void Transform::scale(vec2 scale)
@@ -19,4 +20,8 @@ void Transform::translate(vec2 offset)
 {
 	mat3 T = { { 1.f, 0.f, 0.f },{ 0.f, 1.f, 0.f },{ offset.x, offset.y, 1.f } };
 	mat = mat * T;
+}
+
+void StartButton::OnClick() {
+	std::cout << "hi";
 }
