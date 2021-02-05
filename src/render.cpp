@@ -1,8 +1,5 @@
 // internal
 #include "render.hpp"
-#include "fish.hpp"
-#include "salmon.hpp"
-
 #include "render_components.hpp"
 #include "tiny_ecs.hpp"
 
@@ -16,9 +13,10 @@ void RenderSystem::drawTexturedMesh(ECS::Entity entity, const mat3& projection)
 	// Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
 	Transform transform;
 	transform.translate(motion.position);
-	transform.rotate(motion.angle);
+    transform.rotate(motion.angle);
 	transform.scale(motion.scale);
-	// !!! TODO A1: add rotation to the chain of transformations, mind the order of transformations
+	// add rotation to the chain of transformations, mind the order of transformations
+
 	// Setting shaders
 	glUseProgram(texmesh.effect.program);
 	glBindVertexArray(texmesh.mesh.vao);
@@ -60,18 +58,17 @@ void RenderSystem::drawTexturedMesh(ECS::Entity entity, const mat3& projection)
 		glVertexAttribPointer(in_color_loc, 3, GL_FLOAT, GL_FALSE, sizeof(ColoredVertex), reinterpret_cast<void*>(sizeof(vec3)));
 
 		// Light up?
-		// !!! TODO A1: check whether the entity has a LightUp component
+		// A1: check whether the entity has a LightUp component
+        GLint light_up_uloc = glGetUniformLocation(texmesh.effect.program, "light_up");
 		if (ECS::registry<LightUp>.has(entity))
 		{
-			GLint light_up_uloc = glGetUniformLocation(texmesh.effect.program, "light_up");
-			// !!! TODO A1: set the light_up shader variable using glUniform1i
-			glUniform1i(light_up_uloc, 1);
+			// A1: set the light_up shader variable using glUniform1i
+            glUniform1i(light_up_uloc, 1);// placeholder to silence unused warning until implemented
 		}
-		else {
-			GLint light_up_uloc = glGetUniformLocation(texmesh.effect.program, "light_up");
-			// !!! TODO A1: set the light_up shader variable using glUniform1i
-			glUniform1i(light_up_uloc, 0);
-		}
+        else
+        {
+            glUniform1i(light_up_uloc, 0);
+        }
 	}
 	else
 	{
@@ -81,29 +78,7 @@ void RenderSystem::drawTexturedMesh(ECS::Entity entity, const mat3& projection)
 
 	// Getting uniform locations for glUniform* calls
 	GLint color_uloc = glGetUniformLocation(texmesh.effect.program, "fcolor");
-
-
-	bool setdark = true;
-	if (ECS::registry<Salmon>.has(entity) && ECS::registry<DeathTimer>.has(entity)) {
-		glUniform3fv(color_uloc, 1, (float*) new vec3{ 1, 0, 0 });
-	}
-	else {
-		glUniform3fv(color_uloc, 1, (float*)&texmesh.texture.color);
-	}
-
-	gl_has_errors();
-
-	//bool setdark = true;
-	//for (auto& salmon : ECS::registry<Salmon>.entities) {
-	//	if (!ECS::registry<DeathTimer>.has(salmon))
-	//		setdark = false;
-	//}
-	//if (setdark) {
-	//	glUniform3fv(color_uloc, 1, (float*) new vec3{ 1, 0, 0 });
-	//}
-	//else {
-	//	glUniform3fv(color_uloc, 1, (float*)&texmesh.texture.color);
-	//}
+	glUniform3fv(color_uloc, 1, (float*)&texmesh.texture.color);
 	gl_has_errors();
 
 	// Get number of indices from index buffer, which has elements uint16_t
