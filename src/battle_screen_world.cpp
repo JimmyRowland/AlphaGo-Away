@@ -144,7 +144,6 @@ void BattleWorldSystem::restart()
     ECS::ContainerInterface::list_all_components();
     std::cout << "Restarting\n";
 
-    init_grid();
 
     // Reset the game speed
     current_speed = 1.f;
@@ -157,6 +156,7 @@ void BattleWorldSystem::restart()
     // Debugging for memory/component leaks
     ECS::ContainerInterface::list_all_components();
 
+    init_grid();
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // TODO: Add our grid map related entities.
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

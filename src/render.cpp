@@ -187,8 +187,11 @@ void RenderSystem::draw(vec2 window_size_in_game_units)
 	float ty = -(top + bottom) / (top - bottom);
 	mat3 projection_2D{ { sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ tx, ty, 1.f } };
 	// Draw all textured meshes that have a position and size component
+	//std::cout << ECS::registry<ShadedMeshRef>.size() << std::endl;
 	for (ECS::Entity entity : ECS::registry<ShadedMeshRef>.entities)
 	{
+		//std::cout << "Hello" << std::endl;
+
 		if (!ECS::registry<Motion>.has(entity))
 			continue;
 		// Note, its not very efficient to access elements indirectly via the entity albeit iterating through all Sprites in sequence

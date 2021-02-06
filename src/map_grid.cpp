@@ -24,7 +24,7 @@ ECS::Entity Grid::createGrid(vec2 position, int grid_type, std::string texture_p
     motion.angle = 0.f;
     // grids are not expected to move
     motion.velocity = { 0.f, 0.f };
-    motion.scale = resource.mesh.original_size * 10.f;
+    motion.scale = resource.mesh.original_size * 0.5f;
     motion.scale.x *= -1; // point front to the right
     
     // can delete this id field if not needed when constructing the whole map
