@@ -48,6 +48,8 @@ private:
 
     // Loads the audio
     void init_audio();
+    // Loads the grid
+    void init_grid();
 
     // Number of fish eaten by the salmon, displayed in the window title
     unsigned int points;

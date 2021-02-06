@@ -186,7 +186,6 @@ void RenderSystem::draw(vec2 window_size_in_game_units)
 	float tx = -(right + left) / (right - left);
 	float ty = -(top + bottom) / (top - bottom);
 	mat3 projection_2D{ { sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ tx, ty, 1.f } };
-
 	// Draw all textured meshes that have a position and size component
 	for (ECS::Entity entity : ECS::registry<ShadedMeshRef>.entities)
 	{
@@ -195,6 +194,7 @@ void RenderSystem::draw(vec2 window_size_in_game_units)
 		// Note, its not very efficient to access elements indirectly via the entity albeit iterating through all Sprites in sequence
 		drawTexturedMesh(entity, projection_2D);
 		gl_has_errors();
+
 	}
 
 	// Truely render to the screen
