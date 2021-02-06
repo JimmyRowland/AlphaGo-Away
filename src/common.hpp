@@ -44,13 +44,13 @@ struct Motion {
     int movable = 0;
 };
 
-struct Button {
-	virtual void OnClick() ;
-};
-
-struct StartButton : public Button{
-	void OnClick();
-};
+//struct Button {
+//	virtual void OnClick() ;
+//};
+//
+//struct StartButton : public Button{
+//	void OnClick();
+//};
 
 struct Property {
 	int hp = 10;

@@ -22,6 +22,6 @@ void Transform::translate(vec2 offset)
 	mat = mat * T;
 }
 
-void StartButton::OnClick() {
-	std::cout << "hi";
-}
+//void StartButton::OnClick() {
+//	std::cout << "hi";
+//}
