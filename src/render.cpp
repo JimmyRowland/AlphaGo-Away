@@ -190,8 +190,6 @@ void RenderSystem::draw(vec2 window_size_in_game_units)
 	//std::cout << ECS::registry<ShadedMeshRef>.size() << std::endl;
 	for (ECS::Entity entity : ECS::registry<ShadedMeshRef>.entities)
 	{
-		//std::cout << "Hello" << std::endl;
-
 		if (!ECS::registry<Motion>.has(entity))
 			continue;
 		// Note, its not very efficient to access elements indirectly via the entity albeit iterating through all Sprites in sequence

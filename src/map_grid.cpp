@@ -1,7 +1,7 @@
 // Header
 #include "map_grid.hpp"
 #include "render.hpp"
-
+#include <iostream>
 ECS::Entity Grid::createGrid(vec2 position, int grid_type, std::string texture_path)
 {
     auto entity = ECS::Entity();
