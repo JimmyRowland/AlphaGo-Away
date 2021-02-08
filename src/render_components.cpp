@@ -1,5 +1,5 @@
 #include "render_components.hpp"
-#include "render.hpp"
+#include "system/render.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
 #include "../ext/stb_image/stb_image.h"
@@ -173,7 +173,7 @@ namespace {
         return is;
     };
 
-} // anonymous namespace 
+} // anonymous namespace
 
 // Very, VERY simple OBJ loader adapted from https://github.com/opengl-tutorials/ogl tutorial 7
 // (modified to also read vertex color and omit uv and normals)
@@ -267,7 +267,7 @@ void Mesh::loadFromOBJFile(std::string obj_path) {
 }
 
 // Returns a resource for every key, initializing with zero on the first query
-ShadedMesh& cache_resource(std::string key) 
+ShadedMesh& cache_resource(std::string key)
 {
 	static std::unordered_map<std::string, ShadedMesh> resource_cache;
 	const auto it = resource_cache.find(key);
@@ -280,6 +280,6 @@ ShadedMesh& cache_resource(std::string key)
 	return it->second;
 }
 
-ShadedMeshRef::ShadedMeshRef(ShadedMesh& mesh) : 
-	reference_to_cache(&mesh) 
+ShadedMeshRef::ShadedMeshRef(ShadedMesh& mesh) :
+	reference_to_cache(&mesh)
 {};

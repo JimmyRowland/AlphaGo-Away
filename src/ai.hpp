@@ -2,7 +2,7 @@
 
 #include <vector>
 
-#include "common.hpp"
+#include "core/common.hpp"
 #include "tiny_ecs.hpp"
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

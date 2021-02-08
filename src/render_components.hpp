@@ -1,5 +1,5 @@
 #pragma once
-#include "common.hpp"
+#include "core/common.hpp"
 #include <vector>
 #include <unordered_map>
 #include "../ext/stb_image/stb_image.h"
@@ -77,7 +77,7 @@ struct Texture
 	GLResource<TEXTURE> texture_id;
 	ivec2 size = {0, 0};
 	vec3 color = {1,1,1};
-	
+
 	// Loads texture from file specified by path
 	void load_from_file(std::string path);
 	bool is_valid() const; // True if texture is valid

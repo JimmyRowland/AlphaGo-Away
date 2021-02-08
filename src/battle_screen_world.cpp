@@ -1,10 +1,9 @@
 // Header
 #include "battle_screen_world.hpp"
-#include "physics.hpp"
-#include "debug.hpp"
-#include "turtle.hpp"
-#include "fish.hpp"
-#include "pebbles.hpp"
+#include "system/physics.hpp"
+#include "logger/debug.hpp"
+#include "entity/turtle.hpp"
+#include "entity/fish.hpp"
 #include "render_components.hpp"
 
 // stlib

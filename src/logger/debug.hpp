@@ -1,6 +1,6 @@
 #pragma once
 
-#include "common.hpp"
+#include "core/common.hpp"
 
 // Data structure for pebble-specific information
 namespace DebugSystem {

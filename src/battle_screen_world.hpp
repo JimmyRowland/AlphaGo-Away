@@ -1,10 +1,10 @@
 #pragma once
 
 // internal
-#include "common.hpp"
+#include "core/common.hpp"
 //TODO remove
-#include "salmon.hpp"
-#include "map_grid.hpp"
+#include "entity/salmon.hpp"
+#include "entity/map_grid.hpp"
 
 // stlib
 #include <vector>

@@ -1,6 +1,6 @@
 // Header
 #include "salmon.hpp"
-#include "render.hpp"
+#include "system/render.hpp"
 
 ECS::Entity Salmon::createSalmon(vec2 position)
 {

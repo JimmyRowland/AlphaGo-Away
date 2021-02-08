@@ -1,11 +1,11 @@
 #pragma once
 
-#include "common.hpp"
+#include "core/common.hpp"
 #include "tiny_ecs.hpp"
 
-// Salmon enemy 
-struct Turtle
+// Salmon food
+struct Fish
 {
 	// Creates all the associated render resources and default transform
-	static ECS::Entity createTurtle(vec2 position);
+	static ECS::Entity createFish(vec2 position);
 };

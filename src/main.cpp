@@ -7,13 +7,13 @@
 #include <iostream>
 
 // internal
-#include "common.hpp"
+#include "core/common.hpp"
 #include "battle_screen_world.hpp"
 #include "tiny_ecs.hpp"
-#include "render.hpp"
-#include "physics.hpp"
+#include "system/render.hpp"
+#include "system/physics.hpp"
 #include "ai.hpp"
-#include "debug.hpp"
+#include "logger/debug.hpp"
 
 using Clock = std::chrono::high_resolution_clock;
 

@@ -1,7 +1,7 @@
 // Header
 #include "debug.hpp"
 #include "tiny_ecs.hpp"
-#include "render.hpp"
+#include "system/render.hpp"
 
 #include <cmath>
 #include <iostream>
