@@ -105,21 +105,21 @@ void BattleWorldSystem::init_grid() {
     int winWidth, winHeight;
     glfwGetWindowSize(window, &winWidth, &winHeight);
     int gridWidth = floor((winWidth - 20) / grid.size());
-    int gridHeight = floor((winHeight - 20) / grid[0].size());
+    int gridHeight = floor((winWidth - 20) / grid[0].size());
     for (int i = 0; i < grid.size(); i++) {
         for (int j = 0; j < grid[0].size(); j++) {
             int xpos, ypos;
             if (i == 0) {
-                xpos = 10;
+                xpos = 10 + gridWidth / 2;
             }
             else {
-                std::get<0>(grid[i - 1][j]) + gridWidth;
+                xpos = std::get<0>(grid[i - 1][j]) + gridWidth;
             }
             if (j == 0) {
-                ypos = 10;
+                ypos = 10 + gridHeight / 2;
             }
             else {
-                std::get<1>(grid[i][j - 1]) + gridHeight;
+                ypos = std::get<1>(grid[i][j - 1]) + gridHeight;
             }
             grid[i][j] = std::tuple<int, int>{ xpos, ypos };
         }
@@ -130,10 +130,12 @@ void BattleWorldSystem::init_grid() {
         for (int j = 0; j < grid[0].size(); j++) {
             int xpos = std::get<0>(grid[i][j]);
             int ypos = std::get<1>(grid[i][j]);
-            ECS::Entity entity = Grid::createGrid({xpos, ypos}, GRID_TYPE::BASIC, "basic_grid.png");
+            //std::cout << xpos << ", " << ypos << std::endl;
+            ECS::Entity entity = Grid::createGrid({xpos, ypos}, GRID_TYPE::BASIC, "basic_grid.png", vec2(gridWidth, gridHeight));
         }
     }
-
+    
+    //ECS::Entity entity = Grid::createGrid({0.5, 0.5}, GRID_TYPE::BASIC, "basic_grid.png");
 }
 
 // Reset the world state to its initial state
