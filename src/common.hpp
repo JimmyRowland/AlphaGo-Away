@@ -41,22 +41,4 @@ struct Motion {
 	float angle = 0;
 	vec2 velocity = { 0, 0 };
 	vec2 scale = { 10, 10 };
-    int movable = 0;
-};
-
-struct Button {
-	virtual void OnClick() ;
-};
-
-struct StartButton : public Button{
-	void OnClick();
-};
-
-struct Property {
-	int hp = 10;
-	int maxhp = 10;
-
-	int attackRange = 5;
-	int moveRange = 5;
-	int damage = 5;
 };

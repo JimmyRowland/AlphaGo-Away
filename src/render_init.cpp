@@ -76,7 +76,6 @@ void RenderSystem::createSprite(ShadedMesh& sprite, std::string texture_path, st
 	sprite.effect.load_from_file(shader_path(shader_name) + ".vs.glsl", shader_path(shader_name) + ".fs.glsl");
 }
 
-// TODO: We might only use this method if we have to render something like the salmon object
 // Load a new mesh from disc and register it with ECS
 void RenderSystem::createColoredMesh(ShadedMesh& texmesh, std::string shader_name)
 {
@@ -110,8 +109,7 @@ void RenderSystem::createColoredMesh(ShadedMesh& texmesh, std::string shader_nam
 void RenderSystem::initScreenTexture()
 {
 	// Create a sprite withour loading a texture
-    // This is our start screen texture; might need to write a new method to load this image
-	createSprite(screen_sprite, textures_path("StartScreen.jpg"), "textured");
+	createSprite(screen_sprite, "", "water");
 
 	// Initialize the screen texture and its state
 	screen_sprite.texture.create_from_screen(&window, depth_render_buffer_id.data());

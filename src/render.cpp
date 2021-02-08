@@ -13,9 +13,8 @@ void RenderSystem::drawTexturedMesh(ECS::Entity entity, const mat3& projection)
 	// Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
 	Transform transform;
 	transform.translate(motion.position);
-    transform.rotate(motion.angle);
 	transform.scale(motion.scale);
-	// add rotation to the chain of transformations, mind the order of transformations
+	// !!! TODO A1: add rotation to the chain of transformations, mind the order of transformations
 
 	// Setting shaders
 	glUseProgram(texmesh.effect.program);
@@ -58,17 +57,14 @@ void RenderSystem::drawTexturedMesh(ECS::Entity entity, const mat3& projection)
 		glVertexAttribPointer(in_color_loc, 3, GL_FLOAT, GL_FALSE, sizeof(ColoredVertex), reinterpret_cast<void*>(sizeof(vec3)));
 
 		// Light up?
-		// A1: check whether the entity has a LightUp component
-        GLint light_up_uloc = glGetUniformLocation(texmesh.effect.program, "light_up");
-		if (ECS::registry<LightUp>.has(entity))
+		// !!! TODO A1: check whether the entity has a LightUp component
+		if (false)
 		{
-			// A1: set the light_up shader variable using glUniform1i
-            glUniform1i(light_up_uloc, 1);// placeholder to silence unused warning until implemented
+			GLint light_up_uloc = glGetUniformLocation(texmesh.effect.program, "light_up");
+
+			// !!! TODO A1: set the light_up shader variable using glUniform1i
+			(void)light_up_uloc; // placeholder to silence unused warning until implemented
 		}
-        else
-        {
-            glUniform1i(light_up_uloc, 0);
-        }
 	}
 	else
 	{
@@ -186,8 +182,8 @@ void RenderSystem::draw(vec2 window_size_in_game_units)
 	float tx = -(right + left) / (right - left);
 	float ty = -(top + bottom) / (top - bottom);
 	mat3 projection_2D{ { sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ tx, ty, 1.f } };
+
 	// Draw all textured meshes that have a position and size component
-	//std::cout << ECS::registry<ShadedMeshRef>.size() << std::endl;
 	for (ECS::Entity entity : ECS::registry<ShadedMeshRef>.entities)
 	{
 		if (!ECS::registry<Motion>.has(entity))
@@ -195,7 +191,6 @@ void RenderSystem::draw(vec2 window_size_in_game_units)
 		// Note, its not very efficient to access elements indirectly via the entity albeit iterating through all Sprites in sequence
 		drawTexturedMesh(entity, projection_2D);
 		gl_has_errors();
-
 	}
 
 	// Truely render to the screen
