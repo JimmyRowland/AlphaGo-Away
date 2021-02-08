@@ -8,7 +8,7 @@
 
 // internal
 #include "common.hpp"
-#include "world.hpp"
+#include "battle_screen_world.hpp"
 #include "tiny_ecs.hpp"
 #include "render.hpp"
 #include "physics.hpp"
@@ -31,7 +31,7 @@ struct Description {
 int main()
 {
 	// Initialize the main systems
-	WorldSystem world(window_size_in_px);
+	BattleWorldSystem world(window_size_in_px);
 	RenderSystem renderer(*world.window);
 	PhysicsSystem physics;
 	AISystem ai;

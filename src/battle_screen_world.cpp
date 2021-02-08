@@ -1,5 +1,5 @@
 // Header
-#include "world.hpp"
+#include "battle_screen_world.hpp"
 #include "physics.hpp"
 #include "debug.hpp"
 #include "turtle.hpp"
@@ -21,7 +21,7 @@ const size_t FISH_DELAY_MS = 5000;
 
 // Create the fish world
 // Note, this has a lot of OpenGL specific things, could be moved to the renderer; but it also defines the callbacks to the mouse and keyboard. That is why it is called here.
-WorldSystem::WorldSystem(ivec2 window_size_px) :
+BattleWorldSystem::BattleWorldSystem(ivec2 window_size_px) :
 	points(0),
 	next_turtle_spawn(0.f),
 	next_fish_spawn(0.f)
@@ -57,8 +57,8 @@ WorldSystem::WorldSystem(ivec2 window_size_px) :
 	// Input is handled using GLFW, for more info see
 	// http://www.glfw.org/docs/latest/input_guide.html
 	glfwSetWindowUserPointer(window, this);
-	auto key_redirect = [](GLFWwindow* wnd, int _0, int _1, int _2, int _3) { ((WorldSystem*)glfwGetWindowUserPointer(wnd))->on_key(_0, _1, _2, _3); };
-	auto cursor_pos_redirect = [](GLFWwindow* wnd, double _0, double _1) { ((WorldSystem*)glfwGetWindowUserPointer(wnd))->on_mouse_move({ _0, _1 }); };
+	auto key_redirect = [](GLFWwindow* wnd, int _0, int _1, int _2, int _3) { ((BattleWorldSystem*)glfwGetWindowUserPointer(wnd))->on_key(_0, _1, _2, _3); };
+	auto cursor_pos_redirect = [](GLFWwindow* wnd, double _0, double _1) { ((BattleWorldSystem*)glfwGetWindowUserPointer(wnd))->on_mouse_move({_0, _1 }); };
 	glfwSetKeyCallback(window, key_redirect);
 	glfwSetCursorPosCallback(window, cursor_pos_redirect);
 
@@ -68,7 +68,7 @@ WorldSystem::WorldSystem(ivec2 window_size_px) :
 	std::cout << "Loaded music\n";
 }
 
-WorldSystem::~WorldSystem(){
+BattleWorldSystem::~BattleWorldSystem(){
 	// Destroy music components
 	if (background_music != nullptr)
 		Mix_FreeMusic(background_music);
@@ -85,7 +85,7 @@ WorldSystem::~WorldSystem(){
 	glfwDestroyWindow(window);
 }
 
-void WorldSystem::init_audio()
+void BattleWorldSystem::init_audio()
 {
 	//////////////////////////////////////
 	// Loading music and sounds with SDL
@@ -107,8 +107,46 @@ void WorldSystem::init_audio()
 
 }
 
+// TODO move this to grid_map entity
+//enum GRID_TYPE { BASIC, WATER, FOREST };
+//void BattleWorldSystem::init_grid() {
+//    std::vector<std::vector<std::tuple<int, int>>> grid(10, std::vector<std::tuple<int, int>>(10) );
+//    int winWidth, winHeight;
+//    glfwGetWindowSize(window, &winWidth, &winHeight);
+//    int gridWidth = floor((winWidth - 20) / grid.size());
+//    int gridHeight = floor((winHeight - 20) / grid[0].size());
+//    for (int i = 0; i < grid.size(); i++) {
+//        for (int j = 0; j < grid[0].size(); j++) {
+//            int xpos, ypos;
+//            if (i == 0) {
+//                xpos = 10;
+//            }
+//            else {
+//                std::get<0>(grid[i - 1][j]) + gridWidth;
+//            }
+//            if (j == 0) {
+//                ypos = 10;
+//            }
+//            else {
+//                std::get<1>(grid[i][j - 1]) + gridHeight;
+//            }
+//            grid[i][j] = std::tuple<int, int>{ xpos, ypos };
+//        }
+//    }
+//
+//
+//    for (int i = 0; i < grid.size(); i++) {
+//        for (int j = 0; j < grid[0].size(); j++) {
+//            int xpos = std::get<0>(grid[i][j]);
+//            int ypos = std::get<1>(grid[i][j]);
+//            ECS::Entity entity = Grid::createGrid({xpos, ypos}, GRID_TYPE::BASIC, "basic_grid.png");
+//        }
+//    }
+//
+//}
+
 // Update our game world
-void WorldSystem::step(float elapsed_ms, vec2 window_size_in_game_units)
+void BattleWorldSystem::step(float elapsed_ms, vec2 window_size_in_game_units)
 {
 	// Updating window title with points
 	std::stringstream title_ss;
@@ -185,7 +223,7 @@ void WorldSystem::step(float elapsed_ms, vec2 window_size_in_game_units)
 }
 
 // Reset the world state to its initial state
-void WorldSystem::restart()
+void BattleWorldSystem::restart()
 {
 	// Debugging for memory/component leaks
 	ECS::ContainerInterface::list_all_components();
@@ -219,7 +257,7 @@ void WorldSystem::restart()
 }
 
 // Compute collisions between entities
-void WorldSystem::handle_collisions()
+void BattleWorldSystem::handle_collisions()
 {
 	// Loop over all collisions detected by the physics system
 	auto& registry = ECS::registry<PhysicsSystem::Collision>;
@@ -268,14 +306,14 @@ void WorldSystem::handle_collisions()
 }
 
 // Should the game be over ?
-bool WorldSystem::is_over() const
+bool BattleWorldSystem::is_over() const
 {
 	return glfwWindowShouldClose(window)>0;
 }
 
 // On key callback
 // TODO A1: check out https://www.glfw.org/docs/3.3/input_guide.html
-void WorldSystem::on_key(int key, int, int action, int mod)
+void BattleWorldSystem::on_key(int key, int, int action, int mod)
 {
 	// Move salmon if alive
 	if (!ECS::registry<DeathTimer>.has(player_salmon))
@@ -314,7 +352,7 @@ void WorldSystem::on_key(int key, int, int action, int mod)
 	current_speed = std::max(0.f, current_speed);
 }
 
-void WorldSystem::on_mouse_move(vec2 mouse_pos)
+void BattleWorldSystem::on_mouse_move(vec2 mouse_pos)
 {
 	if (!ECS::registry<DeathTimer>.has(player_salmon))
 	{
