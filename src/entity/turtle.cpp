@@ -2,9 +2,12 @@
 #include "turtle.hpp"
 #include "system/render.hpp"
 
-ECS::Entity Turtle::createTurtle(vec2 position)
+TurtleFactory::TurtleFactory(entt::registry & registry)
+        : Factory(registry){}
+
+entt::entity TurtleFactory::createTurtle(vec2 position)
 {
-	auto entity = ECS::Entity();
+	auto entity = m_registry.create();
 
 	// Create rendering primitives
 	std::string key = "turtle";
@@ -14,6 +17,7 @@ ECS::Entity Turtle::createTurtle(vec2 position)
 
 	// Store a reference to the potentially re-used mesh object (the value is stored in the resource cache)
 	ECS::registry<ShadedMeshRef>.emplace(entity, resource);
+	m_registry.assign<ShadedMeshRef>(entity, resource);
 
 	// Initialize the motion
 	auto& motion = ECS::registry<Motion>.emplace(entity);

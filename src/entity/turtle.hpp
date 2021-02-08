@@ -1,11 +1,13 @@
 #pragma once
 
 #include "core/common.hpp"
-#include "tiny_ecs.hpp"
+#include <entt/entt.hpp>
 
-// Salmon enemy
-struct Turtle
+#include "factory.hpp"
+
+class TurtleFactory: public Factory
 {
-	// Creates all the associated render resources and default transform
-	static ECS::Entity createTurtle(vec2 position);
+public:
+    TurtleFactory(entt::registry & registry);
+	entt::entity createTurtle(vec2 position);
 };
