@@ -12,6 +12,8 @@
 
 // Game configuration
 // TODO: Add any needed contant here
+enum GRID_TYPE { BASIC, WATER, FOREST };
+std::vector<std::vector<std::tuple<int, int>>> grid(10, std::vector<std::tuple<int, int>>(10) );
 
 // Create the battle world
 // Note, this has a lot of OpenGL specific things, could be moved to the renderer; but it also defines the callbacks to the mouse and keyboard. That is why it is called here.
@@ -99,12 +101,51 @@ void BattleWorldSystem::init_audio()
 
 }
 
+void BattleWorldSystem::init_grid() {
+    int winWidth, winHeight;
+    glfwGetWindowSize(window, &winWidth, &winHeight);
+    int gridWidth = floor((winWidth - 20) / grid.size());
+    int gridHeight = floor((winWidth - 20) / grid[0].size());
+    for (int i = 0; i < grid.size(); i++) {
+        for (int j = 0; j < grid[0].size(); j++) {
+            int xpos, ypos;
+            if (i == 0) {
+                xpos = 10 + gridWidth / 2;
+            }
+            else {
+                xpos = std::get<0>(grid[i - 1][j]) + gridWidth;
+            }
+            if (j == 0) {
+                ypos = 10 + gridHeight / 2;
+            }
+            else {
+                ypos = std::get<1>(grid[i][j - 1]) + gridHeight;
+            }
+            grid[i][j] = std::tuple<int, int>{ xpos, ypos };
+        }
+    } 
+
+
+    for (int i = 0; i < grid.size(); i++) {
+        for (int j = 0; j < grid[0].size(); j++) {
+            int xpos = std::get<0>(grid[i][j]);
+            int ypos = std::get<1>(grid[i][j]);
+            //std::cout << xpos << ", " << ypos << std::endl;
+            ECS::Entity entity = Grid::createGrid({xpos, ypos}, GRID_TYPE::BASIC, "basic_grid.png", vec2(gridWidth, gridHeight));
+        }
+    }
+    
+    //ECS::Entity entity = Grid::createGrid({0.5, 0.5}, GRID_TYPE::BASIC, "basic_grid.png");
+}
+
 // Reset the world state to its initial state
 void BattleWorldSystem::restart()
 {
+    
     // Debugging for memory/component leaks
     ECS::ContainerInterface::list_all_components();
     std::cout << "Restarting\n";
+
 
     // Reset the game speed
     current_speed = 1.f;
@@ -117,6 +158,7 @@ void BattleWorldSystem::restart()
     // Debugging for memory/component leaks
     ECS::ContainerInterface::list_all_components();
 
+    init_grid();
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // TODO: Add our grid map related entities.
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -132,7 +174,7 @@ void BattleWorldSystem::step(float elapsed_ms, vec2 window_size_in_game_units)
     glfwSetWindowTitle(window, title_ss.str().c_str());
     
     // Removing out of screen entities
-//    auto& registry = ECS::registry<Motion>;
+    auto& registry = ECS::registry<Motion>;
 
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // TODO: handle world update.

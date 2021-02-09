@@ -34,9 +34,10 @@ struct Description {
 int main()
 {
 	// Initialize the main systems
-    StartWorldSystem start_world(window_size_in_px);
+    // StartWorldSystem start_world(window_size_in_px);
     BattleWorldSystem battle_world(window_size_in_px);
-	RenderSystem renderer(*start_world.window);
+	// RenderSystem renderer(*start_world.window);
+	RenderSystem renderer(*battle_world.window);
 	PhysicsSystem physics;
 	AISystem ai;
 
