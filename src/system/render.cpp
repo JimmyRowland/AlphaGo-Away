@@ -1,18 +1,18 @@
 // internal
 #include "render.hpp"
 #include "render_components.hpp"
-#include "tiny_ecs.hpp"
 
 #include <iostream>
 
-void RenderSystem::drawTexturedMesh(ECS::Entity entity, const mat3& projection)
+void RenderSystem::drawTexturedMesh(entt::registry & m_registry,entt::entity entity, const mat3& projection)
 {
-	auto& motion = ECS::registry<Motion>.get(entity);
-	auto& texmesh = *ECS::registry<ShadedMeshRef>.get(entity).reference_to_cache;
+	auto& motion = m_registry.get<Motion>(entity);
+	auto& texmesh = *m_registry.get<ShadedMeshRef>(entity).reference_to_cache;
 	// Transformation code, see Rendering and Transformation in the template specification for more info
 	// Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
 	Transform transform;
 	transform.translate(motion.position);
+    transform.rotate(motion.angle);
 	transform.scale(motion.scale);
 	// !!! TODO A1: add rotation to the chain of transformations, mind the order of transformations
 
@@ -56,15 +56,6 @@ void RenderSystem::drawTexturedMesh(ECS::Entity entity, const mat3& projection)
 		glEnableVertexAttribArray(in_color_loc);
 		glVertexAttribPointer(in_color_loc, 3, GL_FLOAT, GL_FALSE, sizeof(ColoredVertex), reinterpret_cast<void*>(sizeof(vec3)));
 
-		// Light up?
-		// !!! TODO A1: check whether the entity has a LightUp component
-		if (false)
-		{
-			GLint light_up_uloc = glGetUniformLocation(texmesh.effect.program, "light_up");
-
-			// !!! TODO A1: set the light_up shader variable using glUniform1i
-			(void)light_up_uloc; // placeholder to silence unused warning until implemented
-		}
 	}
 	else
 	{
@@ -95,7 +86,7 @@ void RenderSystem::drawTexturedMesh(ECS::Entity entity, const mat3& projection)
 }
 
 // Draw the intermediate texture to the screen, with some distortion to simulate water
-void RenderSystem::drawToScreen() 
+void RenderSystem::drawToScreen(entt::registry & m_registry)
 {
 	// Setting shaders
 	glUseProgram(screen_sprite.effect.program);
@@ -128,7 +119,7 @@ void RenderSystem::drawToScreen()
 	GLuint time_uloc       = glGetUniformLocation(screen_sprite.effect.program, "time");
 	GLuint dead_timer_uloc = glGetUniformLocation(screen_sprite.effect.program, "darken_screen_factor");
 	glUniform1f(time_uloc, static_cast<float>(glfwGetTime() * 10.0f));
-	auto& screen = ECS::registry<ScreenState>.get(screen_state_entity);
+	auto& screen =  m_registry.get<ScreenState>(screen_state_entity);
 	glUniform1f(dead_timer_uloc, screen.darken_screen_factor);
 	gl_has_errors();
 
@@ -153,7 +144,7 @@ void RenderSystem::drawToScreen()
 
 // Render our game world
 // http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-14-render-to-texture/
-void RenderSystem::draw(vec2 window_size_in_game_units)
+void RenderSystem::draw(entt::registry & m_registry, vec2 window_size_in_game_units)
 {
 	// Getting size of window
 	ivec2 frame_buffer_size; // in pixels
@@ -184,17 +175,17 @@ void RenderSystem::draw(vec2 window_size_in_game_units)
 	mat3 projection_2D{ { sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ tx, ty, 1.f } };
 
 	// Draw all textured meshes that have a position and size component
-	for (ECS::Entity entity : ECS::registry<ShadedMeshRef>.entities)
+	for (entt::entity entity : m_registry.view<ShadedMeshRef>())
 	{
-		if (!ECS::registry<Motion>.has(entity))
+		if (!m_registry.has<Motion>(entity))
 			continue;
 		// Note, its not very efficient to access elements indirectly via the entity albeit iterating through all Sprites in sequence
-		drawTexturedMesh(entity, projection_2D);
+		drawTexturedMesh(m_registry,entity, projection_2D);
 		gl_has_errors();
 	}
 
 	// Truely render to the screen
-	drawToScreen();
+	drawToScreen(m_registry);
 
 	// flicker-free display with a double buffer
 	glfwSwapBuffers(&window);

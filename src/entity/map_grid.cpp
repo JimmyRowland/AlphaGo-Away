@@ -2,9 +2,9 @@
 #include "map_grid.hpp"
 #include "system/render.hpp"
 #include <iostream>
-ECS::Entity Grid::createGrid(vec2 position, int grid_type, std::string texture_path)
+entt::entity Grid::createGrid(entt::registry& m_registry, vec2 position, int grid_type, std::string texture_path)
 {
-    auto entity = ECS::Entity();
+    auto entity = m_registry.create();
     int id = 10;
 
     std::string key = "grid";
@@ -16,10 +16,10 @@ ECS::Entity Grid::createGrid(vec2 position, int grid_type, std::string texture_p
         RenderSystem::createSprite(resource, textures_path(texture_path), "textured");
     }
     // Store a reference to the potentially re-used mesh object (the value is stored in the resource cache)
-    ECS::registry<ShadedMeshRef>.emplace(entity, resource);
+    m_registry.emplace<ShadedMeshRef>(entity, resource);
 
     // Setting initial motion values
-    Motion& motion = ECS::registry<Motion>.emplace(entity);
+    Motion& motion = m_registry.emplace<Motion>(entity);
     motion.position = position;
     motion.angle = 0.f;
     // grids are not expected to move
@@ -31,7 +31,7 @@ ECS::Entity Grid::createGrid(vec2 position, int grid_type, std::string texture_p
     int type = grid_type;
 
     // Create and (empty) Salmon component to be able to refer to all turtles
-    ECS::registry<Grid>.emplace(entity);
+    m_registry.emplace<Grid>(entity);
 
     return entity;
 }

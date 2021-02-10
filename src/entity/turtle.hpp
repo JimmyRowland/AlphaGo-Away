@@ -3,11 +3,7 @@
 #include "core/common.hpp"
 #include <entt/entt.hpp>
 
-#include "factory.hpp"
-
-class TurtleFactory: public Factory
-{
-public:
-    TurtleFactory(entt::registry & registry);
-	entt::entity createTurtle(vec2 position);
+struct Turtle{
+    static 	entt::entity createTurtle(entt::registry& m_registry,vec2 position);
 };
+

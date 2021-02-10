@@ -1,6 +1,5 @@
 // Header
 #include "debug.hpp"
-#include "tiny_ecs.hpp"
 #include "system/render.hpp"
 
 #include <cmath>
@@ -13,8 +12,9 @@
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 namespace DebugSystem 
 {
-	void createLine(vec2 position, vec2 scale) {
-		auto entity = ECS::Entity();
+	void createLine(entt::registry& m_registry, vec2 position, vec2 scale) {
+		auto entity = m_registry.create();
+
 
 		std::string key = "thick_line";
 		ShadedMesh& resource = cache_resource(key);
@@ -50,22 +50,22 @@ namespace DebugSystem
 		}
 
 		// Store a reference to the potentially re-used mesh object (the value is stored in the resource cache)
-		ECS::registry<ShadedMeshRef>.emplace(entity, resource);
+		m_registry.emplace<ShadedMeshRef>(entity, resource);
 
 		// Create motion
-		auto& motion = ECS::registry<Motion>.emplace(entity);
+		auto& motion = m_registry.emplace<Motion>(entity);
 		motion.angle = 0.f;
 		motion.velocity = { 0, 0 };
 		motion.position = position;
 		motion.scale = scale;
 
-		ECS::registry<DebugComponent>.emplace(entity);
+		m_registry.emplace<DebugComponent>(entity);
 	}
 
-	void clearDebugComponents() {
+	void clearDebugComponents(entt::registry& m_registry) {
 		// Clear old debugging visualizations
-		while (ECS::registry<DebugComponent>.entities.size() > 0) {
-			ECS::ContainerInterface::remove_all_components_of(ECS::registry<DebugComponent>.entities.back());
+        for(const auto entity: m_registry.view<DebugComponent>()) {
+            m_registry.destroy(entity);
         }
 	}
 

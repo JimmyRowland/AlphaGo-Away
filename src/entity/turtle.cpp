@@ -2,10 +2,7 @@
 #include "turtle.hpp"
 #include "system/render.hpp"
 
-TurtleFactory::TurtleFactory(entt::registry & registry)
-        : Factory(registry){}
-
-entt::entity TurtleFactory::createTurtle(vec2 position)
+entt::entity Turtle::createTurtle(entt::registry& m_registry, vec2 position)
 {
 	auto entity = m_registry.create();
 
@@ -16,11 +13,10 @@ entt::entity TurtleFactory::createTurtle(vec2 position)
 		RenderSystem::createSprite(resource, textures_path("turtle.png"), "textured");
 
 	// Store a reference to the potentially re-used mesh object (the value is stored in the resource cache)
-	ECS::registry<ShadedMeshRef>.emplace(entity, resource);
-	m_registry.assign<ShadedMeshRef>(entity, resource);
+	m_registry.emplace<ShadedMeshRef>(entity, resource);
 
 	// Initialize the motion
-	auto& motion = ECS::registry<Motion>.emplace(entity);
+	auto& motion = m_registry.emplace<Motion>(entity);
 	motion.angle = 0.f;
 	motion.velocity = { 100.f, 0.f }; // 200
 	motion.position = position;
@@ -28,7 +24,7 @@ entt::entity TurtleFactory::createTurtle(vec2 position)
 	motion.scale = vec2({ -0.4f, 0.4f }) * static_cast<vec2>(resource.texture.size);
 
 	// Create and (empty) Turtle component to be able to refer to all turtles
-	ECS::registry<Turtle>.emplace(entity);
+	m_registry.emplace<Turtle>(entity);
 
 	return entity;
 }

@@ -6,7 +6,7 @@
 #include <fstream>
 
 // World initialization
-RenderSystem::RenderSystem(GLFWwindow& window) :
+RenderSystem::RenderSystem(entt::registry& m_registry, GLFWwindow& window) :
 	window(window)
 {
 	glfwMakeContextCurrent(&window);
@@ -19,20 +19,13 @@ RenderSystem::RenderSystem(GLFWwindow& window) :
 	frame_buffer = 0;
 	glGenFramebuffers(1, &frame_buffer);
 	glBindFramebuffer(GL_FRAMEBUFFER, frame_buffer);
-
-	initScreenTexture();
+    initScreenTexture(m_registry);
 }
 
 RenderSystem::~RenderSystem()
 {
 	// delete allocated resources
 	glDeleteFramebuffers(1, &frame_buffer);
-
-	// remove all entities created by the render system
-	while (ECS::registry<Motion>.entities.size() > 0)
-		ECS::ContainerInterface::remove_all_components_of(ECS::registry<Motion>.entities.back());
-	while (ECS::registry<ShadedMeshRef>.entities.size() > 0)
-		ECS::ContainerInterface::remove_all_components_of(ECS::registry<ShadedMeshRef>.entities.back());
 }
 
 // Create a new sprite and register it with ECS
@@ -106,12 +99,16 @@ void RenderSystem::createColoredMesh(ShadedMesh& texmesh, std::string shader_nam
 }
 
 // Initialize the screen texture from a standard sprite
-void RenderSystem::initScreenTexture()
+void RenderSystem::initScreenTexture(entt::registry& m_registry)
 {
 	// Create a sprite withour loading a texture
+    // This is our start screen texture; might need to write a new method to load this image
+	//createSprite(screen_sprite, textures_path("StartScreen.jpg"), "textured");
 	createSprite(screen_sprite, "", "water");
 
 	// Initialize the screen texture and its state
 	screen_sprite.texture.create_from_screen(&window, depth_render_buffer_id.data());
-	ECS::registry<ScreenState>.emplace(screen_state_entity);
+    auto entity = m_registry.create();
+    screen_state_entity = entity;
+    m_registry.emplace<ScreenState>(screen_state_entity);
 }

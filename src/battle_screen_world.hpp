@@ -3,7 +3,6 @@
 // internal
 #include "core/common.hpp"
 //TODO remove
-#include "entity/salmon.hpp"
 #include "entity/map_grid.hpp"
 
 // stlib
@@ -14,6 +13,7 @@
 #include <SDL.h>
 #include <SDL_mixer.h>
 #include <utility>
+#include <entt/entt.hpp>
 
 // Container for all our entities and game logic. Individual rendering / update is 
 // deferred to the relative update() methods
@@ -21,22 +21,22 @@ class BattleWorldSystem
 {
 public:
 	// Creates a window
-	BattleWorldSystem(ivec2 window_size_px);
+	BattleWorldSystem(entt::registry& m_registry,ivec2 window_size_px);
 
 	// Releases all associated resources
 	~BattleWorldSystem();
 
 	// restart level
-	void restart();
+	void restart(entt::registry& m_registry);
 
 	// Steps the game ahead by ms milliseconds
-	void step(float elapsed_ms, vec2 window_size_in_game_units);
+	void step(entt::registry& m_registry, float elapsed_ms, vec2 window_size_in_game_units);
 
 	// Check for collisions
-	void handle_collisions();
+	void handle_collisions(entt::registry& m_registry);
 
 	// Renders our scene
-	void draw();
+	void draw(entt::registry& m_registry);
 
 	// Should the game be over ?
 	bool is_over() const;
@@ -50,8 +50,6 @@ private:
 
     // Loads the audio
     void init_audio();
-    // Loads the grid
-    void init_grid();
 
 	// Number of fish eaten by the salmon, displayed in the window title
 	unsigned int points;
@@ -60,8 +58,6 @@ private:
 	float current_speed;
     //TODO remove
     float next_turtle_spawn;
-	float next_fish_spawn;
-	ECS::Entity player_salmon;
 	
 	// music references
 	Mix_Music* background_music;

@@ -3,11 +3,6 @@
 #include <vector>
 
 #include "core/common.hpp"
-#include "tiny_ecs.hpp"
-
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-// DON'T WORRY ABOUT THIS CLASS UNTIL ASSIGNMENT 3
-// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 class AISystem
 {

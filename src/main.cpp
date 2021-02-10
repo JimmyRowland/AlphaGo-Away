@@ -9,7 +9,6 @@
 // internal
 #include "core/common.hpp"
 #include "battle_screen_world.hpp"
-#include "tiny_ecs.hpp"
 #include "system/render.hpp"
 #include "system/physics.hpp"
 #include "ai.hpp"
@@ -30,14 +29,15 @@ struct Description {
 // Entry point
 int main()
 {
+    entt::registry m_registry;
 	// Initialize the main systems
-	BattleWorldSystem world(window_size_in_px);
-	RenderSystem renderer(*world.window);
+	BattleWorldSystem world(m_registry, window_size_in_px);
+	RenderSystem renderer(m_registry, *world.window);
 	PhysicsSystem physics;
 	AISystem ai;
 
 	// Set all states to default
-	world.restart();
+	world.restart(m_registry);
 	auto t = Clock::now();
 	// Variable timestep loop
 	while (!world.is_over())
@@ -50,14 +50,15 @@ int main()
 		float elapsed_ms = static_cast<float>((std::chrono::duration_cast<std::chrono::microseconds>(now - t)).count()) / 1000.f;
 		t = now;
 
-		DebugSystem::clearDebugComponents();
+		DebugSystem::clearDebugComponents(m_registry);
 		ai.step(elapsed_ms, window_size_in_game_units);
-		world.step(elapsed_ms, window_size_in_game_units);
-		physics.step(elapsed_ms, window_size_in_game_units);
-		world.handle_collisions();
+		world.step(m_registry, elapsed_ms, window_size_in_game_units);
+		physics.step(m_registry, elapsed_ms, window_size_in_game_units);
+		world.handle_collisions(m_registry);
 
-		renderer.draw(window_size_in_game_units);
+		renderer.draw(m_registry,window_size_in_game_units);
 	}
+	m_registry.clear<>();
 
 	return EXIT_SUCCESS;
 }
