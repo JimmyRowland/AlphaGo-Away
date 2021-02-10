@@ -4,7 +4,6 @@
 #include "logger/debug.hpp"
 #include "entity/turtle.hpp"
 #include "render_components.hpp"
-
 // stlib
 #include <string.h>
 #include <cassert>
@@ -16,7 +15,7 @@ const size_t TURTLE_DELAY_MS = 2000;
 
 // Create the fish world
 // Note, this has a lot of OpenGL specific things, could be moved to the renderer; but it also defines the callbacks to the mouse and keyboard. That is why it is called here.
-BattleWorldSystem::BattleWorldSystem(entt::registry& m_registry, ivec2 window_size_px) :
+BattleWorldSystem::BattleWorldSystem( ivec2 window_size_px) :
 	points(0),
 	next_turtle_spawn(0.f)
 {
@@ -91,7 +90,7 @@ void BattleWorldSystem::init_audio()
 }
 
 // Update our game world
-void BattleWorldSystem::step(entt::registry& m_registry, float elapsed_ms, vec2 window_size_in_game_units)
+void BattleWorldSystem::step( float elapsed_ms, vec2 window_size_in_game_units)
 {
 
 	// Spawning new turtles
@@ -101,7 +100,7 @@ void BattleWorldSystem::step(entt::registry& m_registry, float elapsed_ms, vec2 
 		// Reset timer
 		next_turtle_spawn = (TURTLE_DELAY_MS / 2) + uniform_dist(rng) * (TURTLE_DELAY_MS / 2);
 		// Create turtle
-		entt::entity entity = Turtle::createTurtle(m_registry,{0, 0});
+		entt::entity entity = Turtle::createTurtle({0, 0});
 		// Setting random initial position and constant velocity
 		auto& motion = m_registry.get<Motion>(entity);
 		motion.position = vec2(window_size_in_game_units.x - 150.f, 50.f + uniform_dist(rng) * (window_size_in_game_units.y - 100.f));
@@ -111,7 +110,7 @@ void BattleWorldSystem::step(entt::registry& m_registry, float elapsed_ms, vec2 
 }
 
 // Reset the world state to its initial state
-void BattleWorldSystem::restart(entt::registry& m_registry)
+void BattleWorldSystem::restart()
 {
 	std::cout << "Restarting\n";
 
@@ -124,7 +123,7 @@ void BattleWorldSystem::restart(entt::registry& m_registry)
 }
 
 // Compute collisions between entities
-void BattleWorldSystem::handle_collisions(entt::registry& m_registry)
+void BattleWorldSystem::handle_collisions()
 {
 	// Loop over all collisions detected by the physics system
     const auto view = m_registry.view<PhysicsSystem::Collision, Motion>();
@@ -173,6 +172,13 @@ void BattleWorldSystem::on_key(int key, int, int action, int mod)
 		current_speed += 0.1f;
 		std::cout << "Current speed = " << current_speed << std::endl;
 	}
+//    if (action == GLFW_KEY_D && key == GLFW_KEY_K)
+//    {
+//        auto view = m_registry.view<Motion>();
+//    }
+
+
+
 	current_speed = std::max(0.f, current_speed);
 }
 

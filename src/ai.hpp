@@ -3,7 +3,8 @@
 #include <vector>
 
 #include "core/common.hpp"
-
+#include <entt/entt.hpp>
+#include "core/registry.h"
 class AISystem
 {
 public:

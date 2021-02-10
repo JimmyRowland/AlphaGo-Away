@@ -25,7 +25,7 @@ bool collides(const Motion& motion1, const Motion& motion2)
 	return false;
 }
 
-void PhysicsSystem::step(entt::registry& m_registry, float elapsed_ms, vec2 window_size_in_game_units)
+void PhysicsSystem::step(float elapsed_ms, vec2 window_size_in_game_units)
 {
 	// Move entities based on how much time has passed, this is to (partially) avoid
 	// having entities move at different speed based on the machine.
@@ -47,8 +47,8 @@ void PhysicsSystem::step(entt::registry& m_registry, float elapsed_ms, vec2 wind
             scale_horizontal_line.y *= 0.1f;
             auto scale_vertical_line = motion.scale;
             scale_vertical_line.x *= 0.1f;
-            DebugSystem::createLine(m_registry,motion.position, scale_horizontal_line);
-            DebugSystem::createLine(m_registry,motion.position, scale_vertical_line);
+            DebugSystem::createLine(motion.position, scale_horizontal_line);
+            DebugSystem::createLine(motion.position, scale_vertical_line);
         }
 	}
 

@@ -2,7 +2,7 @@
 #include "map_grid.hpp"
 #include "system/render.hpp"
 #include <iostream>
-entt::entity Grid::createGrid(entt::registry& m_registry, vec2 position, int grid_type, std::string texture_path)
+entt::entity Grid::createGrid(vec2 pos, int in_id, std::string texture_path)
 {
     auto entity = m_registry.create();
     int id = 10;
@@ -20,7 +20,7 @@ entt::entity Grid::createGrid(entt::registry& m_registry, vec2 position, int gri
 
     // Setting initial motion values
     Motion& motion = m_registry.emplace<Motion>(entity);
-    motion.position = position;
+    motion.position = pos;
     motion.angle = 0.f;
     // grids are not expected to move
     motion.velocity = { 0.f, 0.f };
@@ -28,7 +28,7 @@ entt::entity Grid::createGrid(entt::registry& m_registry, vec2 position, int gri
     motion.scale.x *= -1; // point front to the right
     
     // can delete this id field if not needed when constructing the whole map
-    int type = grid_type;
+    int type = in_id;
 
     // Create and (empty) Salmon component to be able to refer to all turtles
     m_registry.emplace<Grid>(entity);

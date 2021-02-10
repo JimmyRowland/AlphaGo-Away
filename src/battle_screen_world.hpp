@@ -2,6 +2,7 @@
 
 // internal
 #include "core/common.hpp"
+#include "core/registry.h"
 //TODO remove
 #include "entity/map_grid.hpp"
 
@@ -15,28 +16,29 @@
 #include <utility>
 #include <entt/entt.hpp>
 
+
 // Container for all our entities and game logic. Individual rendering / update is 
 // deferred to the relative update() methods
 class BattleWorldSystem
 {
 public:
 	// Creates a window
-	BattleWorldSystem(entt::registry& m_registry,ivec2 window_size_px);
+	BattleWorldSystem(ivec2 window_size_px);
 
 	// Releases all associated resources
 	~BattleWorldSystem();
 
 	// restart level
-	void restart(entt::registry& m_registry);
+    void restart();
 
 	// Steps the game ahead by ms milliseconds
-	void step(entt::registry& m_registry, float elapsed_ms, vec2 window_size_in_game_units);
+	void step( float elapsed_ms, vec2 window_size_in_game_units);
 
 	// Check for collisions
-	void handle_collisions(entt::registry& m_registry);
+    void handle_collisions();
 
 	// Renders our scene
-	void draw(entt::registry& m_registry);
+	void draw();
 
 	// Should the game be over ?
 	bool is_over() const;

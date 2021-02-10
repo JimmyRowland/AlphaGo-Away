@@ -12,7 +12,7 @@
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 namespace DebugSystem 
 {
-	void createLine(entt::registry& m_registry, vec2 position, vec2 scale) {
+	void createLine(vec2 position, vec2 scale) {
 		auto entity = m_registry.create();
 
 
@@ -62,7 +62,7 @@ namespace DebugSystem
 		m_registry.emplace<DebugComponent>(entity);
 	}
 
-	void clearDebugComponents(entt::registry& m_registry) {
+	void clearDebugComponents() {
 		// Clear old debugging visualizations
         for(const auto entity: m_registry.view<DebugComponent>()) {
             m_registry.destroy(entity);

@@ -1,13 +1,13 @@
 #pragma once
 
 #include "core/common.hpp"
+#include "core/registry.h"
 #include <entt/entt.hpp>
-
 // A simple physics system that moves rigid bodies and checks for collision
 class PhysicsSystem
 {
 public:
-	void step(entt::registry& m_registry, float elapsed_ms, vec2 window_size_in_game_units);
+	void step(float elapsed_ms, vec2 window_size_in_game_units);
 
 	// Stucture to store collision information
 	struct Collision

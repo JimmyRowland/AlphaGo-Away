@@ -6,7 +6,7 @@
 #include <fstream>
 
 // World initialization
-RenderSystem::RenderSystem(entt::registry& m_registry, GLFWwindow& window) :
+RenderSystem::RenderSystem(GLFWwindow &window) :
 	window(window)
 {
 	glfwMakeContextCurrent(&window);
@@ -19,7 +19,7 @@ RenderSystem::RenderSystem(entt::registry& m_registry, GLFWwindow& window) :
 	frame_buffer = 0;
 	glGenFramebuffers(1, &frame_buffer);
 	glBindFramebuffer(GL_FRAMEBUFFER, frame_buffer);
-    initScreenTexture(m_registry);
+    initScreenTexture();
 }
 
 RenderSystem::~RenderSystem()
@@ -99,7 +99,7 @@ void RenderSystem::createColoredMesh(ShadedMesh& texmesh, std::string shader_nam
 }
 
 // Initialize the screen texture from a standard sprite
-void RenderSystem::initScreenTexture(entt::registry& m_registry)
+void RenderSystem::initScreenTexture()
 {
 	// Create a sprite withour loading a texture
     // This is our start screen texture; might need to write a new method to load this image

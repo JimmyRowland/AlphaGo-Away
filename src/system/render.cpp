@@ -4,7 +4,7 @@
 
 #include <iostream>
 
-void RenderSystem::drawTexturedMesh(entt::registry & m_registry,entt::entity entity, const mat3& projection)
+void RenderSystem::drawTexturedMesh(entt::entity entity, const mat3 &projection)
 {
 	auto& motion = m_registry.get<Motion>(entity);
 	auto& texmesh = *m_registry.get<ShadedMeshRef>(entity).reference_to_cache;
@@ -86,7 +86,7 @@ void RenderSystem::drawTexturedMesh(entt::registry & m_registry,entt::entity ent
 }
 
 // Draw the intermediate texture to the screen, with some distortion to simulate water
-void RenderSystem::drawToScreen(entt::registry & m_registry)
+void RenderSystem::drawToScreen()
 {
 	// Setting shaders
 	glUseProgram(screen_sprite.effect.program);
@@ -144,7 +144,7 @@ void RenderSystem::drawToScreen(entt::registry & m_registry)
 
 // Render our game world
 // http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-14-render-to-texture/
-void RenderSystem::draw(entt::registry & m_registry, vec2 window_size_in_game_units)
+void RenderSystem::draw(vec2 window_size_in_game_units)
 {
 	// Getting size of window
 	ivec2 frame_buffer_size; // in pixels
@@ -180,12 +180,12 @@ void RenderSystem::draw(entt::registry & m_registry, vec2 window_size_in_game_un
 		if (!m_registry.has<Motion>(entity))
 			continue;
 		// Note, its not very efficient to access elements indirectly via the entity albeit iterating through all Sprites in sequence
-		drawTexturedMesh(m_registry,entity, projection_2D);
+        drawTexturedMesh(entity, projection_2D);
 		gl_has_errors();
 	}
 
 	// Truely render to the screen
-	drawToScreen(m_registry);
+    drawToScreen();
 
 	// flicker-free display with a double buffer
 	glfwSwapBuffers(&window);

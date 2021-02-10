@@ -2,7 +2,7 @@
 #include "turtle.hpp"
 #include "system/render.hpp"
 
-entt::entity Turtle::createTurtle(entt::registry& m_registry, vec2 position)
+entt::entity Turtle::createTurtle(vec2 position)
 {
 	auto entity = m_registry.create();
 
