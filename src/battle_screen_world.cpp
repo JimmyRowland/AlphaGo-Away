@@ -3,6 +3,7 @@
 #include "debug.hpp"
 #include "physics.hpp"
 #include "render_components.hpp"
+#include "unit.hpp"
 
 // stlib
 #include <string.h>
@@ -159,6 +160,7 @@ void BattleWorldSystem::restart()
     ECS::ContainerInterface::list_all_components();
 
     init_grid();
+    player_unit = Unit::createUnit({38, 30});
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // TODO: Add our grid map related entities.
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -175,6 +177,8 @@ void BattleWorldSystem::step(float elapsed_ms, vec2 window_size_in_game_units)
     
     // Removing out of screen entities
     auto& registry = ECS::registry<Motion>;
+
+    //create new unit
 
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // TODO: handle world update.

@@ -10,8 +10,8 @@ ECS::Entity Unit::createUnit(vec2 position)
 	ShadedMesh& resource = cache_resource(key);
 	if (resource.mesh.vertices.size() == 0)
 	{
-		resource.mesh.loadFromOBJFile(mesh_path("salmon.obj"));
-		RenderSystem::createColoredMesh(resource, "salmon");
+		resource.mesh.loadFromOBJFile(mesh_path("unit1.obj"));
+		RenderSystem::createColoredMesh(resource, "unit");
 	}
 
 	// Store a reference to the potentially re-used mesh object (the value is stored in the resource cache)
