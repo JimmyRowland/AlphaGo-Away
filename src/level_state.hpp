@@ -11,6 +11,13 @@ public: LevelState(unsigned int gold, unsigned int health_total, unsigned int da
     void update_gold();
     void update_health();
     void update_received_damage();
+
+    unsigned int getGold() const;
+
+    unsigned int getHealthTotal() const;
+
+    unsigned int getReceivedDamageTotal() const;
+
 private:
     unsigned int gold;
     unsigned int health_total;
