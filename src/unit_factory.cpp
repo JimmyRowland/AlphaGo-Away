@@ -1,8 +1,12 @@
 // Header
-#include "unit.hpp"
+#include "unit_factory.hpp"
 #include "render.hpp"
 
-ECS::Entity Unit::createUnit(vec2 position)
+UnitFactory::UnitFactory(LevelState &level_state) {
+    this->level_state = level_state;
+}
+
+ECS::Entity UnitFactory::createUnit(vec2 position)
 {
 	auto entity = ECS::Entity();
 
