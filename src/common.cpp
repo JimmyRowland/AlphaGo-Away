@@ -16,8 +16,9 @@ void Transform::rotate(float radians)
 	mat = mat * R;
 }
 
-void Transform::translate(vec2 offset)
-{
-	mat3 T = { { 1.f, 0.f, 0.f },{ 0.f, 1.f, 0.f },{ offset.x, offset.y, 1.f } };
-	mat = mat * T;
+void Transform::translate(vec2 offset) {
+    mat3 T = {{1.f,      0.f,      0.f},
+              {0.f,      1.f,      0.f},
+              {offset.x, offset.y, 1.f}};
+    mat = mat * T;
 }

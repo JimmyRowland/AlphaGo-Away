@@ -56,6 +56,7 @@ private:
 
     // Game state
     float current_speed;
+    ECS::Entity player_unit;
     
     // TODO: Add grids for later rendering.
     
