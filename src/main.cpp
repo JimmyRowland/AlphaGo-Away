@@ -36,12 +36,15 @@ int main()
 {
 	// Initialize the main systems
     // StartWorldSystem start_world(window_size_in_px);
-    LevelState levelState(1000, 0, 0);
+    LevelStateSystem levelState(100, 0, 0);
     UnitFactory unitFactory(levelState);
     BattleWorldSystem battle_world(window_size_in_px, unitFactory);
 	// RenderSystem renderer(*start_world.window);
 	RenderSystem renderer(*battle_world.window);
 	PhysicsSystem physics;
+    physics.collision_observers.push_back(&battle_world);
+    physics.collision_observers.push_back(&levelState);
+
 	AISystem ai;
 
 	// Set all states to default

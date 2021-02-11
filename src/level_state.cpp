@@ -4,21 +4,39 @@
 
 #include "level_state.hpp"
 
-LevelState::LevelState(unsigned int gold, unsigned int health_total, unsigned int damage_received_total) {
+LevelStateSystem::LevelStateSystem(unsigned int gold, unsigned int health_total, unsigned int damage_received_total) {
+    this->gold = gold;
+    this->health_total = health_total;
+    this->received_damage_total = damage_received_total;
 }
-void LevelState::update_gold() {if(gold>=100) gold-=100;}
 
-void LevelState::update_health() {if(health_total>=10) health_total-=10;}
-void LevelState::update_received_damage() {if(received_damage_total>=100) received_damage_total-=100;}
+bool LevelStateSystem::update_gold() {
+    if (gold >= 100) {
+        gold -= 100;
+        return true;
+    }
+    else {
+        gold += 50;
+        return false;
+    }
+}
 
-unsigned int LevelState::getGold() const {
+void LevelStateSystem::update_health() { if (health_total >= 10) health_total -= 10; }
+
+void LevelStateSystem::update_received_damage() { if (received_damage_total >= 100) received_damage_total -= 100; }
+
+unsigned int LevelStateSystem::getGold() const {
     return gold;
 }
 
-unsigned int LevelState::getHealthTotal() const {
+unsigned int LevelStateSystem::getHealthTotal() const {
     return health_total;
 }
 
-unsigned int LevelState::getReceivedDamageTotal() const {
+unsigned int LevelStateSystem::getReceivedDamageTotal() const {
     return received_damage_total;
+}
+
+void LevelStateSystem::on_collision() {
+    int x = 0;
 }

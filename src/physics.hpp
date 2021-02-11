@@ -2,6 +2,7 @@
 
 #include "common.hpp"
 #include "tiny_ecs.hpp"
+#include "collision_observer.hpp"
 
 // A simple physics system that moves rigid bodies and checks for collision
 class PhysicsSystem
@@ -16,4 +17,7 @@ public:
 		ECS::Entity other; // the second object involved in the collision
 		Collision(ECS::Entity& other);
 	};
+	std::vector<CollisionObserver *> collision_observers;
+
+
 };

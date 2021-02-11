@@ -4,6 +4,8 @@
 #include "common.hpp"
 #include "map_grid.hpp"
 #include "unit_factory.hpp"
+#include "collision_observer.hpp"
+
 // stlib
 #include <vector>
 #include <random>
@@ -15,7 +17,7 @@
 
 // Container for all our entities and game logic. Individual rendering / update is
 // deferred to the relative update() methods
-class BattleWorldSystem
+class BattleWorldSystem: public CollisionObserver
 {
 public:
     // Creates a window
@@ -33,6 +35,8 @@ public:
     // Check for collisions
     void handle_collisions();
 
+    void on_collision() override;
+
     // Renders our scene
     void draw();
 
@@ -45,6 +49,7 @@ private:
     // Input callback functions
     void on_key(int key, int, int action, int mod);
     void on_mouse_move(vec2 mouse_pos);
+    void on_mouse_click(int button, int action, int mods);
 
     // Loads the audio
     void init_audio();

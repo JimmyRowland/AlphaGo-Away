@@ -28,6 +28,7 @@ void PhysicsSystem::step(float elapsed_ms, vec2 window_size_in_game_units)
 	for (auto& motion : ECS::registry<Motion>.components)
 	{
 		float step_seconds = 1.0f * (elapsed_ms / 1000.f);
+        motion.position+=motion.velocity*step_seconds;
         // TODO:
 	}
     
@@ -67,6 +68,9 @@ void PhysicsSystem::step(float elapsed_ms, vec2 window_size_in_game_units)
 				// Note, we are abusing the ECS system a bit in that we potentially insert muliple collisions for the same entity, hence, emplace_with_duplicates
 				ECS::registry<Collision>.emplace_with_duplicates(entity_i, entity_j);
 				ECS::registry<Collision>.emplace_with_duplicates(entity_j, entity_i);
+                for(auto observer: collision_observers){
+                    observer->on_collision();
+                }
 			}
 		}
 	}

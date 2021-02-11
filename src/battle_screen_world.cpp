@@ -53,9 +53,10 @@ BattleWorldSystem::BattleWorldSystem(ivec2 window_size_px, UnitFactory &unitFact
     glfwSetWindowUserPointer(window, this);
     auto key_redirect = [](GLFWwindow* wnd, int _0, int _1, int _2, int _3) { ((BattleWorldSystem*)glfwGetWindowUserPointer(wnd))->on_key(_0, _1, _2, _3); };
     auto cursor_pos_redirect = [](GLFWwindow* wnd, double _0, double _1) { ((BattleWorldSystem*)glfwGetWindowUserPointer(wnd))->on_mouse_move({ _0, _1 }); };
+    auto cursor_click_redirect = [](GLFWwindow* wnd, int _0, int _1, int _2) {((BattleWorldSystem*)glfwGetWindowUserPointer(wnd))->on_mouse_click( _0, _1, _2); };
     glfwSetKeyCallback(window, key_redirect);
     glfwSetCursorPosCallback(window, cursor_pos_redirect);
-
+    glfwSetMouseButtonCallback(window, cursor_click_redirect);
     // Playing background music indefinitely
     init_audio();
     Mix_PlayMusic(background_music, -1);
@@ -160,6 +161,8 @@ void BattleWorldSystem::restart()
 
     init_grid();
     player_unit = unitFactory.create_unit({38, 30});
+
+
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // TODO: Add our grid map related entities.
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -249,9 +252,19 @@ void BattleWorldSystem::on_key(int key, int, int action, int mod)
 
 void BattleWorldSystem::on_mouse_move(vec2 mouse_pos)
 {
-    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    // TODO: Add mouse contorl here.
-    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    
+
         (void)mouse_pos;
+}
+
+void BattleWorldSystem::on_mouse_click(int button, int action, int mods){
+    if(button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS)
+    {
+        double xpos, ypos;
+        glfwGetCursorPos(window, &xpos, &ypos);
+        player_unit = unitFactory.create_unit({xpos, ypos});
+    }
+}
+
+void BattleWorldSystem::on_collision() {
+    int x = 1;
 }
