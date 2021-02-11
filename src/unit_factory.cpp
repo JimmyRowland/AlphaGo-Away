@@ -2,13 +2,13 @@
 #include "unit_factory.hpp"
 #include "render.hpp"
 
-UnitFactory::UnitFactory(LevelState &level_state) {
-    this->level_state = level_state;
+UnitFactory::UnitFactory(LevelState &levelState) : level_state(levelState) {
 }
 
-ECS::Entity UnitFactory::createUnit(vec2 position)
-{
+ECS::Entity UnitFactory::create_unit(vec2 position) {
+    level_state.update_gold();
 	auto entity = ECS::Entity();
+
 
 	std::string key = "unit";
 	ShadedMesh& resource = cache_resource(key);
@@ -27,10 +27,7 @@ ECS::Entity UnitFactory::createUnit(vec2 position)
 	motion.angle = 0.f;
 	motion.velocity = { 0.f, 0.f };
 	motion.scale = resource.mesh.original_size * 150.f;
-	motion.scale.x *= -1; // point front to the right
-
-	// Create and (empty) Salmon component to be able to refer to all turtles
+	motion.scale.x *= -1;
 	ECS::registry<Unit>.emplace(entity);
-
 	return entity;
 }

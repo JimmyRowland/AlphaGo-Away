@@ -3,7 +3,7 @@
 // internal
 #include "common.hpp"
 #include "map_grid.hpp"
-
+#include "unit_factory.hpp"
 // stlib
 #include <vector>
 #include <random>
@@ -19,7 +19,7 @@ class BattleWorldSystem
 {
 public:
     // Creates a window
-    BattleWorldSystem(ivec2 window_size_px);
+    BattleWorldSystem(ivec2 window_size_px, UnitFactory& unitFactory);
 
     // Releases all associated resources
     ~BattleWorldSystem();
@@ -50,6 +50,9 @@ private:
     void init_audio();
     // Loads the grid
     void init_grid();
+
+    UnitFactory &unitFactory;
+
 
     // Number of fish eaten by the salmon, displayed in the window title
     unsigned int points;

@@ -18,9 +18,8 @@ std::vector<std::vector<std::tuple<int, int>>> grid(10, std::vector<std::tuple<i
 
 // Create the battle world
 // Note, this has a lot of OpenGL specific things, could be moved to the renderer; but it also defines the callbacks to the mouse and keyboard. That is why it is called here.
-BattleWorldSystem::BattleWorldSystem(ivec2 window_size_px) :
-    points(0)
-{
+BattleWorldSystem::BattleWorldSystem(ivec2 window_size_px, UnitFactory &unitFactory) :
+        points(0), unitFactory(unitFactory) {
     // Seeding rng with random device
     rng = std::default_random_engine(std::random_device()());
 
@@ -160,7 +159,7 @@ void BattleWorldSystem::restart()
     ECS::ContainerInterface::list_all_components();
 
     init_grid();
-    player_unit = Unit::createUnit({38, 30});
+    player_unit = unitFactory.create_unit({38, 30});
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // TODO: Add our grid map related entities.
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!

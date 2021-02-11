@@ -15,6 +15,7 @@
 #include "render.hpp"
 #include "start_screen_world.hpp"
 #include "tiny_ecs.hpp"
+#include "level_state.hpp"
 
 
 using Clock = std::chrono::high_resolution_clock;
@@ -35,7 +36,9 @@ int main()
 {
 	// Initialize the main systems
     // StartWorldSystem start_world(window_size_in_px);
-    BattleWorldSystem battle_world(window_size_in_px);
+    LevelState levelState(1000, 0, 0);
+    UnitFactory unitFactory(levelState);
+    BattleWorldSystem battle_world(window_size_in_px, unitFactory);
 	// RenderSystem renderer(*start_world.window);
 	RenderSystem renderer(*battle_world.window);
 	PhysicsSystem physics;
