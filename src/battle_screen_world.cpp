@@ -4,6 +4,7 @@
 #include "physics.hpp"
 #include "render_components.hpp"
 #include "unit.hpp"
+#include "enemy.hpp"
 
 // stlib
 #include <string.h>
@@ -53,9 +54,14 @@ BattleWorldSystem::BattleWorldSystem(ivec2 window_size_px) :
     // http://www.glfw.org/docs/latest/input_guide.html
     glfwSetWindowUserPointer(window, this);
     auto key_redirect = [](GLFWwindow* wnd, int _0, int _1, int _2, int _3) { ((BattleWorldSystem*)glfwGetWindowUserPointer(wnd))->on_key(_0, _1, _2, _3); };
-    auto cursor_pos_redirect = [](GLFWwindow* wnd, double _0, double _1) { ((BattleWorldSystem*)glfwGetWindowUserPointer(wnd))->on_mouse_move({ _0, _1 }); };
+    auto mouse_button_redirect = [](GLFWwindow* wnd, int _0, int _1, int _2) {
+        ((BattleWorldSystem *) glfwGetWindowUserPointer(wnd))->on_mouse_click(_0, _1, _2); };
     glfwSetKeyCallback(window, key_redirect);
-    glfwSetCursorPosCallback(window, cursor_pos_redirect);
+    // get cursor position
+
+    //glfwSetInputMode(window, GLFW_STICKY_MOUSE_BUTTONS, GLFW_TRUE);
+    glfwSetMouseButtonCallback(window,mouse_button_redirect);
+    //glfwSetCursorPosCallback(window, cursor_pos_redirect);
 
     // Playing background music indefinitely
     init_audio();
@@ -135,7 +141,7 @@ void BattleWorldSystem::init_grid() {
             ECS::Entity entity = Grid::createGrid({xpos, ypos}, GRID_TYPE::BASIC, "basic_grid.png", vec2(gridWidth, gridHeight));
         }
     }
-    
+
     //ECS::Entity entity = Grid::createGrid({0.5, 0.5}, GRID_TYPE::BASIC, "basic_grid.png");
 }
 
@@ -160,7 +166,17 @@ void BattleWorldSystem::restart()
     ECS::ContainerInterface::list_all_components();
 
     init_grid();
-    player_unit = Unit::createUnit({38, 30});
+    init_player_unit_0 = Unit::createUnit({38, 30});
+    int winWidth, winHeight;
+    glfwGetWindowSize(window, &winWidth, &winHeight);
+    int gridWidth = floor((winWidth - 20) / grid.size());
+    int gridHeight = floor((winWidth - 20) / grid[0].size());
+    init_player_unit_1 = Unit::createUnit({38, 30+gridHeight});
+    init_player_unit_2 = Unit::createUnit({38, 30+gridHeight*2});
+    init_ai_1 = Enemy::createEnemy({38+9*gridWidth, 30+4*gridHeight}, "ai_default.png", vec2(gridWidth, gridHeight));
+    init_ai_2 = Enemy::createEnemy({38+9*gridWidth, 30+5*gridHeight}, "ai_default.png", vec2(gridWidth, gridHeight));
+    init_ai_3 = Enemy::createEnemy({38+9*gridWidth, 30+6*gridHeight}, "ai_default.png", vec2(gridWidth, gridHeight));
+
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // TODO: Add our grid map related entities.
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -213,13 +229,27 @@ bool BattleWorldSystem::is_over() const
 }
 
 // On key callback
-// TODO A1: check out https://www.glfw.org/docs/3.3/input_guide.html
+
 void BattleWorldSystem::on_key(int key, int, int action, int mod)
 {
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // TODO: Add keyboard contorl here.
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    
+    // For M1: when press B, both AI and unit simply walk forward.
+    if (key == GLFW_KEY_B && (action == GLFW_PRESS || action == GLFW_REPEAT)) {
+        for(auto entity : ECS::registry<Unit>.entities){
+            auto& motion = ECS::registry<Motion>.get(entity);
+            motion.trigger = 1;
+            //motion.velocity = {50.f, 0.f};
+        }
+        for(auto entity : ECS::registry<Enemy>.entities){
+            auto& motion = ECS::registry<Motion>.get(entity);
+            motion.trigger = 1;
+            //motion.velocity = {-50.f, 0.f};
+        }
+
+    }
+
     // Resetting game
     if (action == GLFW_RELEASE && key == GLFW_KEY_R)
     {
@@ -248,11 +278,80 @@ void BattleWorldSystem::on_key(int key, int, int action, int mod)
 }
 
 
-void BattleWorldSystem::on_mouse_move(vec2 mouse_pos)
+void BattleWorldSystem::on_mouse_click(int button, int action, int mods)
 {
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // TODO: Add mouse contorl here.
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    
-        (void)mouse_pos;
-}
+
+      //When keep mouse left key pressed,
+      // you can drag to arrange unit's location and one map grid only contain one unit
+      //When you release the key, the unit will fall into the grid where the cursor is currently located.
+      // If the grid already contain one unit, the unit will automatically fall into the adjacent one or back to the original place (wait for implement)
+      //For current M1, the unit can be placed anywhere on the map, when our explicit battle mechanism come out, will limit the unit's position
+    double xpos, ypos;
+    glfwGetCursorPos(window, &xpos, &ypos);
+    int winWidth, winHeight;
+    glfwGetWindowSize(window, &winWidth, &winHeight);
+    auto gridWidth = (floor((winWidth - 20) / grid.size()))/2;
+    auto gridHeight = (floor((winWidth - 20) / grid[0].size()))/2;
+    //auto& selected_unit = ECS::registry<Unit>.entities[0];
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS){
+        for(auto entity : ECS::registry<Unit>.entities){
+            auto& motion = ECS::registry<Motion>.get(entity);
+            auto dis_x = abs(motion.position.x - xpos);
+            auto dis_y = abs(motion.position.y - ypos);
+            if(dis_x<gridWidth && dis_y<gridHeight){
+                //selected_unit = entity;
+                auto& selection = ECS::registry<Select>.get(entity);
+                selection.select = 1;
+                selection.origin_pos_x = motion.position.x;
+                selection.origin_pos_y = motion.position.y;
+                glfwGetCursorPos(window, &xpos, &ypos);
+                motion.position.x = xpos;
+                motion.position.y = ypos;
+                break;
+            }
+        }
+    }else if(button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE){
+        for(auto entity : ECS::registry<Unit>.entities){
+            auto& selection = ECS::registry<Select>.get(entity);
+            if(selection.select){
+                auto& motion = ECS::registry<Motion>.get(entity);
+                int grid_pos_x = std::get<0>(grid[grid[0].size()-1][0]);
+                int grid_pos_y = std::get<1>(grid[0][grid[0].size()-1]);
+                glfwGetCursorPos(window, &xpos, &ypos);
+                auto dis_x = xpos - grid_pos_x;
+                auto dis_y = ypos - grid_pos_y;
+                if(dis_x > gridWidth || dis_y> gridHeight){
+                    motion.position.x = selection.origin_pos_x;
+                    motion.position.y =selection.origin_pos_y;
+                    selection.select = 0;
+                } else {
+                    for (int i = 0; i < grid[0].size(); i++) {
+                        for (int j = 0; j < grid[0].size(); j++) {
+                             grid_pos_x = std::get<0>(grid[i][j]);
+                             grid_pos_y = std::get<1>(grid[i][j]);
+                            glfwGetCursorPos(window, &xpos, &ypos);
+                            dis_x = abs(xpos - grid_pos_x);
+                            dis_y = abs(ypos - grid_pos_y);
+                            if( dis_x<gridWidth && dis_y<gridHeight ){
+                                motion.position.x = grid_pos_x;
+                                motion.position.y = grid_pos_y;
+                                selection.select = 0;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+
+            }
+        }
+
+
+    }
+
+
+    }
+

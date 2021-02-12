@@ -28,6 +28,10 @@ void PhysicsSystem::step(float elapsed_ms, vec2 window_size_in_game_units)
 	for (auto& motion : ECS::registry<Motion>.components)
 	{
 		float step_seconds = 1.0f * (elapsed_ms / 1000.f);
+		if(motion.trigger == 1){
+            motion.position += step_seconds * motion.velocity;
+		}
+
         // TODO:
 	}
     

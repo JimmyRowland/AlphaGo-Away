@@ -144,9 +144,12 @@ struct DeathTimer
 	float counter_ms = 1000;
 };
 
-// A1: create a new struct called LightUp in render_components.hpp
-// A timer to control lit-up of the salmon (when in collisions with fish)
-struct LightUp
+
+//lift_up==0 means the unit is standing on the map, while lift_up==1 means the unit has been lifted up by mouse click
+struct Select
 {
-    float counter_ms = 600;
+    int select = 0;
+    float origin_pos_x =0;
+    float origin_pos_y = 0;
+
 };
