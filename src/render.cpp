@@ -59,11 +59,16 @@ void RenderSystem::drawTexturedMesh(ECS::Entity entity, const mat3& projection)
 
 		// Light up?
 		// A1: check whether the entity has a LightUp component
-        GLint light_up_uloc = glGetUniformLocation(texmesh.effect.program, "light_up");
-		if (ECS::registry<LightUp>.has(entity))
+        GLint light_up_uloc = glGetUniformLocation(texmesh.effect.program, "is_enemy");
+		if (ECS::registry<Property>.has(entity))
 		{
-			// A1: set the light_up shader variable using glUniform1i
-            glUniform1i(light_up_uloc, 1);// placeholder to silence unused warning until implemented
+		     if(ECS::registry<Property>.get(entity).isEnemy){
+                 glUniform1i(light_up_uloc, 1);
+		     }
+             else
+             {
+                 glUniform1i(light_up_uloc, 0);
+             }
 		}
         else
         {

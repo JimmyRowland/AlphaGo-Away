@@ -3,6 +3,10 @@
 // internal
 #include "common.hpp"
 #include "map_grid.hpp"
+#include "unit_factory.hpp"
+#include "collision_observer.hpp"
+#include "keyboard_observer.hpp"
+#include "physics.hpp"
 
 // stlib
 #include <vector>
@@ -15,14 +19,16 @@
 
 // Container for all our entities and game logic. Individual rendering / update is
 // deferred to the relative update() methods
-class BattleWorldSystem
+class BattleWorldSystem: public CollisionObserver
 {
 public:
     // Creates a window
-    BattleWorldSystem(ivec2 window_size_px);
+    BattleWorldSystem(ivec2 window_size_px, UnitFactory& unitFactory);
 
     // Releases all associated resources
     ~BattleWorldSystem();
+
+    std::vector<KeyboardObserver *> keyBoardObservers;
 
     // restart level
     void restart();
@@ -33,30 +39,45 @@ public:
     // Check for collisions
     void handle_collisions();
 
+    void on_collision(ECS::Entity entity_i, ECS::Entity entity_j) override;
+
     // Renders our scene
     void draw();
 
+    PhysicsSystem* physicsSystem;
+
+
     // Should the game be over ?
     bool is_over() const;
-
     // OpenGL window handle
     GLFWwindow* window;
 private:
     // Input callback functions
     void on_key(int key, int, int action, int mod);
     void on_mouse_move(vec2 mouse_pos);
+    void on_mouse_click(int button, int action, int mods);
 
     // Loads the audio
     void init_audio();
     // Loads the grid
     void init_grid();
 
+    UnitFactory &unitFactory;
+
+
     // Number of fish eaten by the salmon, displayed in the window title
     unsigned int points;
 
     // Game state
     float current_speed;
+    ECS::Entity init_player_unit_0;
+    ECS::Entity init_player_unit_1;
+    ECS::Entity init_player_unit_2;
+    ECS::Entity init_ai_2;
+    ECS::Entity init_ai_1;
+    ECS::Entity init_ai_3;
     ECS::Entity player_unit;
+
     
     // TODO: Add grids for later rendering.
     

@@ -3,7 +3,7 @@
 #include "debug.hpp"
 #include "physics.hpp"
 #include "render_components.hpp"
-#include "unit.hpp"
+#include "unit_factory.hpp"
 
 // stlib
 #include <string.h>
@@ -13,20 +13,21 @@
 
 // Game configuration
 // TODO: Add any needed contant here
-enum GRID_TYPE { BASIC, WATER, FOREST };
-std::vector<std::vector<std::tuple<int, int>>> grid(10, std::vector<std::tuple<int, int>>(10) );
+enum GRID_TYPE {
+    BASIC, WATER, FOREST
+};
+std::vector<std::vector<std::tuple<int, int>>> grid(10, std::vector<std::tuple<int, int>>(10));
 
 // Create the battle world
 // Note, this has a lot of OpenGL specific things, could be moved to the renderer; but it also defines the callbacks to the mouse and keyboard. That is why it is called here.
-BattleWorldSystem::BattleWorldSystem(ivec2 window_size_px) :
-    points(0)
-{
+BattleWorldSystem::BattleWorldSystem(ivec2 window_size_px, UnitFactory &unitFactory) :
+        points(0), unitFactory(unitFactory) {
     // Seeding rng with random device
     rng = std::default_random_engine(std::random_device()());
 
     ///////////////////////////////////////
     // Initialize GLFW
-    auto glfw_err_callback = [](int error, const char* desc) { std::cerr << "OpenGL:" << error << desc << std::endl; };
+    auto glfw_err_callback = [](int error, const char *desc) { std::cerr << "OpenGL:" << error << desc << std::endl; };
     glfwSetErrorCallback(glfw_err_callback);
     if (!glfwInit())
         throw std::runtime_error("Failed to initialize GLFW");
@@ -52,18 +53,24 @@ BattleWorldSystem::BattleWorldSystem(ivec2 window_size_px) :
     // Input is handled using GLFW, for more info see
     // http://www.glfw.org/docs/latest/input_guide.html
     glfwSetWindowUserPointer(window, this);
-    auto key_redirect = [](GLFWwindow* wnd, int _0, int _1, int _2, int _3) { ((BattleWorldSystem*)glfwGetWindowUserPointer(wnd))->on_key(_0, _1, _2, _3); };
-    auto cursor_pos_redirect = [](GLFWwindow* wnd, double _0, double _1) { ((BattleWorldSystem*)glfwGetWindowUserPointer(wnd))->on_mouse_move({ _0, _1 }); };
+    auto key_redirect = [](GLFWwindow *wnd, int _0, int _1, int _2,
+                           int _3) { ((BattleWorldSystem *) glfwGetWindowUserPointer(wnd))->on_key(_0, _1, _2, _3); };
+    auto cursor_pos_redirect = [](GLFWwindow *wnd, double _0, double _1) {
+        ((BattleWorldSystem *) glfwGetWindowUserPointer(wnd))->on_mouse_move({_0, _1});
+    };
+    auto cursor_click_redirect = [](GLFWwindow *wnd, int _0, int _1, int _2) {
+        ((BattleWorldSystem *) glfwGetWindowUserPointer(wnd))->on_mouse_click(_0, _1, _2);
+    };
     glfwSetKeyCallback(window, key_redirect);
     glfwSetCursorPosCallback(window, cursor_pos_redirect);
-
+    glfwSetMouseButtonCallback(window, cursor_click_redirect);
     // Playing background music indefinitely
     init_audio();
     Mix_PlayMusic(background_music, -1);
     std::cout << "Loaded music\n";
 }
 
-BattleWorldSystem::~BattleWorldSystem(){
+BattleWorldSystem::~BattleWorldSystem() {
     // Destroy music components
     if (background_music != nullptr)
         Mix_FreeMusic(background_music);
@@ -80,8 +87,7 @@ BattleWorldSystem::~BattleWorldSystem(){
     glfwDestroyWindow(window);
 }
 
-void BattleWorldSystem::init_audio()
-{
+void BattleWorldSystem::init_audio() {
     //////////////////////////////////////
     // Loading music and sounds with SDL
     if (SDL_Init(SDL_INIT_AUDIO) < 0)
@@ -95,10 +101,10 @@ void BattleWorldSystem::init_audio()
     salmon_eat_sound = Mix_LoadWAV(audio_path("salmon_eat.wav").c_str());
 
     if (background_music == nullptr || salmon_dead_sound == nullptr || salmon_eat_sound == nullptr)
-        throw std::runtime_error("Failed to load sounds make sure the data directory is present: "+
-            audio_path("music.wav")+
-            audio_path("salmon_dead.wav")+
-            audio_path("salmon_eat.wav"));
+        throw std::runtime_error("Failed to load sounds make sure the data directory is present: " +
+                                 audio_path("music.wav") +
+                                 audio_path("salmon_dead.wav") +
+                                 audio_path("salmon_eat.wav"));
 
 }
 
@@ -112,19 +118,17 @@ void BattleWorldSystem::init_grid() {
             int xpos, ypos;
             if (i == 0) {
                 xpos = 10 + gridWidth / 2;
-            }
-            else {
+            } else {
                 xpos = std::get<0>(grid[i - 1][j]) + gridWidth;
             }
             if (j == 0) {
                 ypos = 10 + gridHeight / 2;
-            }
-            else {
+            } else {
                 ypos = std::get<1>(grid[i][j - 1]) + gridHeight;
             }
-            grid[i][j] = std::tuple<int, int>{ xpos, ypos };
+            grid[i][j] = std::tuple<int, int>{xpos, ypos};
         }
-    } 
+    }
 
 
     for (int i = 0; i < grid.size(); i++) {
@@ -132,17 +136,17 @@ void BattleWorldSystem::init_grid() {
             int xpos = std::get<0>(grid[i][j]);
             int ypos = std::get<1>(grid[i][j]);
             //std::cout << xpos << ", " << ypos << std::endl;
-            ECS::Entity entity = Grid::createGrid({xpos, ypos}, GRID_TYPE::BASIC, "basic_grid.png", vec2(gridWidth, gridHeight));
+            ECS::Entity entity = Grid::createGrid({xpos, ypos}, GRID_TYPE::BASIC, "basic_grid.png",
+                                                  vec2(gridWidth, gridHeight));
         }
     }
-    
+
     //ECS::Entity entity = Grid::createGrid({0.5, 0.5}, GRID_TYPE::BASIC, "basic_grid.png");
 }
 
 // Reset the world state to its initial state
-void BattleWorldSystem::restart()
-{
-    
+void BattleWorldSystem::restart() {
+
     // Debugging for memory/component leaks
     ECS::ContainerInterface::list_all_components();
     std::cout << "Restarting\n";
@@ -153,46 +157,76 @@ void BattleWorldSystem::restart()
 
     // Remove all entities that we created
     // All that have a motion, we could also iterate over all fish, turtles, ... but that would be more cumbersome
-    while (ECS::registry<Motion>.entities.size()>0)
+    while (ECS::registry<Motion>.entities.size() > 0)
         ECS::ContainerInterface::remove_all_components_of(ECS::registry<Motion>.entities.back());
 
     // Debugging for memory/component leaks
     ECS::ContainerInterface::list_all_components();
 
     init_grid();
-    player_unit = Unit::createUnit({38, 30});
+
+
+    init_player_unit_0 = unitFactory.create_unit({38, 30});
+    int winWidth, winHeight;
+    glfwGetWindowSize(window, &winWidth, &winHeight);
+    int gridWidth = floor((winWidth - 20) / grid.size());
+    int gridHeight = floor((winWidth - 20) / grid[0].size());
+    unitFactory.setGridHeight(gridHeight);
+    unitFactory.setGridWidth(gridWidth);
+    init_player_unit_1 = unitFactory.create_unit({38, 30 + gridHeight});
+    init_player_unit_2 = unitFactory.create_unit({38, 30 + gridHeight * 2});
+    init_ai_1 = unitFactory.create_unit({38 + 9 * gridWidth, 30 + 4 * gridHeight}, MONITOR);
+    init_ai_2 = unitFactory.create_unit({38 + 9 * gridWidth, 30 + 5 * gridHeight}, MONITOR);
+    init_ai_3 = unitFactory.create_unit({38 + 9 * gridWidth, 30 + 6 * gridHeight}, MONITOR);
+
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // TODO: Add our grid map related entities.
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    
+
 }
 
 // Update our game world
-void BattleWorldSystem::step(float elapsed_ms, vec2 window_size_in_game_units)
-{
+void BattleWorldSystem::step(float elapsed_ms, vec2 window_size_in_game_units) {
     // Updating window title with points
     std::stringstream title_ss;
     title_ss << "Points: " << points;
     glfwSetWindowTitle(window, title_ss.str().c_str());
-    
-    // Removing out of screen entities
-    auto& registry = ECS::registry<Motion>;
-
-    //create new unit
-
-    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    // TODO: handle world update.
-    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    
+    int gridWidth = floor((window_size_in_game_units.x - 20) / grid.size());
+    int gridHeight = floor((window_size_in_game_units.y - 20) / grid[0].size());
+    float boardWidth = 9 * gridWidth + 38;
+    float boardHeight = 9 * gridHeight - 150;
+    for (auto entity: ECS::view<Motion, Property>()) {
+        Motion &motion = ECS::registry<Motion>.get(entity);
+        if (motion.position.y < 30.f) {
+            motion.position.y = 30.f;
+            if (motion.velocity.y < 0) {
+                motion.velocity.y = 0;
+            }
+        } else if (motion.position.y > boardHeight) {
+            motion.position.y = boardHeight;
+            if (motion.velocity.y > 0) {
+                motion.velocity.y = 0;
+            }
+        }
+        if (motion.position.x - 30.f < 0) {
+            if (motion.velocity.x < 0) {
+                motion.velocity.x = 0;
+            }
+            motion.position.x = 30.f;
+        } else if (motion.position.x > boardWidth) {
+            if (motion.velocity.x > 0) {
+                motion.velocity.x = 0;
+            }
+            motion.position.x = boardWidth;
+        }
+    }
 }
 
 // Compute collisions between entities
-void BattleWorldSystem::handle_collisions()
-{
+void BattleWorldSystem::handle_collisions() {
     // Loop over all collisions detected by the physics system
-    auto& registry = ECS::registry<PhysicsSystem::Collision>;
-    for (unsigned int i=0; i< registry.components.size(); i++)
-    {
+    auto &registry = ECS::registry<PhysicsSystem::Collision>;
+    for (unsigned int i = 0; i < registry.components.size(); i++) {
         // The entity and its collider
 //        auto entity = registry.entities[i];
 //        auto entity_other = registry.components[i].other;
@@ -207,25 +241,22 @@ void BattleWorldSystem::handle_collisions()
 }
 
 // Should the game be over ?
-bool BattleWorldSystem::is_over() const
-{
-    return glfwWindowShouldClose(window)>0;
+bool BattleWorldSystem::is_over() const {
+    return glfwWindowShouldClose(window) > 0;
 }
 
 // On key callback
-// TODO A1: check out https://www.glfw.org/docs/3.3/input_guide.html
-void BattleWorldSystem::on_key(int key, int, int action, int mod)
-{
+
+void BattleWorldSystem::on_key(int key, int, int action, int mod) {
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // TODO: Add keyboard contorl here.
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    
+
     // Resetting game
-    if (action == GLFW_RELEASE && key == GLFW_KEY_R)
-    {
+    if (action == GLFW_RELEASE && key == GLFW_KEY_R) {
         int w, h;
         glfwGetWindowSize(window, &w, &h);
-        
+
         restart();
     }
 
@@ -234,25 +265,113 @@ void BattleWorldSystem::on_key(int key, int, int action, int mod)
         DebugSystem::in_debug_mode = (action != GLFW_RELEASE);
 
     // Control the current speed with `<` `>`
-    if (action == GLFW_RELEASE && (mod & GLFW_MOD_SHIFT) && key == GLFW_KEY_COMMA)
-    {
+    if (action == GLFW_RELEASE && (mod & GLFW_MOD_SHIFT) && key == GLFW_KEY_COMMA) {
         current_speed -= 0.1f;
         std::cout << "Current speed = " << current_speed << std::endl;
     }
-    if (action == GLFW_RELEASE && (mod & GLFW_MOD_SHIFT) && key == GLFW_KEY_PERIOD)
-    {
+    if (action == GLFW_RELEASE && (mod & GLFW_MOD_SHIFT) && key == GLFW_KEY_PERIOD) {
         current_speed += 0.1f;
         std::cout << "Current speed = " << current_speed << std::endl;
     }
     current_speed = std::max(0.f, current_speed);
+
+    for (auto observer: keyBoardObservers) {
+        observer->on_key_click(key, action);
+    }
 }
 
 
-void BattleWorldSystem::on_mouse_move(vec2 mouse_pos)
-{
-    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    // TODO: Add mouse contorl here.
-    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    
-        (void)mouse_pos;
+void BattleWorldSystem::on_mouse_move(vec2 mouse_pos) {
+
+    (void) mouse_pos;
 }
+
+void BattleWorldSystem::on_mouse_click(int button, int action, int mods) {
+    if (button == GLFW_MOUSE_BUTTON_LEFT) {
+        double xpos, ypos;
+        glfwGetCursorPos(window, &xpos, &ypos);
+        int winWidth, winHeight;
+        glfwGetWindowSize(window, &winWidth, &winHeight);
+        auto gridWidth = (floor((winWidth - 20) / grid.size())) / 2;
+        auto gridHeight = (floor((winWidth - 20) / grid[0].size())) / 2;
+        //auto& selected_unit = ECS::registry<Unit>.entities[0];
+        if (physicsSystem->should_pause) {
+            if (action == GLFW_PRESS) {
+                for (auto entity : ECS::registry<Property>.entities) {
+                    auto &motion = ECS::registry<Motion>.get(entity);
+                    auto dis_x = abs(motion.position.x - xpos);
+                    auto dis_y = abs(motion.position.y - ypos);
+                    if (dis_x < gridWidth && dis_y < gridHeight) {
+                        //Propertyed_unit = entity;
+                        auto &property = ECS::registry<Property>.get(entity);
+                        property.selected = true;
+                        glfwGetCursorPos(window, &xpos, &ypos);
+                        motion.position.x = xpos;
+                        motion.position.y = ypos;
+                        break;
+                    }
+                }
+            } else if (action == GLFW_RELEASE) {
+                for (auto entity : ECS::registry<Unit>.entities) {
+                    auto &property = ECS::registry<Property>.get(entity);
+                    if (property.selected) {
+                        auto &motion = ECS::registry<Motion>.get(entity);
+                        int grid_pos_x = std::get<0>(grid[grid[0].size() - 1][0]);
+                        int grid_pos_y = std::get<1>(grid[0][grid[0].size() - 1]);
+                        glfwGetCursorPos(window, &xpos, &ypos);
+                        auto dis_x = xpos - grid_pos_x;
+                        auto dis_y = ypos - grid_pos_y;
+                        if (dis_x > gridWidth || dis_y > gridHeight) {
+
+                            property.selected = false;
+                        } else {
+                            for (int i = 0; i < grid[0].size(); i++) {
+                                for (int j = 0; j < grid[0].size(); j++) {
+                                    grid_pos_x = std::get<0>(grid[i][j]);
+                                    grid_pos_y = std::get<1>(grid[i][j]);
+                                    glfwGetCursorPos(window, &xpos, &ypos);
+                                    dis_x = abs(xpos - grid_pos_x);
+                                    dis_y = abs(ypos - grid_pos_y);
+                                    if (dis_x < gridWidth && dis_y < gridHeight) {
+                                        motion.position.x = grid_pos_x;
+                                        motion.position.y = grid_pos_y;
+                                        property.selected = false;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
+
+                    }
+                }
+
+
+            }
+        } else {
+            if (action==GLFW_PRESS && xpos > 30.f && xpos < 570.f && ypos > 30.f && ypos < 570.f) {
+                unitFactory.create_unit({xpos, ypos});
+            }
+        }
+    }
+}
+
+void BattleWorldSystem::on_collision(ECS::Entity entity_i, ECS::Entity entity_j) {
+    Property &property_i = ECS::registry<Property>.get(entity_i);
+    Property &property_j = ECS::registry<Property>.get(entity_j);
+
+    if (property_j.isEnemy != property_i.isEnemy) {
+        property_i.hp -= property_j.damage;
+        property_j.hp -= property_i.damage;
+        if (property_i.hp <= 0) {
+            ECS::ContainerInterface::remove_all_components_of(entity_i);
+            Mix_PlayChannel(-1, salmon_dead_sound, 0);
+        }
+        if (property_j.hp <= 0) {
+            ECS::ContainerInterface::remove_all_components_of(entity_j);
+            Mix_PlayChannel(-1, salmon_dead_sound, 0);
+        }
+    }
+}
+
+

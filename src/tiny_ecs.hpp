@@ -169,4 +169,14 @@ namespace ECS {
 			return components.size();
 		}
 	};
+
+    template<typename Component, typename ... Args>
+    std::vector<Entity> view(){
+        std::vector<Entity> view;
+        auto entities = registry<Component>.entities;
+        for(auto entity: entities){
+            if((... && registry<Args>.has(entity))) view.push_back(entity);
+        }
+        return view;
+    }
 }

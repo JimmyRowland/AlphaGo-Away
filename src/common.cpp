@@ -22,3 +22,12 @@ void Transform::translate(vec2 offset) {
               {offset.x, offset.y, 1.f}};
     mat = mat * T;
 }
+float get_velocity_after_drag(float velocity_x){
+    if(velocity_x > 0){
+        float new_velocity_x = velocity_x - 2.f;
+        return new_velocity_x > 0 ? new_velocity_x : 0;
+    }else{
+        float new_velocity_x = velocity_x + 2.f;
+        return new_velocity_x < 0 ? new_velocity_x : 0;
+    }
+}
