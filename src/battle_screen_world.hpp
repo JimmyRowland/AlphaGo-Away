@@ -6,6 +6,7 @@
 #include "unit_factory.hpp"
 #include "collision_observer.hpp"
 #include "keyboard_observer.hpp"
+#include "physics.hpp"
 
 // stlib
 #include <vector>
@@ -43,10 +44,11 @@ public:
     // Renders our scene
     void draw();
 
+    PhysicsSystem* physicsSystem;
+
 
     // Should the game be over ?
     bool is_over() const;
-
     // OpenGL window handle
     GLFWwindow* window;
 private:

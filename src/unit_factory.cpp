@@ -5,16 +5,28 @@
 UnitFactory::UnitFactory(LevelStateSystem &levelState) : level_state(levelState) {
 }
 
-ECS::Entity UnitFactory::create_unit(vec2 position) {
+ECS::Entity UnitFactory::create_unit(vec2 position, unsigned int unit_type) {
     auto entity = ECS::Entity();
-
-
     std::string key = "unit";
+    if(unit_type==TERMINATOR){
+        key = "unit";
+    }if(unit_type==MONITOR){
+        key = "monitor";
+    }
     ShadedMesh& resource = cache_resource(key);
     if (resource.mesh.vertices.size() == 0)
     {
-        resource.mesh.loadFromOBJFile(mesh_path("unit1.obj"));
-        RenderSystem::createColoredMesh(resource, "unit");
+        if(unit_type==TERMINATOR){
+            resource.mesh.loadFromOBJFile(mesh_path("unit1.obj"));
+            RenderSystem::createColoredMesh(resource, key);
+        }
+        if(unit_type==MONITOR){
+            resource = ShadedMesh();
+            RenderSystem::createSprite(resource, textures_path("ai_default.png"), "textured");
+//            resource.mesh.loadFromOBJFile(mesh_path("unit1.obj"));
+//            RenderSystem::createColoredMesh(resource, key);
+        }
+
     }
 
     // Store a reference to the potentially re-used mesh object (the value is stored in the resource cache)
@@ -36,6 +48,10 @@ ECS::Entity UnitFactory::create_unit(vec2 position) {
     }else{
         property.isEnemy=0;
     }
+    if(unit_type==MONITOR){
+        motion.scale = vec2(gridWidth,gridHeight);
+        property.hp = 1000;
+    }
 
     return entity;
 
@@ -49,4 +65,12 @@ void UnitFactory::on_key_click(int key, int action) {
     {
         should_place_enemy = SHOULD_PLACE_HUMAN;
     }
+}
+
+void UnitFactory::setGridWidth(float gridWidth) {
+    UnitFactory::gridWidth = gridWidth;
+}
+
+void UnitFactory::setGridHeight(float gridHeight) {
+    UnitFactory::gridHeight = gridHeight;
 }

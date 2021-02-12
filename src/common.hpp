@@ -59,5 +59,6 @@ struct Property {
 	int damage = 5;
 	int isEnemy = ALLY;
 	ECS::Entity target;
+	bool selected = false;
 };
 float get_velocity_after_drag(float velocity_x);

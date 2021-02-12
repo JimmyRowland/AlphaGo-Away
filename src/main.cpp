@@ -46,6 +46,7 @@ int main()
     physics.collision_observers.push_back(&levelState);
     battle_world.keyBoardObservers.push_back(&unitFactory);
     battle_world.keyBoardObservers.push_back(&physics);
+    battle_world.physicsSystem = &physics;
 
 	AISystem ai;
 

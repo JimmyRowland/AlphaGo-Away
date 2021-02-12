@@ -61,21 +61,6 @@ void PhysicsSystem::step(float elapsed_ms, vec2 window_size_in_game_units)
         float step_seconds = 1.0f * (elapsed_ms / 1000.f);
         motion.velocity = vec2(get_velocity_after_drag(motion.velocity.x),get_velocity_after_drag(motion.velocity.y));
         motion.position+=motion.velocity*step_seconds;
-        if(motion.position.y < 30.f && motion.velocity.y < 0){
-            motion.position.y = 30.f;
-            motion.velocity.y = 0;
-        }else if(motion.position.y > 570.f && motion.velocity.y > 0){
-            motion.position.y = 770.f;
-            motion.velocity.y = 0;
-        }
-        if(motion.position.x - 60.f < 0 && motion.velocity.x < 0){
-            motion.position.x = 60.f;
-            motion.velocity.x = 0;
-        }
-        else if(motion.position.x > 570.f && motion.velocity.x > 0){
-            motion.position.x = 570.f;
-            motion.velocity.x = 0;
-        }
 
 
     }

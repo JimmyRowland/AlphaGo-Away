@@ -20,7 +20,6 @@ public:
 	};
 	std::vector<CollisionObserver *> collision_observers;
 	void on_key_click(int key, int action) override;
-private:
-    bool should_pause = false;
+    bool should_pause = true;
 
 };
