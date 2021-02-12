@@ -127,17 +127,7 @@ void PhysicsSystem::step(float elapsed_ms, vec2 window_size_in_game_units)
                     ECS::registry<Collision>.emplace_with_duplicates(entity_i, entity_j);
                     ECS::registry<Collision>.emplace_with_duplicates(entity_j, entity_i);
                     for(auto observer: collision_observers){
-                        observer->on_collision();
-                    }
-                    if(property_j.isEnemy != property_i.isEnemy){
-                        property_i.hp -= property_j.damage;
-                        property_j.hp -= property_i.damage;
-                        if(property_i.hp<=0){
-                            ECS::ContainerInterface::remove_all_components_of(entity_i);
-                        }
-                        if(property_j.hp<=0){
-                            ECS::ContainerInterface::remove_all_components_of(entity_j);
-                        }
+                        observer->on_collision(entity_i, entity_j);
                     }
                     float step_seconds = 1.0f * (elapsed_ms / 1000.f);
                     vec2 direction = motion_j.position-motion_i.position;

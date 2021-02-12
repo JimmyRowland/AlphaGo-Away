@@ -38,7 +38,7 @@ public:
     // Check for collisions
     void handle_collisions();
 
-    void on_collision() override;
+    void on_collision(ECS::Entity entity_i, ECS::Entity entity_j) override;
 
     // Renders our scene
     void draw();

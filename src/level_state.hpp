@@ -8,6 +8,7 @@
 // observer
 #include <gl3w.h>
 #include <GLFW/glfw3.h>
+#include "common.hpp"
 
 
 class LevelStateSystem: public CollisionObserver{
@@ -16,7 +17,7 @@ public: LevelStateSystem(unsigned int gold, unsigned int health_total, unsigned 
     bool update_gold();
     void update_health();
     void update_received_damage();
-    void on_collision();
+    void on_collision(ECS::Entity entity_i, ECS::Entity entity_j);
 
     unsigned int getGold() const;
 

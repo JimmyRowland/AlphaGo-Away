@@ -37,6 +37,7 @@ unsigned int LevelStateSystem::getReceivedDamageTotal() const {
     return received_damage_total;
 }
 
-void LevelStateSystem::on_collision() {
+void LevelStateSystem::on_collision(ECS::Entity entity_i, ECS::Entity entity_j) {
     int x = 0;
 }
+

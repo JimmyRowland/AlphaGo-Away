@@ -268,7 +268,22 @@ void BattleWorldSystem::on_mouse_click(int button, int action, int mods){
     }
 }
 
-void BattleWorldSystem::on_collision() {
-    int x = 1;
+void BattleWorldSystem::on_collision(ECS::Entity entity_i, ECS::Entity entity_j) {
+    Property& property_i = ECS::registry<Property>.get(entity_i);
+    Property& property_j = ECS::registry<Property>.get(entity_j);
+
+    if(property_j.isEnemy != property_i.isEnemy){
+        property_i.hp -= property_j.damage;
+        property_j.hp -= property_i.damage;
+        if(property_i.hp <= 0){
+            ECS::ContainerInterface::remove_all_components_of(entity_i);
+            Mix_PlayChannel(-1, salmon_dead_sound, 0);
+        }
+        if(property_j.hp <= 0){
+            ECS::ContainerInterface::remove_all_components_of(entity_j);
+            Mix_PlayChannel(-1, salmon_dead_sound, 0);
+        }
+    }
 }
+
 
