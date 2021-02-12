@@ -7,7 +7,7 @@
 
 namespace ECS {
 	// Declare the ComponentContainer upfront, such that we can define the registry and use it in the Entity class definition
-	template <typename Component> // A template class, the Component can be any class
+	template <typename Component, typename... Args> // A template class, the Component can be any class
 	class ComponentContainer;
 
 	// Instanciate one component container for each desired class
@@ -106,7 +106,7 @@ namespace ECS {
 		Component& emplace_with_duplicates(Entity e, Args &&... args) {
 			return insert(e, Component(std::forward<Args>(args)...), false);
 		};
-        template<typename... Args>
+
 		std::vector<Entity> view(Args &&... args){
             std::vector<Entity> view;
             for(auto entity: entities){
