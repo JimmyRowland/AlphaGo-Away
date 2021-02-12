@@ -34,22 +34,20 @@ void PhysicsSystem::step(float elapsed_ms, vec2 window_size_in_game_units)
 {
 
     // Check for collisions between all moving entities
-    auto& motion_container = ECS::registry<Motion>;
     // for (auto [i, motion_i] : enumerate(motion_container.components)) // in c++ 17 we will be able to do this instead of the next three lines
-    for (unsigned int i=0; i<motion_container.components.size(); i++)
+    for (auto entity: ECS::registry<Property>.view())
     {
-        Motion& motion = motion_container.components[i];
-        ECS::Entity entity = motion_container.entities[i];
+        Motion& motion = ECS::registry<Motion>.get(entity);
         if(ECS::registry<Property>.has(entity)){
             Property& property = ECS::registry<Property>.get(entity);
             if(ECS::registry<Motion>.has(property.target)){
                 Motion& motion_j = ECS::registry<Motion>.get(property.target);
                 vec2 acceleration = (motion_j.position-motion.position)*vec2(0.1,0.1);
                 motion.velocity += acceleration;
-                if(pow(motion.velocity.x,2)+pow(motion.velocity.y,2) >400){
+                if(pow(motion.velocity.x,2)+pow(motion.velocity.y,2) >1600){
                     float angle = atan2(motion.velocity.y, motion.velocity.x);
-                    motion.velocity.x = cos(angle)*20;
-                    motion.velocity.y = sin(angle)*20;
+                    motion.velocity.x = cos(angle)*40;
+                    motion.velocity.y = sin(angle)*40;
                 }
             }
         }
@@ -100,6 +98,7 @@ void PhysicsSystem::step(float elapsed_ms, vec2 window_size_in_game_units)
 	}
 
 	// for (auto [i, motion_i] : enumerate(motion_container.components)) // in c++ 17 we will be able to do this instead of the next three lines
+    auto& motion_container = ECS::registry<Motion>;
 	for (unsigned int i=0; i<motion_container.components.size(); i++)
 	{
 		Motion& motion_i = motion_container.components[i];

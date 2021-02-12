@@ -106,6 +106,14 @@ namespace ECS {
 		Component& emplace_with_duplicates(Entity e, Args &&... args) {
 			return insert(e, Component(std::forward<Args>(args)...), false);
 		};
+        template<typename... Args>
+		std::vector<Entity> view(Args &&... args){
+            std::vector<Entity> view;
+            for(auto entity: entities){
+                if(has(entity)) view.push_back(entity);
+            }
+            return view;
+		}
 
 		// A wrapper to return the component of an entity
 		Component& get(Entity e) {
