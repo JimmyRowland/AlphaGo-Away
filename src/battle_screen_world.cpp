@@ -264,7 +264,9 @@ void BattleWorldSystem::on_mouse_click(int button, int action, int mods){
     {
         double xpos, ypos;
         glfwGetCursorPos(window, &xpos, &ypos);
-        player_unit = unitFactory.create_unit({xpos, ypos});
+        if(xpos>30.f && xpos<570.f && ypos>30.f && ypos<570.f){
+            player_unit = unitFactory.create_unit({xpos, ypos});
+        }
     }
 }
 

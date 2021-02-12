@@ -64,7 +64,7 @@ void PhysicsSystem::step(float elapsed_ms, vec2 window_size_in_game_units)
         if(motion.position.y < 30.f && motion.velocity.y < 0){
             motion.position.y = 30.f;
             motion.velocity.y = 0;
-        }else if(motion.position.y > 770.f && motion.velocity.y > 0){
+        }else if(motion.position.y > 570.f && motion.velocity.y > 0){
             motion.position.y = 770.f;
             motion.velocity.y = 0;
         }
