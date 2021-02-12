@@ -36,7 +36,7 @@ void PhysicsSystem::step(float elapsed_ms, vec2 window_size_in_game_units)
 
     // Check for collisions between all moving entities
     // for (auto [i, motion_i] : enumerate(motion_container.components)) // in c++ 17 we will be able to do this instead of the next three lines
-    for (auto entity: ECS::registry<Property, Motion>.view())
+    for (auto entity: ECS::view<Property, Motion>())
     {
         Motion& motion = ECS::registry<Motion>.get(entity);
         if(ECS::registry<Property>.has(entity)){

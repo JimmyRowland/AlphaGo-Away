@@ -7,7 +7,7 @@
 
 namespace ECS {
 	// Declare the ComponentContainer upfront, such that we can define the registry and use it in the Entity class definition
-	template <typename Component, typename... Args> // A template class, the Component can be any class
+	template <typename Component> // A template class, the Component can be any class
 	class ComponentContainer;
 
 	// Instanciate one component container for each desired class
@@ -107,14 +107,6 @@ namespace ECS {
 			return insert(e, Component(std::forward<Args>(args)...), false);
 		};
 
-		std::vector<Entity> view(Args &&... args){
-            std::vector<Entity> view;
-            for(auto entity: entities){
-                if(has(entity)) view.push_back(entity);
-            }
-            return view;
-		}
-
 		// A wrapper to return the component of an entity
 		Component& get(Entity e) {
 			const auto it = map_entity_component_index.find(e.id);
@@ -177,4 +169,14 @@ namespace ECS {
 			return components.size();
 		}
 	};
+
+    template<typename Component, typename ... Args>
+    std::vector<Entity> view(){
+        std::vector<Entity> view;
+        auto entities = registry<Component>.entities;
+        for(auto entity: entities){
+            if((... && registry<Args>.has(entity))) view.push_back(entity);
+        }
+        return view;
+    }
 }

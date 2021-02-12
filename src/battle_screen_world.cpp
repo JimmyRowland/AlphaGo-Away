@@ -195,7 +195,7 @@ void BattleWorldSystem::step(float elapsed_ms, vec2 window_size_in_game_units) {
     int gridHeight = floor((window_size_in_game_units.y - 20) / grid[0].size());
     float boardWidth = 9 * gridWidth + 38;
     float boardHeight = 9 * gridHeight - 150;
-    for (auto entity: ECS::registry<Property>.view()) {
+    for (auto entity: ECS::view<Motion, Property>()) {
         Motion &motion = ECS::registry<Motion>.get(entity);
         if (motion.position.y < 30.f) {
             motion.position.y = 30.f;
@@ -348,8 +348,8 @@ void BattleWorldSystem::on_mouse_click(int button, int action, int mods) {
 
 
             }
-        }else{
-            if (xpos > 30.f && xpos < 570.f && ypos > 30.f && ypos < 570.f) {
+        } else {
+            if (action==GLFW_PRESS && xpos > 30.f && xpos < 570.f && ypos > 30.f && ypos < 570.f) {
                 unitFactory.create_unit({xpos, ypos});
             }
         }
