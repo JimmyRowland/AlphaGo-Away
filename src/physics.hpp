@@ -2,7 +2,6 @@
 
 #include "common.hpp"
 #include "tiny_ecs.hpp"
-#include "collision_observer.hpp"
 #include "keyboard_observer.hpp"
 
 // A simple physics system that moves rigid bodies and checks for collision
@@ -18,7 +17,10 @@ public:
 		ECS::Entity other; // the second object involved in the collision
 		Collision(ECS::Entity& other);
 	};
-	std::vector<CollisionObserver *> collision_observers;
+    
+    // A list of functions that will be notified on a collision
+    std::vector<std::function<void(ECS::Entity, ECS::Entity)>> collision_observers;
+    
 	void on_key_click(int key, int action) override;
     bool should_pause = true;
 

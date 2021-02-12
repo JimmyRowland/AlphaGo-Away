@@ -22,6 +22,8 @@ public:
     void setGridWidth(float gridWidth);
 
     void setGridHeight(float gridHeight);
+    
+    LevelStateSystem& getLevelState() const;
 
 private:
     float gridHeight;

@@ -21,7 +21,7 @@ bool LevelStateSystem::update_gold() {
     }
 }
 
-void LevelStateSystem::update_health() { if (health_total >= 10) health_total -= 10; }
+void LevelStateSystem::update_health() { health_total += 10; }
 
 void LevelStateSystem::update_received_damage() { if (received_damage_total >= 100) received_damage_total -= 100; }
 
@@ -38,6 +38,26 @@ unsigned int LevelStateSystem::getReceivedDamageTotal() const {
 }
 
 void LevelStateSystem::on_collision(ECS::Entity entity_i, ECS::Entity entity_j) {
-    int x = 0;
+    Property &property_i = ECS::registry<Property>.get(entity_i);
+    Property &property_j = ECS::registry<Property>.get(entity_j);
+    
+    if (property_j.isEnemy != property_i.isEnemy) {
+        property_i.hp -= property_j.damage;
+        property_j.hp -= property_i.damage;
+        if (property_i.hp <= 0) {
+            if (property_i.isEnemy) {
+                gold += 10;
+            } else {
+                health_total -= property_j.damage;
+            }
+        }
+        if (property_j.hp <= 0) {
+            if (property_j.isEnemy) {
+                gold += 10;
+            } else {
+                health_total -= property_i.damage;
+            }
+        }
+    }
 }
 

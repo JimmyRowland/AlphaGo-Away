@@ -52,6 +52,7 @@ ECS::Entity UnitFactory::create_unit(vec2 position, unsigned int unit_type) {
         motion.scale = vec2(gridWidth,gridHeight);
         property.hp = 1000;
     }
+    level_state.update_health();
 
     return entity;
 
@@ -73,4 +74,8 @@ void UnitFactory::setGridWidth(float gridWidth) {
 
 void UnitFactory::setGridHeight(float gridHeight) {
     UnitFactory::gridHeight = gridHeight;
+}
+
+LevelStateSystem& UnitFactory::getLevelState() const {
+    return level_state;
 }
