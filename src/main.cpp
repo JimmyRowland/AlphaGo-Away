@@ -42,8 +42,9 @@ int main()
 	// RenderSystem renderer(*start_world.window);
 	RenderSystem renderer(*battle_world.window);
 	PhysicsSystem physics;
-    physics.collision_observers.push_back(&battle_world);
-    physics.collision_observers.push_back(&levelState);
+    physics.collision_observers.push_back([&](ECS::Entity a, ECS::Entity b) {return levelState.on_collision(a, b);});
+    physics.collision_observers.push_back([&](ECS::Entity a, ECS::Entity b) {return battle_world.on_collision(a, b);});
+    
     battle_world.keyBoardObservers.push_back(&unitFactory);
     battle_world.keyBoardObservers.push_back(&physics);
     battle_world.physicsSystem = &physics;

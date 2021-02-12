@@ -4,7 +4,6 @@
 #include "common.hpp"
 #include "map_grid.hpp"
 #include "unit_factory.hpp"
-#include "collision_observer.hpp"
 #include "keyboard_observer.hpp"
 #include "physics.hpp"
 
@@ -19,7 +18,7 @@
 
 // Container for all our entities and game logic. Individual rendering / update is
 // deferred to the relative update() methods
-class BattleWorldSystem: public CollisionObserver
+class BattleWorldSystem
 {
 public:
     // Creates a window
@@ -39,7 +38,8 @@ public:
     // Check for collisions
     void handle_collisions();
 
-    void on_collision(ECS::Entity entity_i, ECS::Entity entity_j) override;
+    // observer function
+    void on_collision(ECS::Entity entity_i, ECS::Entity entity_j);
 
     // Renders our scene
     void draw();

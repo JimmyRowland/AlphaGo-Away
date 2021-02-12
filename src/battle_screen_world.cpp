@@ -189,7 +189,7 @@ void BattleWorldSystem::restart() {
 void BattleWorldSystem::step(float elapsed_ms, vec2 window_size_in_game_units) {
     // Updating window title with points
     std::stringstream title_ss;
-    title_ss << "Points: " << points;
+    title_ss << "Points: " << points << " Gold: " << unitFactory.getLevelState().getGold() << " Health: " << unitFactory.getLevelState().getHealthTotal();
     glfwSetWindowTitle(window, title_ss.str().c_str());
     int gridWidth = floor((window_size_in_game_units.x - 20) / grid.size());
     int gridHeight = floor((window_size_in_game_units.y - 20) / grid[0].size());
