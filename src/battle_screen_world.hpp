@@ -5,6 +5,7 @@
 #include "map_grid.hpp"
 #include "unit_factory.hpp"
 #include "collision_observer.hpp"
+#include "keyboard_observer.hpp"
 
 // stlib
 #include <vector>
@@ -26,6 +27,8 @@ public:
     // Releases all associated resources
     ~BattleWorldSystem();
 
+    std::vector<KeyboardObserver *> keyBoardObservers;
+
     // restart level
     void restart();
     
@@ -39,6 +42,7 @@ public:
 
     // Renders our scene
     void draw();
+
 
     // Should the game be over ?
     bool is_over() const;
@@ -77,3 +81,5 @@ private:
     std::default_random_engine rng;
     std::uniform_real_distribution<float> uniform_dist; // number between 0..1
 };
+
+

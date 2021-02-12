@@ -221,7 +221,6 @@ void BattleWorldSystem::on_key(int key, int, int action, int mod)
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // TODO: Add keyboard contorl here.
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    
     // Resetting game
     if (action == GLFW_RELEASE && key == GLFW_KEY_R)
     {
@@ -247,6 +246,10 @@ void BattleWorldSystem::on_key(int key, int, int action, int mod)
         std::cout << "Current speed = " << current_speed << std::endl;
     }
     current_speed = std::max(0.f, current_speed);
+
+    for(auto observer: keyBoardObservers){
+        observer->on_key_click(key, action);
+    }
 }
 
 
@@ -268,3 +271,4 @@ void BattleWorldSystem::on_mouse_click(int button, int action, int mods){
 void BattleWorldSystem::on_collision() {
     int x = 1;
 }
+

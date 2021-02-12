@@ -32,6 +32,7 @@ bool collides(const Motion& motion1, const Motion& motion2)
 
 void PhysicsSystem::step(float elapsed_ms, vec2 window_size_in_game_units)
 {
+    if(should_pause) return;
 
     // Check for collisions between all moving entities
     // for (auto [i, motion_i] : enumerate(motion_container.components)) // in c++ 17 we will be able to do this instead of the next three lines
@@ -150,6 +151,13 @@ void PhysicsSystem::step(float elapsed_ms, vec2 window_size_in_game_units)
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // TODO: Add any update to physic system here.
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+}
+
+void PhysicsSystem::on_key_click(int key, int action) {
+    if (action == GLFW_PRESS && key == GLFW_KEY_P)
+    {
+        should_pause = !should_pause;
+    }
 }
 
 PhysicsSystem::Collision::Collision(ECS::Entity& other)

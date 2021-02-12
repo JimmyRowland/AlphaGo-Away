@@ -30,14 +30,23 @@ ECS::Entity UnitFactory::create_unit(vec2 position) {
     Property& property = ECS::registry<Property>.emplace(entity);
 
 
-
-    if(!level_state.update_gold()){
-
-        property.isEnemy = 1;
+    level_state.update_gold();
+    if(should_place_enemy){
+        property.isEnemy=1;
     }else{
-        property.isEnemy = 0;
+        property.isEnemy=0;
     }
 
     return entity;
 
+}
+void UnitFactory::on_key_click(int key, int action) {
+    if (action == GLFW_PRESS && key == GLFW_KEY_E)
+    {
+        should_place_enemy = SHOULD_PLACE_ENEMY;
+    }
+    if (action == GLFW_PRESS && key == GLFW_KEY_H)
+    {
+        should_place_enemy = SHOULD_PLACE_HUMAN;
+    }
 }

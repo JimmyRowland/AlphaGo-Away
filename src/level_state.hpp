@@ -6,6 +6,10 @@
 #ifndef SALMON_LEVEL_STATE_HPP
 #define SALMON_LEVEL_STATE_HPP
 // observer
+#include <gl3w.h>
+#include <GLFW/glfw3.h>
+
+
 class LevelStateSystem: public CollisionObserver{
 //    TODO: remove after observer pattern part is marked
 public: LevelStateSystem(unsigned int gold, unsigned int health_total, unsigned int damage_received_total);
