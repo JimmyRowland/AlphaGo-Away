@@ -16,6 +16,8 @@
 #include <glm/ext/vector_int2.hpp>  // ivec2
 #include <glm/vec3.hpp>             // vec3
 #include <glm/mat3x3.hpp>           // mat3
+
+#include "tiny_ecs.hpp"
 using namespace glm;
 static const float PI = 3.14159265359f;
 
@@ -25,6 +27,9 @@ inline std::string shader_path(const std::string& name) { return data_path() + "
 inline std::string textures_path(const std::string& name) { return data_path() + "/textures/" + name; };
 inline std::string audio_path(const std::string& name) { return data_path() + "/audio/" + name; };
 inline std::string mesh_path(const std::string& name) { return data_path() + "/meshes/" + name; };
+
+const int ALLY = 0;
+const int ENEMY = 1;
 
 // The 'Transform' component handles transformations passed to the Vertex shader
 // (similar to the gl Immediate mode equivalent, e.g., glTranslate()...)
@@ -47,10 +52,13 @@ struct Motion {
 };
 
 struct Property {
-	int hp = 10;
-	int maxhp = 10;
-
+	int hp = 100;
+	int maxhp = 100;
 	int attackRange = 5;
 	int moveRange = 5;
 	int damage = 5;
+	int isEnemy = ALLY;
+	ECS::Entity target;
+	bool selected = false;
 };
+float get_velocity_after_drag(float velocity_x);
