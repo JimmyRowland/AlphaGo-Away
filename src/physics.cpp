@@ -58,7 +58,9 @@ void PhysicsSystem::step(float elapsed_ms, vec2 window_size_in_game_units)
         }else if(motion.velocity.x < 0 && motion.scale.x < 0){
             motion.scale.x *= -1;
         }
+
         float step_seconds = 1.0f * (elapsed_ms / 1000.f);
+        motion.velocity = vec2(get_velocity_after_drag(motion.velocity.x),get_velocity_after_drag(motion.velocity.y));
         motion.position+=motion.velocity*step_seconds;
         if(motion.position.y < 30.f && motion.velocity.y < 0){
             motion.position.y = 30.f;
@@ -137,6 +139,10 @@ void PhysicsSystem::step(float elapsed_ms, vec2 window_size_in_game_units)
                             ECS::ContainerInterface::remove_all_components_of(entity_j);
                         }
                     }
+                    float step_seconds = 1.0f * (elapsed_ms / 1000.f);
+                    vec2 direction = motion_j.position-motion_i.position;
+                    motion_j.position+=direction*step_seconds*10.f;
+                    motion_i.position+=direction*step_seconds*-10.f;
                 }
             }
 		}
