@@ -160,8 +160,18 @@ void BattleWorldSystem::restart()
     ECS::ContainerInterface::list_all_components();
 
     init_grid();
-    player_unit = unitFactory.create_unit({38, 30});
 
+
+    init_player_unit_0 = unitFactory.create_unit({38, 30});
+    int winWidth, winHeight;
+    glfwGetWindowSize(window, &winWidth, &winHeight);
+    int gridWidth = floor((winWidth - 20) / grid.size());
+    int gridHeight = floor((winWidth - 20) / grid[0].size());
+    init_player_unit_1 = unitFactory.create_unit({38, 30+gridHeight});
+    init_player_unit_2 = unitFactory.create_unit({38, 30+gridHeight*2});
+//    init_ai_1 = unitFactory.create_unit({38+9*gridWidth, 30+4*gridHeight}, "ai_default.png", vec2(gridWidth, gridHeight));
+//    init_ai_2 = unitFactory.create_unit({38+9*gridWidth, 30+5*gridHeight}, "ai_default.png", vec2(gridWidth, gridHeight));
+//    init_ai_3 = unitFactory.create_unit({38+9*gridWidth, 30+6*gridHeight}, "ai_default.png", vec2(gridWidth, gridHeight));
 
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // TODO: Add our grid map related entities.
@@ -215,12 +225,13 @@ bool BattleWorldSystem::is_over() const
 }
 
 // On key callback
-// TODO A1: check out https://www.glfw.org/docs/3.3/input_guide.html
+
 void BattleWorldSystem::on_key(int key, int, int action, int mod)
 {
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // TODO: Add keyboard contorl here.
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+    
     // Resetting game
     if (action == GLFW_RELEASE && key == GLFW_KEY_R)
     {
@@ -264,9 +275,70 @@ void BattleWorldSystem::on_mouse_click(int button, int action, int mods){
     {
         double xpos, ypos;
         glfwGetCursorPos(window, &xpos, &ypos);
-        if(xpos>30.f && xpos<570.f && ypos>30.f && ypos<570.f){
-            player_unit = unitFactory.create_unit({xpos, ypos});
+         int winWidth, winHeight;
+    glfwGetWindowSize(window, &winWidth, &winHeight);
+    auto gridWidth = (floor((winWidth - 20) / grid.size()))/2;
+    auto gridHeight = (floor((winWidth - 20) / grid[0].size()))/2;
+    //auto& selected_unit = ECS::registry<Unit>.entities[0];
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS){
+        for(auto entity : ECS::registry<Unit>.entities){
+            auto& motion = ECS::registry<Motion>.get(entity);
+            auto dis_x = abs(motion.position.x - xpos);
+            auto dis_y = abs(motion.position.y - ypos);
+            if(dis_x<gridWidth && dis_y<gridHeight){
+                //selected_unit = entity;
+                auto& selection = ECS::registry<Select>.get(entity);
+                selection.select = 1;
+                selection.origin_pos_x = motion.position.x;
+                selection.origin_pos_y = motion.position.y;
+                glfwGetCursorPos(window, &xpos, &ypos);
+                motion.position.x = xpos;
+                motion.position.y = ypos;
+                break;
+            }
         }
+    }else if(button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_RELEASE){
+        for(auto entity : ECS::registry<Unit>.entities){
+            auto& selection = ECS::registry<Select>.get(entity);
+            if(selection.select){
+                auto& motion = ECS::registry<Motion>.get(entity);
+                int grid_pos_x = std::get<0>(grid[grid[0].size()-1][0]);
+                int grid_pos_y = std::get<1>(grid[0][grid[0].size()-1]);
+                glfwGetCursorPos(window, &xpos, &ypos);
+                auto dis_x = xpos - grid_pos_x;
+                auto dis_y = ypos - grid_pos_y;
+                if(dis_x > gridWidth || dis_y> gridHeight){
+                    motion.position.x = selection.origin_pos_x;
+                    motion.position.y =selection.origin_pos_y;
+                    selection.select = 0;
+                } else {
+                    for (int i = 0; i < grid[0].size(); i++) {
+                        for (int j = 0; j < grid[0].size(); j++) {
+                             grid_pos_x = std::get<0>(grid[i][j]);
+                             grid_pos_y = std::get<1>(grid[i][j]);
+                            glfwGetCursorPos(window, &xpos, &ypos);
+                            dis_x = abs(xpos - grid_pos_x);
+                            dis_y = abs(ypos - grid_pos_y);
+                            if( dis_x<gridWidth && dis_y<gridHeight ){
+                                motion.position.x = grid_pos_x;
+                                motion.position.y = grid_pos_y;
+                                selection.select = 0;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+
+            }
+        }
+
+
+    }
+
+//        if(xpos>30.f && xpos<570.f && ypos>30.f && ypos<570.f){
+//            player_unit = unitFactory.create_unit({xpos, ypos});
+//        }
     }
 }
 

@@ -68,7 +68,14 @@ private:
 
     // Game state
     float current_speed;
+    ECS::Entity init_player_unit_0;
+    ECS::Entity init_player_unit_1;
+    ECS::Entity init_player_unit_2;
+    ECS::Entity init_ai_2;
+    ECS::Entity init_ai_1;
+    ECS::Entity init_ai_3;
     ECS::Entity player_unit;
+
     
     // TODO: Add grids for later rendering.
     
@@ -81,5 +88,3 @@ private:
     std::default_random_engine rng;
     std::uniform_real_distribution<float> uniform_dist; // number between 0..1
 };
-
-
