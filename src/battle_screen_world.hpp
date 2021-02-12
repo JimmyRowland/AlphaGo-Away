@@ -3,6 +3,7 @@
 // internal
 #include "common.hpp"
 #include "map_grid.hpp"
+#include "enemy.hpp"
 
 // stlib
 #include <vector>
@@ -44,7 +45,7 @@ public:
 private:
     // Input callback functions
     void on_key(int key, int, int action, int mod);
-    void on_mouse_move(vec2 mouse_pos);
+    void on_mouse_click(int button, int action, int mods);
 
     // Loads the audio
     void init_audio();
@@ -56,7 +57,13 @@ private:
 
     // Game state
     float current_speed;
-    ECS::Entity player_unit;
+    ECS::Entity init_player_unit_0;
+    ECS::Entity init_player_unit_1;
+    ECS::Entity init_player_unit_2;
+    ECS::Entity init_ai_2;
+    ECS::Entity init_ai_1;
+    ECS::Entity init_ai_3;
+
     
     // TODO: Add grids for later rendering.
     

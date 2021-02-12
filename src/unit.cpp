@@ -19,9 +19,11 @@ ECS::Entity Unit::createUnit(vec2 position)
 
 	// Setting initial motion values
 	Motion& motion = ECS::registry<Motion>.emplace(entity);
+    ECS::registry<Select>.emplace(entity);
+
 	motion.position = position;
 	motion.angle = 0.f;
-	motion.velocity = { 0.f, 0.f };
+	motion.velocity = { 50.f, 0.f };
 	motion.scale = resource.mesh.original_size * 150.f;
 	motion.scale.x *= -1; // point front to the right
 
