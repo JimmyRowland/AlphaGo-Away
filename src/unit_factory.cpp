@@ -24,9 +24,8 @@ ECS::Entity UnitFactory::create_unit(vec2 position) {
     Motion& motion = ECS::registry<Motion>.emplace(entity);
     motion.position = position;
     motion.angle = 0.f;
-    motion.velocity = { 1.f, 0.f };
+    motion.velocity = { 0.f, 0.f };
     motion.scale = resource.mesh.original_size * 150.f;
-    motion.scale.x *= -1;
     ECS::registry<Unit>.emplace(entity);
     Property& property = ECS::registry<Property>.emplace(entity);
 
