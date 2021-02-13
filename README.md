@@ -1,6 +1,8 @@
 Group 09
 Game title: AIphaGo Away
-###M1
+
+###M1 
+
 First press p to start the game
 
 left click to place a unit
