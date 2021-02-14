@@ -36,13 +36,30 @@ https://www.jetbrains.com/community/education/#students
 
 Credit:
 
+- package manager
+
 https://github.com/microsoft/vcpkg
+
+- ECS:
 
 https://github.com/skypjack/entt/wiki/Crash-Course:-entity-component-system
 
+- GUI:
+
+https://github.com/ocornut/imgui
+
+- Games:
+
+https://github.com/tyrannicaltoucan/destroid
+
 https://github.com/guillaume-haerinck/imac-tower-defense
 
+https://github.com/bfeldpw/battlesub
+
+https://github.com/DomRe/EnttPong
+
 https://github.com/carlfindahl/wacman
+
 
 
 
