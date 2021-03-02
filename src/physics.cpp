@@ -116,6 +116,9 @@ void PhysicsSystem::step(float elapsed_ms, vec2 window_size_in_game_units)
                     }
                     float step_seconds = 1.0f * (elapsed_ms / 1000.f);
                     vec2 direction = motion_j.position-motion_i.position;
+                    if(direction.x == 0 && direction.y ==0){
+                        direction.x = 20;
+                    }
                     motion_j.position+=direction*step_seconds*10.f;
                     motion_i.position+=direction*step_seconds*-10.f;
                 }
