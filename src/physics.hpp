@@ -4,12 +4,13 @@
 #include "tiny_ecs.hpp"
 #include "keyboard_observer.hpp"
 #include <functional>
+#include <tuple>
 
 // A simple physics system that moves rigid bodies and checks for collision
 class PhysicsSystem: public KeyboardObserver
 {
 public:
-	void step(float elapsed_ms, vec2 window_size_in_game_units);
+	void step(float elapsed_ms, vec2 window_size_in_game_units, std::tuple<float, int, int> grid_dim);
 
 	// Stucture to store collision information
 	struct Collision

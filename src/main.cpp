@@ -23,6 +23,8 @@ using Clock = std::chrono::high_resolution_clock;
 // TODO: Since we have > 1 world systems, we can set different window size here
 const ivec2 window_size_in_px = {600, 800};
 const vec2 window_size_in_game_units = { 600, 800 };
+// grid_dim is {grid width, number grid squares in x dim, number grid squares in y dim}
+const std::tuple<float, int, int> grid_dim = std::make_tuple(580.f, 10, 10);
 // Note, here the window will show a width x height part of the game world, measured in px. 
 // You could also define a window to show 1.5 x 1 part of your game world, where the aspect ratio depends on your window size.
 
@@ -38,7 +40,7 @@ int main()
     // StartWorldSystem start_world(window_size_in_px);
     LevelStateSystem levelState(100, 0, 0);
     UnitFactory unitFactory(levelState);
-    BattleWorldSystem battle_world(window_size_in_px, unitFactory);
+    BattleWorldSystem battle_world(window_size_in_px, unitFactory, grid_dim);
 	// RenderSystem renderer(*start_world.window);
 	RenderSystem renderer(*battle_world.window);
 	PhysicsSystem physics;
@@ -66,9 +68,9 @@ int main()
 		t = now;
 
 		DebugSystem::clearDebugComponents();
-		ai.step(elapsed_ms, window_size_in_game_units);
+		ai.step(elapsed_ms, window_size_in_game_units, grid_dim);
         battle_world.step(elapsed_ms, window_size_in_game_units);
-		physics.step(elapsed_ms, window_size_in_game_units);
+		physics.step(elapsed_ms, window_size_in_game_units, grid_dim);
         battle_world.handle_collisions();
 
 		renderer.draw(window_size_in_game_units);

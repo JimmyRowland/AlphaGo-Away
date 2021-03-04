@@ -4,7 +4,7 @@
 #include "a_star.hpp"
 #include <iostream>
 
-void AISystem::step(float elapsed_ms, vec2 window_size_in_game_units)
+void AISystem::step(float elapsed_ms, vec2 window_size_in_game_units, std::tuple<float, int, int> grid_dim)
 {
 	// !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 	// TODO A2: HANDLE FISH AI HERE
@@ -18,11 +18,11 @@ void AISystem::step(float elapsed_ms, vec2 window_size_in_game_units)
 
 	// Path finding can be done as follows, the pairs are the grid positions of the current units 
 
-	/*A_Star a = A_Star();
-	auto path = a.getPath(std::make_pair(9, 1), std::make_pair(4, 2));
-	// printing for debugging reasons, feel free to use, or just delete if you don't
-	for (int i = 0; i < path.size(); ++i) {
-		std::cout << path[i].first << ", " << path[i].second << std::endl;
-	}*/
+	//A_Star a = A_Star(std::make_pair(std::get<1>(grid_dim), std::get<2>(grid_dim)));
+	//auto path = a.getPath(std::make_pair(9, 1), std::make_pair(4, 2));
+	//// printing for debugging reasons, feel free to use, or just delete if you don't
+	//for (int i = 0; i < path.size(); ++i) {
+	//	std::cout << path[i].first << ", " << path[i].second << std::endl;
+	//}
 
 }

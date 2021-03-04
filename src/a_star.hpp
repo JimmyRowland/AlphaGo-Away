@@ -37,15 +37,13 @@ public:
 	}
 
 	// initialize a 2D vector to represent the grid, where grid[i][j] is the cost of moving to grid[i][j] from an adjacent square
-	A_Star() {
-		int max_i = 0, max_j = 0;
+	A_Star(std::pair<int, int> grid_size) {
 		for(ECS::Entity gridSquare : ECS::registry<Grid>.entities)
 		{
 			Motion& gMotion = ECS::registry<Motion>.get(gridSquare);
-			this->grid.resize(ECS::registry<Grid>.entities.size());
-			for (unsigned int i = 0; i < ECS::registry<Grid>.entities.size(); i++) {
-				this->grid.push_back({});
-				this->grid[i].resize(ECS::registry<Grid>.entities.size());
+			this->grid.resize(grid_size.first);
+			for (unsigned int i = 0; i < grid.size(); i++) {
+				this->grid[i].resize(grid_size.second);
 			}
 			
 		}
@@ -53,15 +51,8 @@ public:
 		{	
 			Motion& gMotion = ECS::registry<Motion>.get(gridSquare);
 			GridProperty& gProperty = ECS::registry<GridProperty>.get(gridSquare);
-			max_i = max(max_i, gMotion.gridPos.first);
-			max_j = max(max_j, gMotion.gridPos.second);
 			this->grid[gMotion.gridPos.first][gMotion.gridPos.second] = costs[gProperty.type];
 		}
-			// resize grid to match world grid exactly
-			this->grid.resize(max_i + 1);
-			for (unsigned int i = 0; i < this->grid.size(); i++) {
-				this->grid[i].resize(max_j + 1);
-			}
 			
 	}
 

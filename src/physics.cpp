@@ -31,7 +31,7 @@ bool collides(const Motion& motion1, const Motion& motion2)
 
 }
 
-void PhysicsSystem::step(float elapsed_ms, vec2 window_size_in_game_units)
+void PhysicsSystem::step(float elapsed_ms, vec2 window_size_in_game_units, std::tuple<float, int, int> grid_dim)
 {
     if(should_pause) return;
 
@@ -62,7 +62,12 @@ void PhysicsSystem::step(float elapsed_ms, vec2 window_size_in_game_units)
         float step_seconds = 1.0f * (elapsed_ms / 1000.f);
         motion.velocity = vec2(get_velocity_after_drag(motion.velocity.x),get_velocity_after_drag(motion.velocity.y));
         motion.position+=motion.velocity*step_seconds;
-
+        float grid_sq_width = std::get<0>(grid_dim) / std::get<1>(grid_dim);
+        float grid_sq_height = std::get<0>(grid_dim) / std::get<2>(grid_dim);
+        motion.gridPos = std::make_pair(
+            floor((motion.position.x - (window_size_in_game_units.x - std::get<0>(grid_dim))) / grid_sq_width) ,
+            floor((motion.position.y - (window_size_in_game_units.x - std::get<0>(grid_dim))) / grid_sq_height));
+        motion.gridPos = motion.gridPos;
 
     }
     

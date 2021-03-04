@@ -16,11 +16,11 @@
 enum GRID_TYPE {
     BASIC, WATER, FOREST
 };
-std::vector<std::vector<std::tuple<int, int>>> grid(10, std::vector<std::tuple<int, int>>(10));
+std::vector<std::vector<std::tuple<int, int>>> grid;
 
 // Create the battle world
 // Note, this has a lot of OpenGL specific things, could be moved to the renderer; but it also defines the callbacks to the mouse and keyboard. That is why it is called here.
-BattleWorldSystem::BattleWorldSystem(ivec2 window_size_px, UnitFactory &unitFactory) :
+BattleWorldSystem::BattleWorldSystem(ivec2 window_size_px, UnitFactory &unitFactory, std::tuple<float, int, int> grid_dim) :
         points(0), unitFactory(unitFactory) {
     // Seeding rng with random device
     rng = std::default_random_engine(std::random_device()());
@@ -68,6 +68,7 @@ BattleWorldSystem::BattleWorldSystem(ivec2 window_size_px, UnitFactory &unitFact
     init_audio();
     Mix_PlayMusic(background_music, -1);
     std::cout << "Loaded music\n";
+    this->grid_dim = grid_dim;
 }
 
 BattleWorldSystem::~BattleWorldSystem() {
@@ -109,20 +110,24 @@ void BattleWorldSystem::init_audio() {
 }
 
 void BattleWorldSystem::init_grid() {
-    int winWidth, winHeight;
+    grid.resize(std::get<1>(this->grid_dim));
+    for (int i = 0; i < grid.size(); i++) {
+        grid[i].resize(std::get<2>(this->grid_dim));
+    }
+    int winWidth, winHeight;    
     glfwGetWindowSize(window, &winWidth, &winHeight);
-    int gridWidth = floor((winWidth - 20) / grid.size());
-    int gridHeight = floor((winWidth - 20) / grid[0].size());
+    int gridWidth = floor(std::get<0>(this->grid_dim) / std::get<1>(this->grid_dim));
+    int gridHeight = floor(std::get<0>(this->grid_dim) / std::get<1>(this->grid_dim));
     for (int i = 0; i < grid.size(); i++) {
         for (int j = 0; j < grid[0].size(); j++) {
             int xpos, ypos;
             if (i == 0) {
-                xpos = 10 + gridWidth / 2;
+                xpos = (winWidth - std::get<0>(this->grid_dim)) / 2 + gridWidth / 2;
             } else {
                 xpos = std::get<0>(grid[i - 1][j]) + gridWidth;
             }
             if (j == 0) {
-                ypos = 10 + gridHeight / 2;
+                ypos = (winWidth - std::get<0>(this->grid_dim)) / 2 + gridHeight / 2;
             } else {
                 ypos = std::get<1>(grid[i][j - 1]) + gridHeight;
             }
