@@ -42,10 +42,14 @@ struct Transform {
 };
 
 enum UnitType {
-	Terminator,
-	Monitor,
-	Archer,
-	Healer
+	H_Terminator,
+	H_Monitor,
+	H_Archer,
+	H_Healer,
+    A_Terminator,
+    A_Monitor,
+    A_Archer,
+    A_Healer
 };
 
 // All data relevant to the shape and motion of entities

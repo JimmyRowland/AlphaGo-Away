@@ -261,7 +261,7 @@ void BattleWorldSystem::on_key(int key, int, int action, int mod) {
     }
 
     // Debugging
-    if (key == GLFW_KEY_D)
+    if (key == GLFW_KEY_B)
         DebugSystem::in_debug_mode = (action != GLFW_RELEASE);
 
     // Control the current speed with `<` `>`
