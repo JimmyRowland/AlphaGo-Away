@@ -137,7 +137,7 @@ void BattleWorldSystem::init_grid() {
             int ypos = std::get<1>(grid[i][j]);
             //std::cout << xpos << ", " << ypos << std::endl;
             ECS::Entity entity = Grid::createGrid({xpos, ypos}, GRID_TYPE::BASIC, "basic_grid.png",
-                                                  vec2(gridWidth, gridHeight));
+                                                  vec2(gridWidth, gridHeight), std::make_pair(i, j));
         }
     }
 

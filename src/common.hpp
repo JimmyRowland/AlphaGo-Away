@@ -49,6 +49,7 @@ struct Motion {
 	vec2 velocity = { 0, 0 };
 	vec2 scale = { 10, 10 };
     int movable = 0;
+	std::pair<int, int> gridPos = std::make_pair(0, 0);
 };
 
 struct Property {
@@ -61,4 +62,11 @@ struct Property {
 	ECS::Entity target;
 	bool selected = false;
 };
+
+struct GridProperty {
+	int type = 0;
+};
+
+
+
 float get_velocity_after_drag(float velocity_x);
