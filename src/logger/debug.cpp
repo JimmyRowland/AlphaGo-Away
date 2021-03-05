@@ -5,7 +5,7 @@
 #include <cmath>
 #include <iostream>
 
-#include "render_components.hpp"
+#include "system/render_components.hpp"
 
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 // DON'T WORRY ABOUT THIS CLASS UNTIL ASSIGNMENT 2

@@ -3,7 +3,7 @@
 #include "system/physics.hpp"
 #include "logger/debug.hpp"
 #include "entity/turtle.hpp"
-#include "render_components.hpp"
+#include "system/render_components.hpp"
 // stlib
 #include <string.h>
 #include <cassert>

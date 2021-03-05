@@ -2,7 +2,7 @@
 #include "core/common.hpp"
 #include <vector>
 #include <unordered_map>
-#include "../ext/stb_image/stb_image.h"
+#include "stb_image.h"
 
 enum GLResourceType {BUFFER, RENDER_BUFFER, SHADER, PROGRAM, TEXTURE, VERTEX_ARRAY};
 
