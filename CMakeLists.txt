@@ -25,7 +25,7 @@ endif()
 # Create executable target
 
 # You can switch to use the file GLOB for simplicity but at your own risk
-file(GLOB_RECURSE SOURCE_FILES src/*.cpp src/*.hpp)
+file(GLOB_RECURSE SOURCE_FILES src/**.cpp src/**.hpp)
 
 # external libraries will be installed into /usr/local/include and /usr/local/lib but that folder is not automatically included in the search on MACs
 if (IS_OS_MAC)
