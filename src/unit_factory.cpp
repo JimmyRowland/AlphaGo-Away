@@ -22,7 +22,7 @@ ECS::Entity UnitFactory::create_unit(vec2 position, unsigned int unit_type) {
         }
         if(unit_type==MONITOR){
             resource = ShadedMesh();
-            RenderSystem::createSprite(resource, textures_path("ai_default.png"), "textured");
+            RenderSystem::createSprite(resource, textures_path("walking_unit.png"), "anime_textured");
 //            resource.mesh.loadFromOBJFile(mesh_path("unit1.obj"));
 //            RenderSystem::createColoredMesh(resource, key);
         }
@@ -37,7 +37,12 @@ ECS::Entity UnitFactory::create_unit(vec2 position, unsigned int unit_type) {
     motion.position = position;
     motion.angle = 0.f;
     motion.velocity = { 0.f, 0.f };
-    motion.scale = resource.mesh.original_size * 150.f;
+    if(unit_type==MONITOR) {
+        motion.scale = resource.mesh.original_size * 100.f;
+    } else {
+        motion.scale = resource.mesh.original_size * 150.f;
+    }
+    
     ECS::registry<Unit>.emplace(entity);
     Property& property = ECS::registry<Property>.emplace(entity);
 

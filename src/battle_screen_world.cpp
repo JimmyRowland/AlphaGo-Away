@@ -213,8 +213,8 @@ void BattleWorldSystem::step(float elapsed_ms, vec2 window_size_in_game_units) {
             int gridHeight = floor((winWidth - 20) / grid[0].size());
             unitFactory.setGridHeight(gridHeight);
             unitFactory.setGridWidth(gridWidth);
-            init_player_unit_1 = unitFactory.create_unit({38, 30 + gridHeight});
-            init_player_unit_2 = unitFactory.create_unit({38, 30 + gridHeight * 2});
+            init_player_unit_1 = unitFactory.create_unit({38, 30 + gridHeight + 50});
+            init_player_unit_2 = unitFactory.create_unit({38, 30 + gridHeight - 100});
             init_ai_1 = unitFactory.create_unit({38 + 9 * gridWidth, 30 + 4 * gridHeight}, MONITOR);
             init_ai_2 = unitFactory.create_unit({38 + 9 * gridWidth, 30 + 5 * gridHeight}, MONITOR);
             init_ai_3 = unitFactory.create_unit({38 + 9 * gridWidth, 30 + 6 * gridHeight}, MONITOR);

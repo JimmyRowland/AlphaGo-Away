@@ -45,4 +45,7 @@ private:
 	ShadedMesh screen_sprite;
 	GLResource<RENDER_BUFFER> depth_render_buffer_id;
 	ECS::Entity screen_state_entity;
+    
+    // track frame number for the unit animation
+    float frame_num = 0.f;
 };
