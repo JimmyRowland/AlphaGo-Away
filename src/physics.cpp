@@ -14,7 +14,10 @@ vec2 get_bounding_box(const Motion& motion)
 // This is a SUPER APPROXIMATE check that puts a circle around the bounding boxes and sees
 // if the center point of either object is inside the other's bounding-box-circle. You don't
 // need to try to use this technique.
+
+//bool collides(const Motion& motion1, const Motion& motion2, const Property& prop1, const Property& prop2)
 bool collides(const ECS::Entity& e1, const ECS::Entity& e2)
+
 {
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // TODO: Add our collision mechanisms.
@@ -22,8 +25,8 @@ bool collides(const ECS::Entity& e1, const ECS::Entity& e2)
 //    place holder
     /*auto dp = motion1.position - motion2.position;
     float dist_squared = dot(dp,dp);
-    float other_r = std::sqrt(std::pow(get_bounding_box(motion1).x/2.0f, 2.f) + std::pow(get_bounding_box(motion1).y/2.0f, 2.f));
-    float my_r = std::sqrt(std::pow(get_bounding_box(motion2).x/2.0f, 2.f) + std::pow(get_bounding_box(motion2).y/2.0f, 2.f));
+    float other_r = std::sqrt(std::pow(get_bounding_box(motion1).x/2.0f, 2.f) + std::pow(get_bounding_box(motion1).y/2.0f, 2.f)) * prop1.attackRangeScale;
+    float my_r = std::sqrt(std::pow(get_bounding_box(motion2).x/2.0f, 2.f) + std::pow(get_bounding_box(motion2).y/2.0f, 2.f)) * prop2.attackRangeScale;
     float r = max(other_r, my_r);
     if (dist_squared < r * r)
         return true;
@@ -144,6 +147,8 @@ void PhysicsSystem::step(float elapsed_ms, vec2 window_size_in_game_units)
                         property_j.target = entity_i;
                     }
                 }
+
+                //if (collides(motion_i, motion_j, property_i, property_j)){
                 if (collides(entity_i, entity_j)){
                     // Create a collision event
                     // Note, we are abusing the ECS system a bit in that we potentially insert muliple collisions for the same entity, hence, emplace_with_duplicates
@@ -160,7 +165,7 @@ void PhysicsSystem::step(float elapsed_ms, vec2 window_size_in_game_units)
                     motion_j.position+=direction*step_seconds*10.f;
                     motion_i.position+=direction*step_seconds*-10.f;
                 }
-            }
+            //}
 		}
 	}
 

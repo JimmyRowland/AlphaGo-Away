@@ -1,5 +1,5 @@
 #pragma once
-
+#include <functional>
 #include "common.hpp"
 #include "tiny_ecs.hpp"
 #include "keyboard_observer.hpp"

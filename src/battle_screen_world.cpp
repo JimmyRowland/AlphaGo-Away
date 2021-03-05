@@ -137,7 +137,7 @@ void BattleWorldSystem::init_grid() {
             int ypos = std::get<1>(grid[i][j]);
             //std::cout << xpos << ", " << ypos << std::endl;
             ECS::Entity entity = Grid::createGrid({xpos, ypos}, GRID_TYPE::BASIC, "basic_grid.png",
-                                                  vec2(gridWidth, gridHeight));
+                                                  vec2(gridWidth, gridHeight), vec2(i, j));
         }
     }
 
@@ -166,19 +166,19 @@ void BattleWorldSystem::restart() {
     init_grid();
 
 
-    init_player_unit_0 = unitFactory.create_unit({38, 30});
+	//init_player_unit_0 = unitFactory.create_unit({ 38, 30 }, Terminator, {0, 0});
     int winWidth, winHeight;
     glfwGetWindowSize(window, &winWidth, &winHeight);
     int gridWidth = floor((winWidth - 20) / grid.size());
     int gridHeight = floor((winWidth - 20) / grid[0].size());
     unitFactory.setGridHeight(gridHeight);
     unitFactory.setGridWidth(gridWidth);
-    init_player_unit_1 = unitFactory.create_unit({38, 30 + gridHeight});
-    init_player_unit_2 = unitFactory.create_unit({38, 30 + gridHeight * 2});
-    init_ai_1 = unitFactory.create_unit({38 + 9 * gridWidth, 30 + 4 * gridHeight}, MONITOR);
-    init_ai_2 = unitFactory.create_unit({38 + 9 * gridWidth, 30 + 5 * gridHeight}, MONITOR);
-    init_ai_3 = unitFactory.create_unit({38 + 9 * gridWidth, 30 + 6 * gridHeight}, MONITOR);
-    //ECS::Entity init_player_unit_3 = unitFactory.create_unit({ 38 + 9 * gridWidth, 30 + 7* gridHeight }, TERMINATOR);
+
+	//init_player_unit_1 = unitFactory.create_unit({ 38, 30 + gridHeight }, Archer, {0, 1});
+	//init_player_unit_2 = unitFactory.create_unit({ 38, 30 + gridHeight * 2 }, Terminator, {0, 2});
+	//init_ai_1 = unitFactory.create_unit({ 38 + 9 * gridWidth, 30 + 4 * gridHeight }, Monitor, {10, 5});
+	//init_ai_2 = unitFactory.create_unit({ 38 + 9 * gridWidth, 30 + 5 * gridHeight }, Healer, {10,6});
+	//init_ai_3 = unitFactory.create_unit({ 38 + 9 * gridWidth, 30 + 6 * gridHeight }, Monitor, {10, 7});
 
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // TODO: Add our grid map related entities.
@@ -262,7 +262,7 @@ void BattleWorldSystem::on_key(int key, int, int action, int mod) {
     }
 
     // Debugging
-    if (key == GLFW_KEY_D)
+    if (key == GLFW_KEY_B)
         DebugSystem::in_debug_mode = (action != GLFW_RELEASE);
 
     // Control the current speed with `<` `>`
@@ -351,7 +351,7 @@ void BattleWorldSystem::on_mouse_click(int button, int action, int mods) {
             }
         } else {
             if (action==GLFW_PRESS && xpos > 30.f && xpos < 570.f && ypos > 30.f && ypos < 570.f) {
-                unitFactory.create_unit({xpos, ypos});
+                unitFactory.create_unit({xpos, ypos}, UnitFactory::curType, vec2((xpos - 30)/30, (ypos - 30)/30));
             }
         }
     }
