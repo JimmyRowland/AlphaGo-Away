@@ -173,6 +173,7 @@ void BattleWorldSystem::restart() {
     int gridHeight = floor((winWidth - 20) / grid[0].size());
     unitFactory.setGridHeight(gridHeight);
     unitFactory.setGridWidth(gridWidth);
+
 	//init_player_unit_1 = unitFactory.create_unit({ 38, 30 + gridHeight }, Archer, {0, 1});
 	//init_player_unit_2 = unitFactory.create_unit({ 38, 30 + gridHeight * 2 }, Terminator, {0, 2});
 	//init_ai_1 = unitFactory.create_unit({ 38 + 9 * gridWidth, 30 + 4 * gridHeight }, Monitor, {10, 5});

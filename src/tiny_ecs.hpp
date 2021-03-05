@@ -4,6 +4,7 @@
 #include <unordered_map>
 #include <algorithm>
 #include <cassert>
+#include <iterator>
 
 namespace ECS {
 	// Declare the ComponentContainer upfront, such that we can define the registry and use it in the Entity class definition
