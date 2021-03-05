@@ -33,9 +33,9 @@ bool collides(const ECS::Entity& e1, const ECS::Entity& e2)
     return false;*/
     BoundingBox bb1 = ECS::registry<BoundingBox>.get(e1); // bounding box for first entity
     BoundingBox bb2 = ECS::registry<BoundingBox>.get(e2); // bounding box for second entity
-    for (int i = 0; i < bb1.vertices.size(); i++) {
-        auto current = bb1.vertices[i];
-        auto next = bb1.vertices[(i + 1) % bb1.vertices.size()];
+    for (int i = 0; i < bb1.transformed_vertices.size(); i++) {
+        auto current = bb1.transformed_vertices[i];
+        auto next = bb1.transformed_vertices[(i + 1) % bb1.transformed_vertices.size()];
         auto edge = next - current;
         vec2 axis = vec2(-edge.y, edge.x);
 
@@ -43,7 +43,7 @@ bool collides(const ECS::Entity& e1, const ECS::Entity& e2)
         auto e2MaxProj = NULL;
         auto e1MinProj = NULL;
         auto e2MinProj = NULL;
-        for (vec2 v : bb1.vertices) { // project entity 1's bb vertices onto the axis
+        for (vec2 v : bb1.transformed_vertices) { // project entity 1's bb vertices onto the axis
             auto projection = dot(axis, v);
             if (e1MaxProj == NULL || projection > e1MaxProj) {
                 e1MaxProj = projection;
@@ -52,7 +52,7 @@ bool collides(const ECS::Entity& e1, const ECS::Entity& e2)
                 e1MinProj = projection;
             }
         }
-        for (vec2 v : bb2.vertices) { // project entity 2's bb vertices onto the axis
+        for (vec2 v : bb2.transformed_vertices) { // project entity 2's bb vertices onto the axis
             auto projection = dot(axis, v);
             if (e2MaxProj == NULL || projection > e2MaxProj) {
                 e2MaxProj = projection;
@@ -165,7 +165,7 @@ void PhysicsSystem::step(float elapsed_ms, vec2 window_size_in_game_units)
                     motion_j.position+=direction*step_seconds*10.f;
                     motion_i.position+=direction*step_seconds*-10.f;
                 }
-            //}
+            }
 		}
 	}
 

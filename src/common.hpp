@@ -81,6 +81,7 @@ float get_velocity_after_drag(float velocity_x);
 
 struct BoundingBox {
 	std::vector<vec2> vertices;
+	std::vector<vec2> transformed_vertices;
 	void scale(vec2 scale);
 	void rotate(float radians);
 	void translate(vec2 offset);

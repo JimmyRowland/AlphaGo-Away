@@ -44,9 +44,9 @@ ECS::Entity UnitFactory::create_unit(vec2 position, UnitType unittype = curType,
     {
 		switch (unittype) {
 			case H_Terminator:
-        resource = ShadedMesh();
-        RenderSystem::createSprite(resource, textures_path("close-001.png"), "textured");
-        break;
+                resource = ShadedMesh();
+                RenderSystem::createSprite(resource, textures_path("close-001.png"), "textured");
+                break;
 			case H_Monitor:
 				resource = ShadedMesh();
 				RenderSystem::createSprite(resource, textures_path("tank-001.png"), "textured");
@@ -98,60 +98,9 @@ ECS::Entity UnitFactory::create_unit(vec2 position, UnitType unittype = curType,
         property.isEnemy=0;
         level_state.update_health();
     }
-    if(unit_type==MONITOR){
-        motion.scale = vec2(gridWidth,gridHeight);
-        property.hp = 1000;
-    }
-
-    Transform transform;
-    transform.translate(motion.position);
-    transform.rotate(motion.angle);
-    transform.scale(motion.scale);
-
-    if (key == "monitor" ) {
-        BoundingBox& boundingBox = ECS::registry<BoundingBox>.emplace(entity);
-        boundingBox.vertices = { vec2(0.f, resource.mesh.original_size.y / 4), vec2(resource.mesh.original_size.x / 2, 0.f), vec2(resource.mesh.original_size.x, resource.mesh.original_size.y / 4),
-                                vec2(resource.mesh.original_size.x, 3* resource.mesh.original_size.y / 4), vec2(resource.mesh.original_size.x / 2, resource.mesh.original_size.y), vec2(0.f, 3 * resource.mesh.original_size.y / 4) };
-        for (int i = 0; i < boundingBox.vertices.size(); i++) {
-            boundingBox.vertices[i] = transform.mat * vec3(boundingBox.vertices[i].x, boundingBox.vertices[i].y, 1.f);
-
-            //std::cout << boundingBox.vertices[i].x << "," << boundingBox.vertices[i].y << std::endl;
-        }
-        
-    }
-    else if (key == "unit") {
-        BoundingBox& boundingBox = ECS::registry<BoundingBox>.emplace(entity);
-        auto& texmesh = *ECS::registry<ShadedMeshRef>.get(entity).reference_to_cache;
-        float top = 0;
-        float bottom = 0;
-        float right = 0;
-        float left = 0;
-        for (ColoredVertex pos : texmesh.mesh.vertices) {
-            auto position = pos.position;
-            //std::cout << position.x << "," << position.y << std::endl;
-            position = transform.mat * vec3(position.x, position.y, 1.f);
-            if (position.x >= right) {
-                right = position.x;
-            }
-            if (position.x <= left) {
-                left = position.x;
-            }
-            if (position.y >= bottom) {
-                bottom = position.y;
-            }
-            if (position.y <= top) {
-                top = position.y;
-            }
-        }
-        //std::cout << top << "," << right << "," << bottom << "," << left << std::endl;
-        boundingBox.vertices = { vec2(left, top), vec2(right, top), vec2(right, bottom), vec2(left, bottom) };
-    }
-
 
 	switch (unittype) {
 		case H_Terminator:
-//			resource.mesh.loadFromOBJFile(mesh_path("unit1.obj"));
-//			RenderSystem::createColoredMesh(resource, key);
             motion.scale = vec2(gridWidth*2.5, gridHeight*2.5);
             property.hp = 1000;
 			break;
@@ -168,8 +117,6 @@ ECS::Entity UnitFactory::create_unit(vec2 position, UnitType unittype = curType,
 			property.attackRangeScale = 3;
 			break;
         case A_Terminator:
-//			resource.mesh.loadFromOBJFile(mesh_path("unit1.obj"));
-//			RenderSystem::createColoredMesh(resource, key);
             motion.scale = vec2(gridWidth*1.5, gridHeight*1.5);
             property.hp = 1000;
             break;
@@ -187,7 +134,38 @@ ECS::Entity UnitFactory::create_unit(vec2 position, UnitType unittype = curType,
             break;
 	}
 
+
 	property.unitType = unittype;
+
+    BoundingBox& boundingBox = ECS::registry<BoundingBox>.emplace(entity);
+    boundingBox.vertices = { vec2(0.f, 0.f), vec2(1.f, 0.f), vec2(1.f, 1.f), vec2(0.f, 1.f) }; // default bounding box. Just a square
+
+    switch (unittype) {
+    case H_Terminator:
+        boundingBox.vertices = { vec2(0.5, 0.25), vec2(0.65, 0.35), vec2(0.65, 0.85),
+            vec2(0.3, 0.85), vec2(0.3, 0.35) };
+        break;
+    case H_Monitor:
+        break;
+    case H_Archer:
+        boundingBox.vertices = { vec2(0.3, 0.25), vec2(0.9, 0.25), vec2(0.75, 0.75), vec2(0.3, 0.75) };
+        break;
+    case H_Healer:
+        boundingBox.vertices = { vec2(0.3, 0.2), vec2(0.8, 0.2), vec2(0.8, 0.8), vec2(0.3, 0.8) };
+        break;
+    case A_Terminator:
+        boundingBox.vertices = { vec2(0.f, 0.4), vec2(0.25, 0.f), vec2(0.8, 0.f), vec2(0.8, 1.f),
+                                vec2(0.25, 1.f), vec2(0.f, 0.65) };
+        break;
+    case A_Monitor:
+        break;
+    case A_Archer:
+        boundingBox.vertices = { vec2(0.f, 0.25), vec2(0.5, 0.f), vec2(1.0, 0.25),
+                                vec2(1.0, 0.75), vec2(0.5, 1.0), vec2(0.f, 0.75) };
+        break;
+    case A_Healer:
+        break;
+    }
     return entity;
 
 }
@@ -248,3 +226,29 @@ void UnitFactory::setGridHeight(float gridHeight) {
 LevelStateSystem& UnitFactory::getLevelState() const {
     return level_state;
 }
+
+/*BoundingBox& boundingBox = ECS::registry<BoundingBox>.emplace(entity);
+auto& texmesh = *ECS::registry<ShadedMeshRef>.get(entity).reference_to_cache;
+float top = 0;
+float bottom = 0;
+float right = 0;
+float left = 0;
+for (ColoredVertex pos : texmesh.mesh.vertices) {
+    auto position = pos.position;
+    //std::cout << position.x << "," << position.y << std::endl;
+    position = transform.mat * vec3(position.x, position.y, 1.f);
+    if (position.x >= right) {
+        right = position.x;
+    }
+    if (position.x <= left) {
+        left = position.x;
+    }
+    if (position.y >= bottom) {
+        bottom = position.y;
+    }
+    if (position.y <= top) {
+        top = position.y;
+    }
+}
+//std::cout << top << "," << right << "," << bottom << "," << left << std::endl;
+boundingBox.vertices = { vec2(left, top), vec2(right, top), vec2(right, bottom), vec2(left, bottom) };*/
