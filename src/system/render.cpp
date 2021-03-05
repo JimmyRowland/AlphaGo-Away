@@ -6,14 +6,14 @@
 
 void RenderSystem::drawTexturedMesh(entt::entity entity, const mat3 &projection)
 {
-	auto& motion = m_registry.get<Motion>(entity);
+	auto& position = m_registry.get<Position>(entity);
 	auto& texmesh = *m_registry.get<ShadedMeshRef>(entity).reference_to_cache;
 	// Transformation code, see Rendering and Transformation in the template specification for more info
 	// Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
 	Transform transform;
-	transform.translate(motion.position);
-    transform.rotate(motion.angle);
-	transform.scale(motion.scale);
+	transform.translate(position.position);
+    transform.rotate(position.angle);
+	transform.scale(position.scale);
 	// !!! TODO A1: add rotation to the chain of transformations, mind the order of transformations
 
 	// Setting shaders
@@ -175,14 +175,19 @@ void RenderSystem::draw(vec2 window_size_in_game_units)
 	mat3 projection_2D{ { sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ tx, ty, 1.f } };
 
 	// Draw all textured meshes that have a position and size component
-	for (entt::entity entity : m_registry.view<ShadedMeshRef>())
+	for (entt::entity entity : m_registry.view<ShadedMeshRef, Tile>())
 	{
-		if (!m_registry.has<Motion>(entity))
-			continue;
 		// Note, its not very efficient to access elements indirectly via the entity albeit iterating through all Sprites in sequence
         drawTexturedMesh(entity, projection_2D);
 		gl_has_errors();
 	}
+
+    for (entt::entity entity : m_registry.view<ShadedMeshRef, UnitProperty>())
+    {
+        // Note, its not very efficient to access elements indirectly via the entity albeit iterating through all Sprites in sequence
+        drawTexturedMesh(entity, projection_2D);
+        gl_has_errors();
+    }
 
 	// Truely render to the screen
     drawToScreen();

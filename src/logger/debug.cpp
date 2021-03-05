@@ -54,10 +54,11 @@ namespace DebugSystem
 
 		// Create motion
 		auto& motion = m_registry.emplace<Motion>(entity);
-		motion.angle = 0.f;
+        auto& entity_position = m_registry.emplace<Position>(entity);
+        entity_position.angle = 0.f;
 		motion.velocity = { 0, 0 };
-		motion.position = position;
-		motion.scale = scale;
+        entity_position.position = position;
+        entity_position.scale = scale;
 
 		m_registry.emplace<DebugComponent>(entity);
 	}

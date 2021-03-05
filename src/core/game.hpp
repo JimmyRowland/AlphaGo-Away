@@ -2,9 +2,10 @@
 
 // internal
 #include "core/common.hpp"
-#include "core/registry.h"
-//TODO remove
-#include "entity/map_grid.hpp"
+#include "core/registry.hpp"
+#include "core/map.hpp"
+#include "core/constants.hpp"
+#include "factories.hpp"
 
 // stlib
 #include <vector>
@@ -15,6 +16,7 @@
 #include <SDL_mixer.h>
 #include <utility>
 #include <entt/entt.hpp>
+#include "components/motion.hpp"
 
 
 // Container for all our entities and game logic. Individual rendering / update is 
@@ -45,10 +47,13 @@ public:
 
 	// OpenGL window handle
 	GLFWwindow* window;
+
+	void init_level();
 private:
 	// Input callback functions
 	void on_key(int key, int, int action, int mod);
 	void on_mouse_move(vec2 mouse_pos);
+    void init_grid();
 
     // Loads the audio
     void init_audio();
@@ -70,4 +75,5 @@ private:
 	// C++ random number generator
 	std::default_random_engine rng;
 	std::uniform_real_distribution<float> uniform_dist; // number between 0..1
+	MapState mapState;
 };

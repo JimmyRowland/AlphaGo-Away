@@ -16,6 +16,12 @@
 #include <glm/ext/vector_int2.hpp>  // ivec2
 #include <glm/vec3.hpp>             // vec3
 #include <glm/mat3x3.hpp>           // mat3
+#include <glm/ext/vector_uint2.hpp>  // uvec2
+
+#include <entt/entt.hpp>
+
+
+
 using namespace glm;
 static const float PI = 3.14159265359f;
 
@@ -35,10 +41,3 @@ struct Transform {
 	void translate(vec2 offset);
 };
 
-// All data relevant to the shape and motion of entities
-struct Motion {
-	vec2 position = { 0, 0 };
-	float angle = 0;
-	vec2 velocity = { 0, 0 };
-	vec2 scale = { 10, 10 };
-};

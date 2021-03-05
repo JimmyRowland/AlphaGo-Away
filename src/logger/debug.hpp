@@ -1,8 +1,9 @@
 #pragma once
 
 #include "core/common.hpp"
-#include "core/registry.h"
+#include "core/registry.hpp"
 #include  <entt/entt.hpp>
+#include "components/motion.hpp"
 // will be replaced with imgui
 
 namespace DebugSystem {

@@ -3,8 +3,10 @@
 #include "core/common.hpp"
 #include <entt/entt.hpp>
 #include "render_components.hpp"
-#include "core/registry.h"
-
+#include "core/registry.hpp"
+#include "components/motion.hpp"
+#include "components/tile.hpp"
+#include "components/units.hpp"
 struct InstancedMesh;
 struct ShadedMesh;
 

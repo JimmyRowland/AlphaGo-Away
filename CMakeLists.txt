@@ -33,7 +33,7 @@ if (IS_OS_MAC)
   link_directories(/usr/local/lib)
 endif()
 
-add_executable(${PROJECT_NAME} ${SOURCE_FILES} src/core/registry.h src/core/constants.hpp src/core/factories.hpp)
+add_executable(${PROJECT_NAME} ${SOURCE_FILES} src/core/registry.hpp src/core/constants.hpp src/core/factories.hpp src/core/factories.hpp src/core/factories.hpp src/components/motion.hpp src/core/factories.cpp src/components/units.hpp src/components/tile.hpp)
 target_include_directories(${PROJECT_NAME} PUBLIC src/)
 
 # Added this so policy CMP0065 doesn't scream

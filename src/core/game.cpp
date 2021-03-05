@@ -2,10 +2,8 @@
 #include "game.hpp"
 #include "system/physics.hpp"
 #include "logger/debug.hpp"
-#include "entity/turtle.hpp"
 #include "system/render_components.hpp"
 // stlib
-#include <string.h>
 #include <cassert>
 #include <sstream>
 #include <iostream>
@@ -100,11 +98,14 @@ void Game::update(float elapsed_ms, vec2 window_size_in_game_units)
 		// Reset timer
 		next_turtle_spawn = (TURTLE_DELAY_MS / 2) + uniform_dist(rng) * (TURTLE_DELAY_MS / 2);
 		// Create turtle
-		entt::entity entity = Turtle::createTurtle({0, 0});
+		entt::entity entity = ground_unit_factory({0,0});
 		// Setting random initial position and constant velocity
 		auto& motion = m_registry.get<Motion>(entity);
-		motion.position = vec2(window_size_in_game_units.x - 150.f, 50.f + uniform_dist(rng) * (window_size_in_game_units.y - 100.f));
+        auto& position = m_registry.get<Position>(entity);
+
+        position.position = vec2(window_size_in_game_units.x - 150.f, 50.f + uniform_dist(rng) * (window_size_in_game_units.y - 100.f));
 		motion.velocity = vec2(-100.f, 0.f );
+
 	}
 
 }
@@ -113,12 +114,13 @@ void Game::update(float elapsed_ms, vec2 window_size_in_game_units)
 void Game::restart()
 {
 	std::cout << "Restarting\n";
-
-	// Reset the game speed
 	current_speed = 1.f;
 
-	// Remove all entities that we created
-//    m_registry.clear();
+
+
+    init_level();
+    init_grid();
+    ground_unit_factory(vec2(80,80));
 
 }
 
@@ -175,4 +177,19 @@ void Game::on_mouse_move(vec2 mouse_pos)
 
 		(void)mouse_pos;
 
+}
+
+void Game::init_level() {
+    mapState = makeMapState();
+}
+
+
+void Game::init_grid() {
+    for (int i = 0; i < tiles.x; i++) {
+        float xpos = tile_size.x/2 + tile_size.x * i;
+        for (int j = 0; j < tiles.y; j++) {
+            float ypos = tile_size.y/2 + tile_size.y * j;
+            tile_factory(vec2(xpos,ypos), mapState[ivec2(i,j)]);
+        }
+    }
 }
