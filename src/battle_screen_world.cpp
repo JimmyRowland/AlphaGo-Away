@@ -100,6 +100,7 @@ void BattleWorldSystem::init_audio() {
     salmon_dead_sound = Mix_LoadWAV(audio_path("salmon_dead.wav").c_str());
     salmon_eat_sound = Mix_LoadWAV(audio_path("salmon_eat.wav").c_str());
 
+    // background_music == nullptr ||
     if (background_music == nullptr || salmon_dead_sound == nullptr || salmon_eat_sound == nullptr)
         throw std::runtime_error("Failed to load sounds make sure the data directory is present: " +
                                  audio_path("music.wav") +
@@ -109,10 +110,11 @@ void BattleWorldSystem::init_audio() {
 }
 
 void BattleWorldSystem::init_grid() {
+    std::cout << "initialize the grids" << std::endl;
     int winWidth, winHeight;
     glfwGetWindowSize(window, &winWidth, &winHeight);
-    int gridWidth = floor((winWidth - 20) / grid.size());
-    int gridHeight = floor((winWidth - 20) / grid[0].size());
+    int gridWidth = floor((winWidth * 0.8 - 20) / grid.size());
+    int gridHeight = floor((winWidth * 0.5 - 20) / grid[0].size());
     for (int i = 0; i < grid.size(); i++) {
         for (int j = 0; j < grid[0].size(); j++) {
             int xpos, ypos;
@@ -140,6 +142,8 @@ void BattleWorldSystem::init_grid() {
                                                   vec2(gridWidth, gridHeight));
         }
     }
+    
+    grid_initialized = true;
 
     //ECS::Entity entity = Grid::createGrid({0.5, 0.5}, GRID_TYPE::BASIC, "basic_grid.png");
 }
@@ -162,31 +166,64 @@ void BattleWorldSystem::restart() {
 
     // Debugging for memory/component leaks
     ECS::ContainerInterface::list_all_components();
-
-    init_grid();
-
-
-    init_player_unit_0 = unitFactory.create_unit({38, 30});
+    
     int winWidth, winHeight;
     glfwGetWindowSize(window, &winWidth, &winHeight);
-    int gridWidth = floor((winWidth - 20) / grid.size());
-    int gridHeight = floor((winWidth - 20) / grid[0].size());
-    unitFactory.setGridHeight(gridHeight);
-    unitFactory.setGridWidth(gridWidth);
-    init_player_unit_1 = unitFactory.create_unit({38, 30 + gridHeight});
-    init_player_unit_2 = unitFactory.create_unit({38, 30 + gridHeight * 2});
-    init_ai_1 = unitFactory.create_unit({38 + 9 * gridWidth, 30 + 4 * gridHeight}, MONITOR);
-    init_ai_2 = unitFactory.create_unit({38 + 9 * gridWidth, 30 + 5 * gridHeight}, MONITOR);
-    init_ai_3 = unitFactory.create_unit({38 + 9 * gridWidth, 30 + 6 * gridHeight}, MONITOR);
+    
+    if (state == 0)
+    {
+        // rendering of the start screen
+        background = ScreenComponent::createScreenComponent({winWidth/2, winHeight/2}, "BgScreens/frame_0_delay-0.11s.png", {winWidth, winHeight}, 10000002, COMPONENT_TYPE::BASICBG);
+        game_title = ScreenComponent::createScreenComponent({winWidth/2, winHeight/2 - 160}, "gameTitle.png", {360, 200}, 998, COMPONENT_TYPE::BASICBG);
+        button_play = ScreenComponent::createScreenComponent({winWidth/2, winHeight/2 + 70}, "buttons/PlayButton.jpg", {150, 70}, 997, COMPONENT_TYPE::BUTTON);
+        button_help = ScreenComponent::createScreenComponent({winWidth/2, winHeight/2 + 160}, "buttons/HelpButton.jpg", {150, 70}, 996, COMPONENT_TYPE::BASICBG);
+        button_quit = ScreenComponent::createScreenComponent({winWidth/2, winHeight/2 + 250}, "buttons/QuitButton.jpg", {150, 70}, 995, COMPONENT_TYPE::BASICBG);
+    }
 
-    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    // TODO: Add our grid map related entities.
-    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 }
 
 // Update our game world
 void BattleWorldSystem::step(float elapsed_ms, vec2 window_size_in_game_units) {
+    int winWidth = window_size_in_game_units.x;
+    int winHeight = window_size_in_game_units.y;
+    if (state == 0) {
+        frame += 0.11;
+        int bg_num = ((int) floor(frame)) % 32;
+        //    std::cout << "current frame number: " << bg_num << std::endl;
+        //    ECS::ContainerInterface::remove_all_components_of(background);
+        // Update the frame of background
+        background = ScreenComponent::createScreenComponent({winWidth/2, winHeight/2}, "BgScreens/frame_" + std::to_string(bg_num) + "_delay-0.11s.png", {winWidth, winHeight}, 10000000 - (frame*0.1), COMPONENT_TYPE::BASICBG);
+        grid_initialized = false;
+        
+    } else if (state == 1) {
+        battle_frame += 0.2;
+        int bg_num = ((int) floor(battle_frame)) % 12;
+        ECS::ContainerInterface::remove_all_components_of(background);
+        ECS::ContainerInterface::remove_all_components_of(game_title);
+        ECS::ContainerInterface::remove_all_components_of(button_play);
+        ECS::ContainerInterface::remove_all_components_of(button_help);
+        ECS::ContainerInterface::remove_all_components_of(button_quit);
+        battle_background = ScreenComponent::createScreenComponent({winWidth/2, winHeight/2}, "BattleScreens/frame_" + std::to_string(bg_num) + ".png", {winWidth, winHeight}, 1000000 - (battle_frame*0.01), COMPONENT_TYPE::BASICBG);
+        
+        if (!grid_initialized) {
+            init_grid();
+            init_player_unit_0 = unitFactory.create_unit({38, 30});
+            int gridWidth = floor((winWidth - 20) / grid.size());
+            int gridHeight = floor((winWidth - 20) / grid[0].size());
+            unitFactory.setGridHeight(gridHeight);
+            unitFactory.setGridWidth(gridWidth);
+            init_player_unit_1 = unitFactory.create_unit({38, 30 + gridHeight});
+            init_player_unit_2 = unitFactory.create_unit({38, 30 + gridHeight * 2});
+            init_ai_1 = unitFactory.create_unit({38 + 9 * gridWidth, 30 + 4 * gridHeight}, MONITOR);
+            init_ai_2 = unitFactory.create_unit({38 + 9 * gridWidth, 30 + 5 * gridHeight}, MONITOR);
+            init_ai_3 = unitFactory.create_unit({38 + 9 * gridWidth, 30 + 6 * gridHeight}, MONITOR);
+        }
+    }
+
+//    std::cout << "bg path: " << ("BgScreens/frame_" + std::to_string(bg_num) + "_delay-0.11s.png") << std::endl;
+//    background = Background::createBackground({winWidth/2, winHeight/2}, "BgScreens/bg6.jpg", {winWidth, winHeight});
+    
     // Updating window title with points
     std::stringstream title_ss;
     title_ss << "Points: " << points << " Gold: " << unitFactory.getLevelState().getGold() << " Health: " << unitFactory.getLevelState().getHealthTotal();
@@ -287,7 +324,7 @@ void BattleWorldSystem::on_mouse_move(vec2 mouse_pos) {
 }
 
 void BattleWorldSystem::on_mouse_click(int button, int action, int mods) {
-    if (button == GLFW_MOUSE_BUTTON_LEFT) {
+    if ((button == GLFW_MOUSE_BUTTON_LEFT) && (state == 1)) {
         double xpos, ypos;
         glfwGetCursorPos(window, &xpos, &ypos);
         int winWidth, winHeight;
@@ -353,6 +390,21 @@ void BattleWorldSystem::on_mouse_click(int button, int action, int mods) {
                 unitFactory.create_unit({xpos, ypos});
             }
         }
+    }
+    
+    // check if any button is clicked
+    if ((button == GLFW_MOUSE_BUTTON_LEFT) && (state == 0)) {
+        double xpos, ypos;
+        glfwGetCursorPos(window, &xpos, &ypos);
+        auto& play_button = ECS::registry<Motion>.get(button_play);
+        vec2 play_position = play_button.position;
+        vec2 play_scale = play_button.scale;
+        bool x_in_button = (xpos <= (play_position.x + play_scale.x)) && (xpos >= (play_position.x - play_scale.x));
+        bool y_in_button = (ypos <= (play_position.y + play_scale.y)) && (xpos >= (play_position.y - play_scale.y));
+        if (x_in_button && y_in_button) {
+            state = 1;
+        }
+        
     }
 }
 

@@ -13,16 +13,14 @@
 #include "debug.hpp"
 #include "physics.hpp"
 #include "render.hpp"
-#include "start_screen_world.hpp"
 #include "tiny_ecs.hpp"
 #include "level_state.hpp"
 
 
 using Clock = std::chrono::high_resolution_clock;
 
-// TODO: Since we have > 1 world systems, we can set different window size here
-const ivec2 window_size_in_px = {600, 800};
-const vec2 window_size_in_game_units = { 600, 800 };
+const ivec2 window_size_in_px = {1000, 700};
+const vec2 window_size_in_game_units = { 1000, 700 };
 // Note, here the window will show a width x height part of the game world, measured in px. 
 // You could also define a window to show 1.5 x 1 part of your game world, where the aspect ratio depends on your window size.
 
@@ -34,6 +32,7 @@ struct Description {
 // Entry point
 int main()
 {
+    const char* glsl_version = "#version 330";
 	// Initialize the main systems
     // StartWorldSystem start_world(window_size_in_px);
     LevelStateSystem levelState(100, 0, 0);
@@ -50,7 +49,7 @@ int main()
     battle_world.physicsSystem = &physics;
 
 	AISystem ai;
-
+    
 	// Set all states to default
     battle_world.restart();
 	auto t = Clock::now();
@@ -70,7 +69,11 @@ int main()
         battle_world.step(elapsed_ms, window_size_in_game_units);
 		physics.step(elapsed_ms, window_size_in_game_units);
         battle_world.handle_collisions();
-
+        ECS::registry<ShadedMeshRef>.sort([](const ECS::Entity& a, const ECS::Entity& b) {
+            auto& mesh_ref_a = ECS::registry<ShadedMeshRef>.get(a);
+            auto& mesh_ref_b = ECS::registry<ShadedMeshRef>.get(b);
+            return (mesh_ref_a.depth < mesh_ref_b.depth);
+        });
 		renderer.draw(window_size_in_game_units);
 	}
 

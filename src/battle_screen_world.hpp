@@ -1,6 +1,7 @@
 #pragma once
 
 // internal
+#include "ScreenComponent.hpp"
 #include "common.hpp"
 #include "map_grid.hpp"
 #include "unit_factory.hpp"
@@ -63,7 +64,19 @@ private:
     void init_grid();
 
     UnitFactory &unitFactory;
-
+    
+    int state = 0;
+    ECS::Entity background;
+    ECS::Entity battle_background;
+    bool grid_initialized = false;
+    // counter to update background frame
+    float frame = 0.f;
+    float battle_frame = 0.f;
+    //buttons on the screen
+    ECS::Entity game_title;
+    ECS::Entity button_play;
+    ECS::Entity button_help;
+    ECS::Entity button_quit;
 
     // Number of fish eaten by the salmon, displayed in the window title
     unsigned int points;
@@ -78,9 +91,6 @@ private:
     ECS::Entity init_ai_3;
     ECS::Entity player_unit;
 
-    
-    // TODO: Add grids for later rendering.
-    
     // music references
     Mix_Music* background_music;
     Mix_Chunk* salmon_dead_sound;
