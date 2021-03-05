@@ -178,6 +178,7 @@ void BattleWorldSystem::restart() {
     init_ai_1 = unitFactory.create_unit({38 + 9 * gridWidth, 30 + 4 * gridHeight}, MONITOR);
     init_ai_2 = unitFactory.create_unit({38 + 9 * gridWidth, 30 + 5 * gridHeight}, MONITOR);
     init_ai_3 = unitFactory.create_unit({38 + 9 * gridWidth, 30 + 6 * gridHeight}, MONITOR);
+    //ECS::Entity init_player_unit_3 = unitFactory.create_unit({ 38 + 9 * gridWidth, 30 + 7* gridHeight }, TERMINATOR);
 
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
     // TODO: Add our grid map related entities.
