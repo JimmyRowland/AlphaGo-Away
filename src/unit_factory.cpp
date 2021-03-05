@@ -138,32 +138,33 @@ ECS::Entity UnitFactory::create_unit(vec2 position, UnitType unittype = curType,
 	property.unitType = unittype;
 
     BoundingBox& boundingBox = ECS::registry<BoundingBox>.emplace(entity);
-    boundingBox.vertices = { vec2(0.f, 0.f), vec2(1.f, 0.f), vec2(1.f, 1.f), vec2(0.f, 1.f) }; // default bounding box. Just a square
+    boundingBox.vertices = { vec2(-0.5, -0.5), vec2(0.5, -0.5), vec2(0.5, 0.5), vec2(-0.5, 0.5) }; // default bounding box. Just a square
 
     switch (unittype) {
-    case H_Terminator:
-        boundingBox.vertices = { vec2(0.5, 0.25), vec2(0.65, 0.35), vec2(0.65, 0.85),
-            vec2(0.3, 0.85), vec2(0.3, 0.35) };
+    case H_Terminator: // close-001
+        //boundingBox.vertices = { vec2(0.5, 0.25), vec2(0.65, 0.35), vec2(0.65, 0.85),
+        //    vec2(0.3, 0.85), vec2(0.3, 0.35) };
+        boundingBox.vertices = { vec2(-0.1, -0.2), vec2(0.1, -0.2), vec2(0.2, 0.f), vec2(0.15, 0.3), vec2(-0.2, 0.3)};
         break;
-    case H_Monitor:
+    case H_Monitor: // tank-001
         break;
-    case H_Archer:
-        boundingBox.vertices = { vec2(0.3, 0.25), vec2(0.9, 0.25), vec2(0.75, 0.75), vec2(0.3, 0.75) };
+    case H_Archer: // long-d-001
+        boundingBox.vertices = { vec2(-0.15, -0.2), vec2(0.28, -0.2), vec2(0.28, 0.f), vec2(0.1, 0.2), vec2(-0.15, 0.2)};
         break;
-    case H_Healer:
-        boundingBox.vertices = { vec2(0.3, 0.2), vec2(0.8, 0.2), vec2(0.8, 0.8), vec2(0.3, 0.8) };
+    case H_Healer: // recover-001
+        boundingBox.vertices = { vec2(-0.15, -0.25), vec2(0.1, -0.25), vec2(0.25, 0.1), vec2(0.25, 0.25), vec2(-0.15, 0.25) };
         break;
-    case A_Terminator:
-        boundingBox.vertices = { vec2(0.f, 0.4), vec2(0.25, 0.f), vec2(0.8, 0.f), vec2(0.8, 1.f),
-                                vec2(0.25, 1.f), vec2(0.f, 0.65) };
+    case A_Terminator: // ai_short-d
+        boundingBox.vertices = { vec2(-0.5, -0.1), vec2(-0.25, -0.5), vec2(0.3, -0.5), vec2(0.3, 0.5),
+                                vec2(-0.25, 0.5), vec2(-0.5, 0.15) };
         break;
-    case A_Monitor:
+    case A_Monitor: // ai_tank-2
         break;
-    case A_Archer:
-        boundingBox.vertices = { vec2(0.f, 0.25), vec2(0.5, 0.f), vec2(1.0, 0.25),
-                                vec2(1.0, 0.75), vec2(0.5, 1.0), vec2(0.f, 0.75) };
+    case A_Archer: // ai_long-d
+        boundingBox.vertices = { vec2(-0.5, -0.25), vec2(0.f, -0.5), vec2(0.5, -0.25),
+                                vec2(0.5, 0.25), vec2(0.f, 0.5), vec2(-0.5, 0.25) };
         break;
-    case A_Healer:
+    case A_Healer: // ai_recover
         break;
     }
     return entity;
