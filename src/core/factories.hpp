@@ -1,0 +1,10 @@
+//
+// Created by grumpy on 2021-03-04.
+//
+
+#ifndef ALPHAGO_AWAY_FACTORIES_HPP
+#define ALPHAGO_AWAY_FACTORIES_HPP
+
+
+
+#endif //ALPHAGO_AWAY_FACTORIES_HPP

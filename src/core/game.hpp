@@ -19,20 +19,20 @@
 
 // Container for all our entities and game logic. Individual rendering / update is 
 // deferred to the relative update() methods
-class BattleWorldSystem
+class Game
 {
 public:
 	// Creates a window
-	BattleWorldSystem(ivec2 window_size_px);
+	Game(ivec2 window_size_px);
 
 	// Releases all associated resources
-	~BattleWorldSystem();
+	~Game();
 
 	// restart level
     void restart();
 
 	// Steps the game ahead by ms milliseconds
-	void step( float elapsed_ms, vec2 window_size_in_game_units);
+	void update(float elapsed_ms, vec2 window_size_in_game_units);
 
 	// Check for collisions
     void handle_collisions();

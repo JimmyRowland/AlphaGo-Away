@@ -1,5 +1,5 @@
 // Header
-#include "battle_screen_world.hpp"
+#include "game.hpp"
 #include "system/physics.hpp"
 #include "logger/debug.hpp"
 #include "entity/turtle.hpp"
@@ -15,7 +15,7 @@ const size_t TURTLE_DELAY_MS = 2000;
 
 // Create the fish world
 // Note, this has a lot of OpenGL specific things, could be moved to the renderer; but it also defines the callbacks to the mouse and keyboard. That is why it is called here.
-BattleWorldSystem::BattleWorldSystem( ivec2 window_size_px) :
+Game::Game(ivec2 window_size_px) :
 	points(0),
 	next_turtle_spawn(0.f)
 {
@@ -50,8 +50,8 @@ BattleWorldSystem::BattleWorldSystem( ivec2 window_size_px) :
 	// Input is handled using GLFW, for more info see
 	// http://www.glfw.org/docs/latest/input_guide.html
 	glfwSetWindowUserPointer(window, this);
-	auto key_redirect = [](GLFWwindow* wnd, int _0, int _1, int _2, int _3) { ((BattleWorldSystem*)glfwGetWindowUserPointer(wnd))->on_key(_0, _1, _2, _3); };
-	auto cursor_pos_redirect = [](GLFWwindow* wnd, double _0, double _1) { ((BattleWorldSystem*)glfwGetWindowUserPointer(wnd))->on_mouse_move({_0, _1 }); };
+	auto key_redirect = [](GLFWwindow* wnd, int _0, int _1, int _2, int _3) { ((Game*)glfwGetWindowUserPointer(wnd))->on_key(_0, _1, _2, _3); };
+	auto cursor_pos_redirect = [](GLFWwindow* wnd, double _0, double _1) { ((Game*)glfwGetWindowUserPointer(wnd))->on_mouse_move({_0, _1 }); };
 	glfwSetKeyCallback(window, key_redirect);
 	glfwSetCursorPosCallback(window, cursor_pos_redirect);
 
@@ -61,7 +61,7 @@ BattleWorldSystem::BattleWorldSystem( ivec2 window_size_px) :
 	std::cout << "Loaded music\n";
 }
 
-BattleWorldSystem::~BattleWorldSystem(){
+Game::~Game(){
 	// Destroy music components
 	if (background_music != nullptr)
 		Mix_FreeMusic(background_music);
@@ -71,7 +71,7 @@ BattleWorldSystem::~BattleWorldSystem(){
 	glfwDestroyWindow(window);
 }
 
-void BattleWorldSystem::init_audio()
+void Game::init_audio()
 {
 	//////////////////////////////////////
 	// Loading music and sounds with SDL
@@ -90,7 +90,7 @@ void BattleWorldSystem::init_audio()
 }
 
 // Update our game world
-void BattleWorldSystem::step( float elapsed_ms, vec2 window_size_in_game_units)
+void Game::update(float elapsed_ms, vec2 window_size_in_game_units)
 {
 
 	// Spawning new turtles
@@ -110,7 +110,7 @@ void BattleWorldSystem::step( float elapsed_ms, vec2 window_size_in_game_units)
 }
 
 // Reset the world state to its initial state
-void BattleWorldSystem::restart()
+void Game::restart()
 {
 	std::cout << "Restarting\n";
 
@@ -123,28 +123,20 @@ void BattleWorldSystem::restart()
 }
 
 // Compute collisions between entities
-void BattleWorldSystem::handle_collisions()
+void Game::handle_collisions()
 {
-	// Loop over all collisions detected by the physics system
-    const auto view = m_registry.view<PhysicsSystem::Collision, Motion>();
-
-    for(auto entity: view) {
-        auto &motion = view.get<Motion>(entity);
-//        auto &bot = view.get<Bot>(entity);
-//        bot.health += health;
-//        bot.state = ATTACK
-    }
+    points;
 
 }
 
 // Should the game be over ?
-bool BattleWorldSystem::is_over() const
+bool Game::is_over() const
 {
 	return glfwWindowShouldClose(window)>0;
 }
 
 
-void BattleWorldSystem::on_key(int key, int, int action, int mod)
+void Game::on_key(int key, int, int action, int mod)
 {
 
 
@@ -172,17 +164,13 @@ void BattleWorldSystem::on_key(int key, int, int action, int mod)
 		current_speed += 0.1f;
 		std::cout << "Current speed = " << current_speed << std::endl;
 	}
-//    if (action == GLFW_KEY_D && key == GLFW_KEY_K)
-//    {
-//        auto view = m_registry.view<Motion>();
-//    }
 
 
 
 	current_speed = std::max(0.f, current_speed);
 }
 
-void BattleWorldSystem::on_mouse_move(vec2 mouse_pos)
+void Game::on_mouse_move(vec2 mouse_pos)
 {
 
 		(void)mouse_pos;
