@@ -2,7 +2,7 @@
 #include "enemy.hpp"
 #include "render.hpp"
 #include <iostream>
-ECS::Entity Enemy::createEnemy(vec2 position, std::string texture_path, vec2 size)
+ECS::Entity Enemy::createEnemy(vec2 position, std::string texture_path, vec2 size, vec2 coor)
 {
     auto entity = ECS::Entity();
     int id = 10;
@@ -21,7 +21,6 @@ ECS::Entity Enemy::createEnemy(vec2 position, std::string texture_path, vec2 siz
     Motion& motion = ECS::registry<Motion>.emplace(entity);
     motion.position = position;
     motion.angle = 0.f;
-
     motion.velocity = { -50.f, 0.f };
     motion.scale = size;
 

@@ -2,10 +2,11 @@
 #include "map_grid.hpp"
 #include "render.hpp"
 #include <iostream>
-ECS::Entity Grid::createGrid(vec2 position, int grid_type, std::string texture_path, vec2 size)
+
+ECS::Entity Grid::createGrid(vec2 position, int grid_type, std::string texture_path, vec2 size, std::pair<int, int> gridPos)
 {
     auto entity = ECS::Entity();
-    int id = 10;
+    int type;
 
     std::string key = "grid";
     ShadedMesh& resource = cache_resource(key);
@@ -26,10 +27,13 @@ ECS::Entity Grid::createGrid(vec2 position, int grid_type, std::string texture_p
     //motion.scale = resource.mesh.original_size * 0.5f;
     //motion.scale = vec2({ 0.7f, 0.7f }) * static_cast<vec2>(resource.texture.size);
     motion.scale = size;
+    motion.gridPos = gridPos;
     //motion.scale.x *= -1; // point front to the right
 
+    GridProperty& gProperty = ECS::registry<GridProperty>.emplace(entity);
+    gProperty.type = grid_type;
+
     // can delete this id field if not needed when constructing the whole map
-    int type = grid_type;
     //std::cout << motion.position.x << motion.position.y << std::endl;
     // Create and (empty) Salmon component to be able to refer to all turtles
     ECS::registry<Grid>.emplace(entity);
