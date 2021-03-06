@@ -2,6 +2,7 @@
 #include "debug.hpp"
 #include "physics.hpp"
 #include "tiny_ecs.hpp"
+#include <iostream>
 
 // Returns the local bounding coordinates scaled by the current size of the entity 
 vec2 get_bounding_box(const Motion& motion)
@@ -13,20 +14,54 @@ vec2 get_bounding_box(const Motion& motion)
 // This is a SUPER APPROXIMATE check that puts a circle around the bounding boxes and sees
 // if the center point of either object is inside the other's bounding-box-circle. You don't
 // need to try to use this technique.
-bool collides(const Motion& motion1, const Motion& motion2)
+
+bool satHelper(const ECS::Entity& e1, const ECS::Entity& e2) {
+    BoundingBox bb1 = ECS::registry<BoundingBox>.get(e1); // bounding box for first entity
+    BoundingBox bb2 = ECS::registry<BoundingBox>.get(e2); // bounding box for second entity
+    if (bb1.vertices.size() <= 0 || bb2.vertices.size() <= 0) { // all unit entities should have a bounding box
+        return false; 
+    }
+    for (int i = 0; i < bb1.transformed_vertices.size(); i++) {
+        auto current = bb1.transformed_vertices[i];
+        auto next = bb1.transformed_vertices[(i + 1) % bb1.transformed_vertices.size()];
+        auto edge = next - current;
+        vec2 axis = vec2(-edge.y, edge.x);
+
+        auto e1MaxProj = NULL;
+        auto e2MaxProj = NULL;
+        auto e1MinProj = NULL;
+        auto e2MinProj = NULL;
+        for (vec2 v : bb1.transformed_vertices) { // project entity 1's bb vertices onto the axis
+            auto projection = dot(axis, v);
+            if (e1MaxProj == NULL || projection > e1MaxProj) {
+                e1MaxProj = projection;
+            }
+            if (e1MinProj == NULL || projection < e1MinProj) {
+                e1MinProj = projection;
+            }
+        }
+        for (vec2 v : bb2.transformed_vertices) { // project entity 2's bb vertices onto the axis
+            auto projection = dot(axis, v);
+            if (e2MaxProj == NULL || projection > e2MaxProj) {
+                e2MaxProj = projection;
+            }
+            if (e2MinProj == NULL || projection < e2MinProj) {
+                e2MinProj = projection;
+            }
+        }
+        if (e1MaxProj < e2MinProj || e1MinProj > e2MaxProj) {
+            return false;
+        }
+    }
+    return true;
+}
+
+//bool collides(const Motion& motion1, const Motion& motion2, const Property& prop1, const Property& prop2)
+bool collides(const ECS::Entity& e1, const ECS::Entity& e2)
 {
-    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-    // TODO: Add our collision mechanisms.
-    // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-//    place holder
-    auto dp = motion1.position - motion2.position;
-    float dist_squared = dot(dp,dp);
-    float other_r = std::sqrt(std::pow(get_bounding_box(motion1).x/2.0f, 2.f) + std::pow(get_bounding_box(motion1).y/2.0f, 2.f));
-    float my_r = std::sqrt(std::pow(get_bounding_box(motion2).x/2.0f, 2.f) + std::pow(get_bounding_box(motion2).y/2.0f, 2.f));
-    float r = max(other_r, my_r);
-    if (dist_squared < r * r)
-        return true;
-    return false;
+    bool e1Check = satHelper(e1, e2);
+    bool e2Check = satHelper(e2, e1);
+    return (e1Check && e2Check);
 
 }
 
@@ -71,15 +106,13 @@ void PhysicsSystem::step(float elapsed_ms, vec2 window_size_in_game_units)
 	// Visualization for debugging the position and scale of objects
 	if (DebugSystem::in_debug_mode)
 	{
-		for (auto& motion : ECS::registry<Motion>.components)
+		for (auto& bb : ECS::registry<BoundingBox>.components)
 		{
 			// draw a cross at the position of all objects
-			auto scale_horizontal_line = motion.scale;
-			scale_horizontal_line.y *= 0.1f;
-			auto scale_vertical_line = motion.scale;
-			scale_vertical_line.x *= 0.1f;
-			DebugSystem::createLine(motion.position, scale_horizontal_line);
-			DebugSystem::createLine(motion.position, scale_vertical_line);
+            for (auto& vertices : bb.transformed_vertices) {
+                auto dotSize = vec2(5.f, 5.f);
+                DebugSystem::createLine(vertices, dotSize);
+            }
 		}
 	}
 
@@ -106,7 +139,9 @@ void PhysicsSystem::step(float elapsed_ms, vec2 window_size_in_game_units)
                         property_j.target = entity_i;
                     }
                 }
-                if (collides(motion_i, motion_j)){
+
+                //if (collides(motion_i, motion_j, property_i, property_j)){
+                if (collides(entity_i, entity_j)){
                     // Create a collision event
                     // Note, we are abusing the ECS system a bit in that we potentially insert muliple collisions for the same entity, hence, emplace_with_duplicates
                     ECS::registry<Collision>.emplace_with_duplicates(entity_i, entity_j);

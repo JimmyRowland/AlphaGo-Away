@@ -10,7 +10,7 @@ namespace DebugSystem {
 	void createLine(vec2 position, vec2 size);
 
 	// !!! TODO A2: implement debugging of bounding boxes
-	void createBox(vec2 position, vec2 size);
+	void createBox(ECS::Entity entity, vec2 scale);
 
 	// Removes all debugging graphics in ECS, called at every iteration of the game loop
 	void clearDebugComponents();

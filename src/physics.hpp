@@ -1,8 +1,9 @@
 #pragma once
-
+#include <functional>
 #include "common.hpp"
 #include "tiny_ecs.hpp"
 #include "keyboard_observer.hpp"
+#include <functional>
 
 // A simple physics system that moves rigid bodies and checks for collision
 class PhysicsSystem: public KeyboardObserver
