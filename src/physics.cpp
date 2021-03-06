@@ -2,19 +2,9 @@
 #include "debug.hpp"
 #include "physics.hpp"
 #include "tiny_ecs.hpp"
+#include "kd-tree.hpp"
 #include <iostream>
-
-// Returns the local bounding coordinates scaled by the current size of the entity 
-vec2 get_bounding_box(const Motion& motion)
-{
-	// fabs is to avoid negative scale due to the facing direction.
-	return { abs(motion.scale.x), abs(motion.scale.y) };
-}
-
-// This is a SUPER APPROXIMATE check that puts a circle around the bounding boxes and sees
-// if the center point of either object is inside the other's bounding-box-circle. You don't
-// need to try to use this technique.
-
+  
 bool satHelper(const ECS::Entity& e1, const ECS::Entity& e2) {
     BoundingBox bb1 = ECS::registry<BoundingBox>.get(e1); // bounding box for first entity
     BoundingBox bb2 = ECS::registry<BoundingBox>.get(e2); // bounding box for second entity
@@ -65,7 +55,7 @@ bool collides(const ECS::Entity& e1, const ECS::Entity& e2)
 
 }
 
-void PhysicsSystem::step(float elapsed_ms, vec2 window_size_in_game_units)
+void PhysicsSystem::step(float elapsed_ms, vec2 window_size_in_game_units, std::tuple<float, int, int> grid_dim)
 {
     if(should_pause) return;
 
@@ -96,7 +86,12 @@ void PhysicsSystem::step(float elapsed_ms, vec2 window_size_in_game_units)
         float step_seconds = 1.0f * (elapsed_ms / 1000.f);
         motion.velocity = vec2(get_velocity_after_drag(motion.velocity.x),get_velocity_after_drag(motion.velocity.y));
         motion.position+=motion.velocity*step_seconds;
-
+        float grid_sq_width = std::get<0>(grid_dim) / std::get<1>(grid_dim);
+        float grid_sq_height = std::get<0>(grid_dim) / std::get<2>(grid_dim);
+        motion.gridPos = std::make_pair(
+            floor((motion.position.x - (window_size_in_game_units.x - std::get<0>(grid_dim))) / grid_sq_width) ,
+            floor((motion.position.y - (window_size_in_game_units.x - std::get<0>(grid_dim))) / grid_sq_height));
+        motion.gridPos = motion.gridPos;
 
     }
     
@@ -117,13 +112,21 @@ void PhysicsSystem::step(float elapsed_ms, vec2 window_size_in_game_units)
 	}
 
 	// for (auto [i, motion_i] : enumerate(motion_container.components)) // in c++ 17 we will be able to do this instead of the next three lines
-    auto& motion_container = ECS::registry<Motion>;
-	for (unsigned int i=0; i<motion_container.components.size(); i++)
+	auto& motion_container = ECS::registry<Motion>;
+	for (unsigned int i = 0; i < motion_container.components.size(); i++)
 	{
 		Motion& motion_i = motion_container.components[i];
 		ECS::Entity entity_i = motion_container.entities[i];
-//		Property& property_i = ECS::registry<Property>.get(entity_i);
-		for (unsigned int j=i+1; j<motion_container.components.size(); j++)
+		if (!ECS::registry<Property>.has(entity_i)) {
+			continue;
+		}
+		Property& property_i = ECS::registry<Property>.get(entity_i);
+		KD_Tree kdtree = KD_Tree(!property_i.isEnemy);
+		kdtree.nearest(kdtree.root, entity_i, property_i.target);
+		if (!ECS::registry<Motion>.has(property_i.target)) {
+			continue;
+		}
+    for (unsigned int j=i+1; j<motion_container.components.size(); j++)
 		{
 			Motion& motion_j = motion_container.components[j];
 			ECS::Entity entity_j = motion_container.entities[j];
@@ -157,8 +160,7 @@ void PhysicsSystem::step(float elapsed_ms, vec2 window_size_in_game_units)
                     motion_j.position+=direction*step_seconds*10.f;
                     motion_i.position+=direction*step_seconds*-10.f;
                 }
-            }
-		}
+           }
 	}
 
     // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
@@ -177,3 +179,4 @@ PhysicsSystem::Collision::Collision(ECS::Entity& other)
 {
 	this->other = other;
 }
+

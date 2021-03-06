@@ -60,8 +60,8 @@ struct Motion {
 	float angle = 0;
 	vec2 velocity = { 0, 0 };
 	vec2 scale = { 10, 10 };
-    int movable = 0;
-	vec2 coor = { 0, 0 };
+  int movable = 0;
+	std::pair<int, int> gridPos = std::make_pair(0, 0);
 };
 
 struct Property {
@@ -77,6 +77,11 @@ struct Property {
 	int attackRangeScale = 1; // This is only for M2, will use attack Range for later 
 	UnitType unitType;
 };
+
+struct GridProperty {
+	int type = 0;
+};
+
 float get_velocity_after_drag(float velocity_x);
 
 struct BoundingBox {
@@ -86,3 +91,4 @@ struct BoundingBox {
 	void rotate(float radians);
 	void translate(vec2 offset);
 };
+

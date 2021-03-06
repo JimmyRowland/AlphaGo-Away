@@ -22,7 +22,7 @@ class BattleWorldSystem
 {
 public:
     // Creates a window
-    BattleWorldSystem(ivec2 window_size_px, UnitFactory& unitFactory);
+    BattleWorldSystem(ivec2 window_size_px, UnitFactory& unitFactory, std::tuple<float, int, int> grid_dim);
 
     // Releases all associated resources
     ~BattleWorldSystem();
@@ -63,6 +63,7 @@ private:
     void init_grid();
 
     UnitFactory &unitFactory;
+    std::tuple<float, int, int> grid_dim;
 
 
     // Number of fish eaten by the salmon, displayed in the window title
