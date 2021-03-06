@@ -60,7 +60,8 @@ struct Motion {
 	float angle = 0;
 	vec2 velocity = { 0, 0 };
 	vec2 scale = { 10, 10 };
-  int movable = 0;
+	int movable = 0;
+	vec2 coor = { 0,0 };
 	std::pair<int, int> gridPos = std::make_pair(0, 0);
 };
 
