@@ -13,7 +13,6 @@ ECS::Entity Grid::createGrid(vec2 position, int grid_type, std::string texture_p
     if (resource.effect.program.resource == 0)
     {
         resource = ShadedMesh();
-        // TODO: I think we can regard grids as sprite? If not, we might need to create another method similar to createSprite() in render_init.cpp
         RenderSystem::createSprite(resource, textures_path(texture_path), "textured");
     }
     // Store a reference to the potentially re-used mesh object (the value is stored in the resource cache)

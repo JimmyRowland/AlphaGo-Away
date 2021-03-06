@@ -15,6 +15,8 @@ void RenderSystem::drawTexturedMesh(ECS::Entity entity, const mat3& projection)
 	transform.translate(motion.position);
     transform.rotate(motion.angle);
 	transform.scale(motion.scale);
+//    std::cout << "scale of the enitity x: " << motion.scale.x << std::endl;
+//    std::cout << "scale of the enitity y: " << motion.scale.y << std::endl;
 	// add rotation to the chain of transformations, mind the order of transformations
 
 	// Setting shaders
@@ -29,6 +31,7 @@ void RenderSystem::drawTexturedMesh(ECS::Entity entity, const mat3& projection)
 
 	GLint transform_uloc = glGetUniformLocation(texmesh.effect.program, "transform");
 	GLint projection_uloc = glGetUniformLocation(texmesh.effect.program, "projection");
+    GLint frame_uloc = glGetUniformLocation(texmesh.effect.program, "frame");
 	gl_has_errors();
 
 	// Setting vertex and index buffers
@@ -96,6 +99,7 @@ void RenderSystem::drawTexturedMesh(ECS::Entity entity, const mat3& projection)
 	// Setting uniform values to the currently bound program
 	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform.mat);
 	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
+    glUniform1i(frame_uloc, ((int) (floor(frame_num)) % 6));
 	gl_has_errors();
 
 	// Drawing of num_indices/3 triangles specified in the index buffer
@@ -164,6 +168,7 @@ void RenderSystem::drawToScreen()
 // http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-14-render-to-texture/
 void RenderSystem::draw(vec2 window_size_in_game_units)
 {
+    frame_num += 0.5;
 	// Getting size of window
 	ivec2 frame_buffer_size; // in pixels
 	glfwGetFramebufferSize(&window, &frame_buffer_size.x, &frame_buffer_size.y);
@@ -191,10 +196,20 @@ void RenderSystem::draw(vec2 window_size_in_game_units)
 	float tx = -(right + left) / (right - left);
 	float ty = -(top + bottom) / (top - bottom);
 	mat3 projection_2D{ { sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ tx, ty, 1.f } };
+    
+    // sort function
+    ECS::registry<ShadedMeshRef>.sort([](const ECS::Entity& a, const ECS::Entity& b) {
+        auto& mesh_ref_a = ECS::registry<ShadedMeshRef>.get(a);
+        auto& mesh_ref_b = ECS::registry<ShadedMeshRef>.get(b);
+        return (mesh_ref_a.depth > mesh_ref_b.depth);
+    });
+    
 	// Draw all textured meshes that have a position and size component
 	//std::cout << ECS::registry<ShadedMeshRef>.size() << std::endl;
 	for (ECS::Entity entity : ECS::registry<ShadedMeshRef>.entities)
 	{
+        auto& mesh_ref = ECS::registry<ShadedMeshRef>.get(entity);
+//        std::cout << "depth: " << mesh_ref.depth << std::endl;
 		if (!ECS::registry<Motion>.has(entity))
 			continue;
 		// Note, its not very efficient to access elements indirectly via the entity albeit iterating through all Sprites in sequence

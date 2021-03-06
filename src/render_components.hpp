@@ -130,6 +130,7 @@ struct ShadedMeshRef
 {
 	ShadedMesh* reference_to_cache;
 	ShadedMeshRef(ShadedMesh& mesh);
+    float depth;
 };
 
 // A struct to refer to debugging graphics in the ECS
