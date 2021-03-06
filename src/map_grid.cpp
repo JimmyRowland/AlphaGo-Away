@@ -2,6 +2,7 @@
 #include "map_grid.hpp"
 #include "render.hpp"
 #include <iostream>
+
 ECS::Entity Grid::createGrid(vec2 position, int grid_type, std::string texture_path, vec2 size, std::pair<int, int> gridPos)
 {
     auto entity = ECS::Entity();
@@ -22,6 +23,7 @@ ECS::Entity Grid::createGrid(vec2 position, int grid_type, std::string texture_p
     Motion& motion = ECS::registry<Motion>.emplace(entity);
     motion.position = position;
     motion.angle = 0.f;
+	motion.coor = coor;
     // grids are not expected to move
     motion.velocity = { 0.f, 0.f };
     //motion.scale = resource.mesh.original_size * 0.5f;
