@@ -17,6 +17,8 @@ ECS::Entity Grid::createGrid(vec2 position, int grid_type, std::string texture_p
     }
     // Store a reference to the potentially re-used mesh object (the value is stored in the resource cache)
     ECS::registry<ShadedMeshRef>.emplace(entity, resource);
+    ShadedMeshRef& mesh_ref = ECS::registry<ShadedMeshRef>.get(entity);
+    mesh_ref.depth = 800;
 
     // Setting initial motion values
     Motion& motion = ECS::registry<Motion>.emplace(entity);

@@ -6,6 +6,7 @@
 #include "unit_factory.hpp"
 #include "keyboard_observer.hpp"
 #include "physics.hpp"
+#include "ScreenComponent.hpp"
 
 // stlib
 #include <vector>
@@ -64,6 +65,19 @@ private:
 
     UnitFactory &unitFactory;
     std::tuple<float, int, int> grid_dim;
+    
+    int state = 0;
+    ECS::Entity background;
+    ECS::Entity battle_background;
+    bool grid_initialized = false;
+    // counter to update background frame
+    float frame = 0.f;
+    float battle_frame = 0.f;
+    //buttons on the screen
+    ECS::Entity game_title;
+    ECS::Entity button_play;
+    ECS::Entity button_help;
+    ECS::Entity button_quit;
 
 
     // Number of fish eaten by the salmon, displayed in the window title
@@ -79,9 +93,6 @@ private:
     ECS::Entity init_ai_3;
     ECS::Entity player_unit;
 
-    
-    // TODO: Add grids for later rendering.
-    
     // music references
     Mix_Music* background_music;
     Mix_Chunk* salmon_dead_sound;

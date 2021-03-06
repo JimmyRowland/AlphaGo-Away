@@ -13,7 +13,6 @@
 #include "debug.hpp"
 #include "physics.hpp"
 #include "render.hpp"
-#include "start_screen_world.hpp"
 #include "tiny_ecs.hpp"
 #include "level_state.hpp"
 
@@ -21,8 +20,8 @@
 using Clock = std::chrono::high_resolution_clock;
 
 // TODO: Since we have > 1 world systems, we can set different window size here
-const ivec2 window_size_in_px = {600, 800};
-const vec2 window_size_in_game_units = { 600, 800 };
+const ivec2 window_size_in_px = {1000, 700};
+const vec2 window_size_in_game_units = { 1000, 700 };
 // grid_dim is {grid width, number grid squares in x dim, number grid squares in y dim}
 const std::tuple<float, int, int> grid_dim = std::make_tuple(580.f, 10, 10);
 // Note, here the window will show a width x height part of the game world, measured in px. 
