@@ -17,10 +17,12 @@
 #include <utility>
 #include <entt/entt.hpp>
 #include "components/motion.hpp"
-
+struct GameState{
+    bool is_sandbox = true;
+};
 
 // Container for all our entities and game logic. Individual rendering / update is 
-// deferred to the relative update() methods
+// deferred to the relative update() methods]
 class Game
 {
 public:
@@ -29,6 +31,7 @@ public:
 
 	// Releases all associated resources
 	~Game();
+
 
 	// restart level
     void restart();
@@ -51,8 +54,12 @@ public:
 	void init_level();
 private:
 	// Input callback functions
+    vec2 get_cursor_position();
+    ivec2 get_window_size();
 	void on_key(int key, int, int action, int mod);
 	void on_mouse_move(vec2 mouse_pos);
+    void on_mouse_click(int button, int action, int mods);
+    void sandbox_on_click(int button, int action, int mods);
     void init_grid();
 
     // Loads the audio
@@ -76,4 +83,7 @@ private:
 	std::default_random_engine rng;
 	std::uniform_real_distribution<float> uniform_dist; // number between 0..1
 	MapState mapState;
+    GameState game_state;
+
 };
+

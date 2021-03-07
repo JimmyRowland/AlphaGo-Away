@@ -5,7 +5,9 @@
 #ifndef ALPHAGO_AWAY_REGISTRY_HPP
 #define ALPHAGO_AWAY_REGISTRY_HPP
 #include <entt/entt.hpp>
-
+#include "common.hpp"
+#include "constants.hpp"
+#include "components/tile.hpp"
 extern entt::registry m_registry;
-
+entt::entity get_tile_entity_at_position(vec2 position);
 #endif //ALPHAGO_AWAY_REGISTRY_HPP

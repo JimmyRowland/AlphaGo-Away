@@ -4,16 +4,8 @@
 
 #ifndef ALPHAGO_AWAY_TILE_HPP
 #define ALPHAGO_AWAY_TILE_HPP
+#include "core/map.hpp"
 struct Tile{
-
-};
-struct Forest{
-
-};
-struct Basic{
-
-};
-struct Water{
-
+    TileType type;
 };
 #endif //ALPHAGO_AWAY_TILE_HPP

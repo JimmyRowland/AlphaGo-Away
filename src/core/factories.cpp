@@ -1,5 +1,26 @@
 #include "factories.hpp"
 
+namespace {
+    std::string get_tile_path(TileType tileType) {
+        switch (tileType) {
+            case TileType::basic: return "basic_grid.png";
+            case TileType::forest: return "tree_grid.png";
+            case TileType::water: return "river_grid.png";
+            default:
+                assert(false);
+                return {};
+        }
+    }
+    ShadedMesh& create_tile_mesh_resource(TileType tileType){
+        std::string tile_texture_path = get_tile_path(tileType);
+        std::string key = tile_texture_path;
+        ShadedMesh& resource = cache_resource(key);
+        if (resource.effect.program.resource == 0)
+            RenderSystem::createSprite(resource, textures_path(tile_texture_path), "textured");
+        return resource;
+    }
+}
+
 entt::entity ground_unit_factory(vec2 pos, bool should_place_enemy){
     auto entity = m_registry.create();
     std::string key = "unit";
@@ -30,36 +51,24 @@ entt::entity ground_unit_factory(vec2 pos, bool should_place_enemy){
     }
     return entity;
 };
-std::string get_tile_path(TileType tileType) {
-    switch (tileType) {
-        case TileType::basic: return "basic_grid.png";
-        case TileType::forest: return "tree_grid.png";
-        case TileType::water: return "river_grid.png";
-        default:
-            assert(false);
-            return {};
-    }
-}
 
 entt::entity tile_factory(vec2 pos, TileType tileType){
     auto entity = m_registry.create();
-    std::string tile_texture_path = get_tile_path(tileType);
-    std::string key = tile_texture_path;
-    ShadedMesh& resource = cache_resource(key);
-    if (resource.effect.program.resource == 0)
-        RenderSystem::createSprite(resource, textures_path(tile_texture_path), "textured");
+    ShadedMesh& resource = create_tile_mesh_resource(tileType);
     m_registry.emplace<ShadedMeshRef>(entity, resource);
     auto& position = m_registry.emplace<Position>(entity);
     position.position = pos;
     position.angle = 0.f;
     position.scale = tile_size;
-    m_registry.emplace<Tile>(entity);
-    switch (tileType) {
-        case TileType::basic: m_registry.emplace<Basic>(entity); break;
-        case TileType::forest: m_registry.emplace<Forest>(entity); break;
-        case TileType::water:  m_registry.emplace<Water>(entity); break;
-        default:
-            assert(false);
-    }
+    auto& tile_comp = m_registry.emplace<Tile>(entity);
+    tile_comp.type = tileType;
     return entity;
+};
+
+void swap_tile_texture(entt::entity entity, TileType tileType){
+    auto& tile_comp = m_registry.get<Tile>(entity);
+    if(tile_comp.type != tileType){
+        ShadedMesh& resource = create_tile_mesh_resource(tileType);
+        m_registry.replace<ShadedMeshRef>(entity, resource);
+    }
 };

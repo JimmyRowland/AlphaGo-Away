@@ -9,5 +9,8 @@
 #include "components/tile.hpp"
 #include "constants.hpp"
 entt::entity ground_unit_factory(vec2 pos, bool should_place_enemy = false);
+
 entt::entity tile_factory(vec2 pos, TileType tileType);
+void swap_tile_texture(entt::entity tile, TileType tileType);
+
 #endif //ALPHAGO_AWAY_FACTORIES_HPP

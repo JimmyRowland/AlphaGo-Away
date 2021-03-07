@@ -9,7 +9,7 @@
 #include "map.hpp"
 
 #include "constants.hpp"
-
+#include "common.hpp"
 namespace {
 
 TileType stateChar(const char c) {
@@ -34,19 +34,32 @@ void stateStr(MapState &state, const char (&str)[Size]) {
 }
 
 MapState makeMapState() {
-  MapState state{tiles};
-  const char str[] = {
-    "###############"
-    "#        #     "
-    "# ## ### # ### "
-    "# ## ### # ### "
-    "#              "
-    "# ## # ##### # "
-    "#    #   #   # "
-    "#### ### # ### "
-    "   # #       # "
-    "#### # ----- # "
-  };
+  MapState state{tile_matrix_dimension};
+//  const char str[] = {
+//    "###############"
+//    "#        #     "
+//    "# ## ### # ### "
+//    "# ## ### # ### "
+//    "#              "
+//    "# ## # ##### # "
+//    "#    #   #   # "
+//    "#### ### # ### "
+//    "   # #       # "
+//    "#### # ----- # "
+//  };
+
+    const char str[] = {
+           "###############"
+           "###############"
+           "###############"
+           "###############"
+           "###############"
+           "###############"
+           "###############"
+           "###############"
+           "###############"
+           "###############"
+    };
   stateStr(state, str);
   return state;
 }

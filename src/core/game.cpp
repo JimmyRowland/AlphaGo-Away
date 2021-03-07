@@ -50,8 +50,12 @@ Game::Game(ivec2 window_size_px) :
 	glfwSetWindowUserPointer(window, this);
 	auto key_redirect = [](GLFWwindow* wnd, int _0, int _1, int _2, int _3) { ((Game*)glfwGetWindowUserPointer(wnd))->on_key(_0, _1, _2, _3); };
 	auto cursor_pos_redirect = [](GLFWwindow* wnd, double _0, double _1) { ((Game*)glfwGetWindowUserPointer(wnd))->on_mouse_move({_0, _1 }); };
+    auto cursor_click_redirect = [](GLFWwindow *wnd, int _0, int _1, int _2) {
+        ((Game*) glfwGetWindowUserPointer(wnd))->on_mouse_click(_0, _1, _2);
+    };
 	glfwSetKeyCallback(window, key_redirect);
 	glfwSetCursorPosCallback(window, cursor_pos_redirect);
+    glfwSetMouseButtonCallback(window, cursor_click_redirect);
 
 	// Playing background music indefinitely
 	init_audio();
@@ -172,6 +176,102 @@ void Game::on_key(int key, int, int action, int mod)
 	current_speed = std::max(0.f, current_speed);
 }
 
+
+void sandbox_on_key(int key, int, int action, int mod){
+
+}
+
+vec2 Game::get_cursor_position(){
+    double xpos, ypos;
+    glfwGetCursorPos(window, &xpos, &ypos);
+    return vec2(xpos, ypos);
+}
+
+ivec2 Game::get_window_size(){
+    int winWidth, winHeight;
+    glfwGetWindowSize(window, &winWidth, &winHeight);
+    return ivec2(winWidth, winHeight);
+}
+
+void Game::on_mouse_click(int button, int action, int mods) {
+    if(game_state.is_sandbox) return sandbox_on_click(button,action,mods);
+    if (button == GLFW_MOUSE_BUTTON_LEFT) {
+//        double xpos, ypos;
+//        glfwGetCursorPos(window, &xpos, &ypos);
+//        int winWidth, winHeight;
+//        glfwGetWindowSize(window, &winWidth, &winHeight);
+//        auto gridWidth = (floor((winWidth - 20) / grid.size())) / 2;
+//        auto gridHeight = (floor((winWidth - 20) / grid[0].size())) / 2;
+//        //auto& selected_unit = ECS::registry<Unit>.entities[0];
+//        if (physicsSystem->should_pause) {
+//            if (action == GLFW_PRESS) {
+//                for (auto entity : ECS::registry<Property>.entities) {
+//                    auto &motion = ECS::registry<Motion>.get(entity);
+//                    auto dis_x = abs(motion.position.x - xpos);
+//                    auto dis_y = abs(motion.position.y - ypos);
+//                    if (dis_x < gridWidth && dis_y < gridHeight) {
+//                        //Propertyed_unit = entity;
+//                        auto &property = ECS::registry<Property>.get(entity);
+//                        property.selected = true;
+//                        glfwGetCursorPos(window, &xpos, &ypos);
+//                        motion.position.x = xpos;
+//                        motion.position.y = ypos;
+//                        break;
+//                    }
+//                }
+//            } else if (action == GLFW_RELEASE) {
+//                for (auto entity : ECS::registry<Unit>.entities) {
+//                    auto &property = ECS::registry<Property>.get(entity);
+//                    if (property.selected) {
+//                        auto &motion = ECS::registry<Motion>.get(entity);
+//                        int grid_pos_x = std::get<0>(grid[grid[0].size() - 1][0]);
+//                        int grid_pos_y = std::get<1>(grid[0][grid[0].size() - 1]);
+//                        glfwGetCursorPos(window, &xpos, &ypos);
+//                        auto dis_x = xpos - grid_pos_x;
+//                        auto dis_y = ypos - grid_pos_y;
+//                        if (dis_x > gridWidth || dis_y > gridHeight) {
+//
+//                            property.selected = false;
+//                        } else {
+//                            for (int i = 0; i < grid[0].size(); i++) {
+//                                for (int j = 0; j < grid[0].size(); j++) {
+//                                    grid_pos_x = std::get<0>(grid[i][j]);
+//                                    grid_pos_y = std::get<1>(grid[i][j]);
+//                                    glfwGetCursorPos(window, &xpos, &ypos);
+//                                    dis_x = abs(xpos - grid_pos_x);
+//                                    dis_y = abs(ypos - grid_pos_y);
+//                                    if (dis_x < gridWidth && dis_y < gridHeight) {
+//                                        motion.position.x = grid_pos_x;
+//                                        motion.position.y = grid_pos_y;
+//                                        property.selected = false;
+//                                        break;
+//                                    }
+//                                }
+//                            }
+//                        }
+//
+//
+//                    }
+//                }
+//
+//
+//            }
+//        } else {
+//            if (action==GLFW_PRESS && xpos > 30.f && xpos < 570.f && ypos > 30.f && ypos < 570.f) {
+//                unitFactory.create_unit({xpos, ypos});
+//            }
+//        }
+    }
+}
+
+void Game::sandbox_on_click(int button, int action, int mods){
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+        auto cursor_position = get_cursor_position();
+        auto entity = get_tile_entity_at_position(cursor_position);
+        swap_tile_texture(entity, TileType::basic);
+    }
+}
+
 void Game::on_mouse_move(vec2 mouse_pos)
 {
 
@@ -185,9 +285,9 @@ void Game::init_level() {
 
 
 void Game::init_grid() {
-    for (int i = 0; i < tiles.x; i++) {
+    for (int i = 0; i < tile_matrix_dimension.x; i++) {
         float xpos = tile_size.x/2 + tile_size.x * i;
-        for (int j = 0; j < tiles.y; j++) {
+        for (int j = 0; j < tile_matrix_dimension.y; j++) {
             float ypos = tile_size.y/2 + tile_size.y * j;
             tile_factory(vec2(xpos,ypos), mapState[ivec2(i,j)]);
         }
