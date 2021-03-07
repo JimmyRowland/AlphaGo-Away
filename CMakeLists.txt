@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 3.17.5)
 project(AlphaGo-Away)
 
 # Set c++11
@@ -7,7 +7,7 @@ if (POLICY CMP0025)
   cmake_policy(SET CMP0025 NEW)
 endif ()
 set (CMAKE_CXX_STANDARD 20)
-
+set (OpenGL_GL_PREFERENCE GLVND)
 # nice hierarchichal structure in MSVC
 set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 
@@ -25,7 +25,7 @@ endif()
 # Create executable target
 
 # You can switch to use the file GLOB for simplicity but at your own risk
-file(GLOB_RECURSE SOURCE_FILES src/**.cpp src/**.hpp)
+file(GLOB_RECURSE SOURCE_FILES src/**.cpp src/**.hpp src/**.c src/**.h)
 
 # external libraries will be installed into /usr/local/include and /usr/local/lib but that folder is not automatically included in the search on MACs
 if (IS_OS_MAC)
@@ -33,7 +33,7 @@ if (IS_OS_MAC)
   link_directories(/usr/local/lib)
 endif()
 
-add_executable(${PROJECT_NAME} ${SOURCE_FILES} src/core/registry.hpp src/core/constants.hpp src/core/factories.hpp src/core/factories.hpp src/core/factories.hpp src/components/motion.hpp src/core/factories.cpp src/components/units.hpp src/components/tile.hpp)
+add_executable(${PROJECT_NAME} ${SOURCE_FILES} src/core/registry.hpp src/core/constants.hpp src/core/factories.hpp src/core/factories.hpp src/core/factories.hpp src/components/motion.hpp src/core/factories.cpp src/components/units.hpp src/components/tile.hpp src/gui/gui.hpp src/gui/gui.cpp)
 target_include_directories(${PROJECT_NAME} PUBLIC src/)
 
 # Added this so policy CMP0065 doesn't scream
@@ -41,7 +41,8 @@ set_target_properties(${PROJECT_NAME} PROPERTIES ENABLE_EXPORTS 0)
 
 # External header-only libraries in the ext/
 target_include_directories(${PROJECT_NAME} PUBLIC ext/stb_image/)
-target_include_directories(${PROJECT_NAME} PUBLIC ext/gl3w)
+#target_include_directories(${PROJECT_NAME} PUBLIC ext/gl3w)
+target_include_directories(${PROJECT_NAME} PUBLIC ext/imgui_backend)
 
 # Find OpenGL
 find_package(OpenGL REQUIRED)
@@ -160,8 +161,11 @@ target_include_directories(${PROJECT_NAME} PUBLIC ${SDL2_INCLUDE_DIRS})
 # vcpkg
 set(VCPKG_INCLUDE_DIRS "${CMAKE_CURRENT_SOURCE_DIR}/vcpkg/glfw/include")
 
+
 find_package(EnTT CONFIG REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE EnTT::EnTT)
+find_package(gl3w CONFIG REQUIRED)
+target_link_libraries(${PROJECT_NAME}  PRIVATE unofficial::gl3w::gl3w)
 
 target_link_libraries(${PROJECT_NAME} PUBLIC ${GLFW_LIBRARIES} ${SDL2_LIBRARIES} ${SDL2MIXER_LIBRARIES} glm::glm)
 

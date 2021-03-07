@@ -38,9 +38,8 @@ Game::Game(ivec2 window_size_px) :
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
 	glfwWindowHint(GLFW_RESIZABLE, 0);
-
 	// Create the main window (for rendering, keyboard, and mouse input)
-	window = glfwCreateWindow(window_size_px.x, window_size_px.y, "Salmon Game Assignment", nullptr, nullptr);
+	window = glfwCreateWindow(window_size_px.x, window_size_px.y, "AlphaGo-Away", nullptr, nullptr);
 	if (window == nullptr)
 		throw std::runtime_error("Failed to glfwCreateWindow");
 
@@ -71,6 +70,7 @@ Game::~Game(){
 
 	// Close the window
 	glfwDestroyWindow(window);
+    glfwTerminate();
 }
 
 void Game::init_audio()
@@ -125,6 +125,7 @@ void Game::restart()
     init_level();
     init_grid();
     ground_unit_factory(vec2(80,80));
+    imgui();
 
 }
 
@@ -194,7 +195,7 @@ ivec2 Game::get_window_size(){
 }
 
 void Game::on_mouse_click(int button, int action, int mods) {
-    if(game_state.is_sandbox) return sandbox_on_click(button,action,mods);
+    if(game_state==GameState::sandbox) return sandbox_on_click(button,action,mods);
     if (button == GLFW_MOUSE_BUTTON_LEFT) {
 //        double xpos, ypos;
 //        glfwGetCursorPos(window, &xpos, &ypos);
@@ -274,9 +275,7 @@ void Game::sandbox_on_click(int button, int action, int mods){
 
 void Game::on_mouse_move(vec2 mouse_pos)
 {
-
 		(void)mouse_pos;
-
 }
 
 void Game::init_level() {
@@ -292,4 +291,12 @@ void Game::init_grid() {
             tile_factory(vec2(xpos,ypos), mapState[ivec2(i,j)]);
         }
     }
+}
+
+void Game::imgui(){
+    level_selection_menu([&](){on_select_sandbox();});
+}
+
+void Game::on_select_sandbox(){
+    game_state = GameState::sandbox;
 }

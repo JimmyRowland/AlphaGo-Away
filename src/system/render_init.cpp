@@ -13,7 +13,7 @@ RenderSystem::RenderSystem(GLFWwindow &window) :
 	glfwSwapInterval(1); // vsync
 
 	// Load OpenGL function pointers
-	gl3w_init();
+    gl3wInit();
 
 	// Create a frame buffer
 	frame_buffer = 0;

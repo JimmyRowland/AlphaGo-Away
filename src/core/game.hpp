@@ -6,6 +6,7 @@
 #include "core/map.hpp"
 #include "core/constants.hpp"
 #include "factories.hpp"
+#include "gui/gui.hpp"
 
 // stlib
 #include <vector>
@@ -17,10 +18,16 @@
 #include <utility>
 #include <entt/entt.hpp>
 #include "components/motion.hpp"
-struct GameState{
-    bool is_sandbox = true;
-};
 
+enum GameState{
+    sandbox,
+    level1,
+    level2,
+    level3,
+    level4,
+    level5,
+    start_screen,
+};
 // Container for all our entities and game logic. Individual rendering / update is 
 // deferred to the relative update() methods]
 class Game
@@ -83,7 +90,10 @@ private:
 	std::default_random_engine rng;
 	std::uniform_real_distribution<float> uniform_dist; // number between 0..1
 	MapState mapState;
-    GameState game_state;
+    GameState game_state = GameState::sandbox;
 
+    void imgui();
+
+    void on_select_sandbox();
 };
 

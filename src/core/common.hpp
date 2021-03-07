@@ -8,7 +8,7 @@
 
 // glfw (OpenGL)
 #define NOMINMAX
-#include <gl3w.h>
+#include <GL/gl3w.h>
 #include <GLFW/glfw3.h>
 
 // The glm library provides vector and matrix operations as in GLSL
@@ -17,6 +17,8 @@
 #include <glm/vec3.hpp>             // vec3
 #include <glm/mat3x3.hpp>           // mat3
 #include <glm/ext/vector_uint2.hpp>  // uvec2
+#include "gui/imgui.h"
+
 
 #include <entt/entt.hpp>
 
