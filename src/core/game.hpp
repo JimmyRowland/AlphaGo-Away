@@ -19,7 +19,7 @@
 #include <entt/entt.hpp>
 #include "components/motion.hpp"
 
-enum GameState{
+enum Level{
     sandbox,
     level1,
     level2,
@@ -90,7 +90,8 @@ private:
 	std::default_random_engine rng;
 	std::uniform_real_distribution<float> uniform_dist; // number between 0..1
 	MapState mapState;
-    GameState game_state = GameState::sandbox;
+    Level level = Level::sandbox;
+    bool is_debug = false;
 
     void imgui();
 

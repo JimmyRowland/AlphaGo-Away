@@ -3,7 +3,9 @@
 #include "render_components.hpp"
 
 #include <iostream>
-
+#include "gui/imgui.h"
+#include "gui/imgui_impl_glfw.h"
+#include "gui/imgui_impl_opengl3.h"
 void RenderSystem::drawTexturedMesh(entt::entity entity, const mat3 &projection)
 {
 	auto& position = m_registry.get<Position>(entity);
@@ -14,7 +16,7 @@ void RenderSystem::drawTexturedMesh(entt::entity entity, const mat3 &projection)
 	transform.translate(position.position);
     transform.rotate(position.angle);
 	transform.scale(position.scale);
-	// !!! TODO A1: add rotation to the chain of transformations, mind the order of transformations
+
 
 	// Setting shaders
 	glUseProgram(texmesh.effect.program);
@@ -188,7 +190,8 @@ void RenderSystem::draw(vec2 window_size_in_game_units)
         drawTexturedMesh(entity, projection_2D);
         gl_has_errors();
     }
-
+    ImGui::Render();
+    ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	// Truely render to the screen
     drawToScreen();
 

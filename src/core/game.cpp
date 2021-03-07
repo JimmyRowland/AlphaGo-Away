@@ -112,6 +112,8 @@ void Game::update(float elapsed_ms, vec2 window_size_in_game_units)
 
 	}
 
+    imgui();
+
 }
 
 // Reset the world state to its initial state
@@ -125,7 +127,6 @@ void Game::restart()
     init_level();
     init_grid();
     ground_unit_factory(vec2(80,80));
-    imgui();
 
 }
 
@@ -146,7 +147,6 @@ bool Game::is_over() const
 void Game::on_key(int key, int, int action, int mod)
 {
 
-
 	// Resetting game
 	if (action == GLFW_RELEASE && key == GLFW_KEY_R)
 	{
@@ -157,8 +157,10 @@ void Game::on_key(int key, int, int action, int mod)
 	}
 
 	// Debugging
-	if (key == GLFW_KEY_D)
-		DebugSystem::in_debug_mode = (action != GLFW_RELEASE);
+	if (action == GLFW_RELEASE && key == GLFW_KEY_D){
+        DebugSystem::in_debug_mode = !DebugSystem::in_debug_mode;
+        is_debug = DebugSystem::in_debug_mode;
+	}
 
 	// Control the current speed with `<` `>`
 	if (action == GLFW_RELEASE && (mod & GLFW_MOD_SHIFT) && key == GLFW_KEY_COMMA)
@@ -195,7 +197,7 @@ ivec2 Game::get_window_size(){
 }
 
 void Game::on_mouse_click(int button, int action, int mods) {
-    if(game_state==GameState::sandbox) return sandbox_on_click(button,action,mods);
+    if(level == Level::sandbox) return sandbox_on_click(button, action, mods);
     if (button == GLFW_MOUSE_BUTTON_LEFT) {
 //        double xpos, ypos;
 //        glfwGetCursorPos(window, &xpos, &ypos);
@@ -294,9 +296,9 @@ void Game::init_grid() {
 }
 
 void Game::imgui(){
-    level_selection_menu([&](){on_select_sandbox();});
+    if(is_debug) level_selection_menu([&](){on_select_sandbox();});
 }
 
 void Game::on_select_sandbox(){
-    game_state = GameState::sandbox;
+    level = Level::sandbox;
 }
