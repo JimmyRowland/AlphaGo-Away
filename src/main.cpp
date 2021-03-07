@@ -33,9 +33,6 @@ int main()
     const char* glsl_version = "#version 130";
 
 #endif
-//    GLFWwindow* window = glfwCreateWindow(1200, 800, "Dear ImGui GLFW+OpenGL3 example", NULL, NULL);
-//    if (window == NULL)
-//        return 1;
 
     // Initialize the main systems
 	Game game(window_size_in_px);
@@ -45,7 +42,7 @@ int main()
 	// Set all states to default
 	auto t = Clock::now();
 
-//    glfwMakeContextCurrent(window);
+
 	ImGui::CreateContext();
     ImGuiIO& io = ImGui::GetIO(); (void)io;
     ImGui::StyleColorsDark();
@@ -54,7 +51,7 @@ int main()
     bool show_demo_window = true;
     bool show_another_window = false;
     ImVec4 clear_color = ImVec4(0.45f, 0.55f, 0.60f, 1.00f);
-
+    init_assets();
 
     game.restart();
 	// Variable timestep loop

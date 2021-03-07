@@ -2,7 +2,7 @@
 #include "system/render.hpp"
 
 #define STB_IMAGE_IMPLEMENTATION
-#include "stb_image.h"
+
 
 // stlib
 #include <array>
