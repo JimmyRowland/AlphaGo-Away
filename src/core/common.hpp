@@ -17,7 +17,7 @@
 #include <glm/vec3.hpp>             // vec3
 #include <glm/mat3x3.hpp>           // mat3
 #include <glm/ext/vector_uint2.hpp>  // uvec2
-#include "gui/imgui.h"
+#include <imgui.h>
 
 
 #include <entt/entt.hpp>

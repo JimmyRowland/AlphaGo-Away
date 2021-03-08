@@ -3,7 +3,7 @@
 #include "render_components.hpp"
 
 #include <iostream>
-#include "gui/imgui.h"
+#include <imgui.h>
 #include "gui/imgui_impl_glfw.h"
 #include "gui/imgui_impl_opengl3.h"
 void RenderSystem::drawTexturedMesh(entt::entity entity, const mat3 &projection)

@@ -164,6 +164,9 @@ find_package(EnTT CONFIG REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE EnTT::EnTT)
 find_package(gl3w CONFIG REQUIRED)
 target_link_libraries(${PROJECT_NAME}  PRIVATE unofficial::gl3w::gl3w)
+find_package(imgui CONFIG REQUIRED)
+target_link_libraries(${PROJECT_NAME} PRIVATE imgui::imgui)
+
 
 
 target_link_libraries(${PROJECT_NAME} PUBLIC ${GLFW_LIBRARIES} ${SDL2_LIBRARIES} ${SDL2MIXER_LIBRARIES} glm::glm)

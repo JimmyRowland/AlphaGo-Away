@@ -10,7 +10,7 @@
 #include "system/ai.hpp"
 #include "logger/debug.hpp"
 #include "core/constants.hpp"
-#include "gui/imgui.h"
+#include <imgui.h>
 #include "gui/imgui_impl_glfw.h"
 #include "gui/imgui_impl_opengl3.h"
 
