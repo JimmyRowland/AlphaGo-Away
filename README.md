@@ -11,6 +11,10 @@ git clone https://github.com/microsoft/vcpkg
 .\vcpkg\bootstrap-vcpkg.bat
 
 .\vcpkg\vcpkg install entt
+.\vcpkg\vcpkg install gl3w
+.\vcpkg\vcpkg install imgui
+.\vcpkg\vcpkg install nlohmann-json
+
 
 .\vcpkg\vcpkg integrate install
 
