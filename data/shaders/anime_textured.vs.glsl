@@ -17,10 +17,10 @@ void main()
 {
     // add offset to textcoord.x
 	texcoord = in_texcoord;
-    if (anime_state == 0) {
-        texcoord.x = 0.15 * texcoord.x;
-    } else {
+    if (anime_state == 1) {
         texcoord.x = 0.17 * frame + 0.15 * texcoord.x; //- texcoord.x * 0.5;
+    } else {
+        texcoord.x = 0.15 * texcoord.x;
     }
     
 	vec3 pos = projection * transform * vec3(in_position.xy, 1.0);

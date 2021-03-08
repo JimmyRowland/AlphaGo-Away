@@ -61,6 +61,7 @@ struct Motion {
 	vec2 velocity = { 0, 0 };
 	vec2 scale = { 10, 10 };
 	int state = 0; // 0: stands still; 1: moving; 2: dying
+    float darken_factor = -1;
 	vec2 coor = { 0,0 };
 	std::pair<int, int> gridPos = std::make_pair(0, 0);
 };
