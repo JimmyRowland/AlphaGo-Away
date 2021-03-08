@@ -166,6 +166,8 @@ find_package(gl3w CONFIG REQUIRED)
 target_link_libraries(${PROJECT_NAME}  PRIVATE unofficial::gl3w::gl3w)
 find_package(imgui CONFIG REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE imgui::imgui)
+find_package(nlohmann_json CONFIG REQUIRED)
+target_link_libraries(${PROJECT_NAME} PRIVATE nlohmann_json nlohmann_json::nlohmann_json)
 
 
 

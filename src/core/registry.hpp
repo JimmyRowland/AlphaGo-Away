@@ -9,5 +9,6 @@
 #include "constants.hpp"
 #include "components/tile.hpp"
 extern entt::registry m_registry;
+int get_entity_index_from_tile_index(int x, int y);
 entt::entity get_tile_entity_at_position(vec2 position);
 #endif //ALPHAGO_AWAY_REGISTRY_HPP

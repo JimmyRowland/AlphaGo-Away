@@ -7,10 +7,13 @@
 #include "core/constants.hpp"
 #include "factories.hpp"
 #include "gui/gui.hpp"
-
+#include <nlohmann/json.hpp>
 // stlib
 #include <vector>
 #include <random>
+#include <iostream>
+#include <fstream>
+#include <iomanip>
 
 #define SDL_MAIN_HANDLED
 #include <SDL.h>
@@ -104,5 +107,11 @@ private:
     void imgui_sandbox_menu();
 
     TileType imgui_tile_type_selection_to_tileType();
+
+    void imgui_save_level();
+
+    void imgui_load_level();
+
+    void load_grid(std::string);
 };
 

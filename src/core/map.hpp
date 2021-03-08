@@ -12,9 +12,9 @@ enum class TileType : std::uint8_t {
 };
 
 using MapState = Grid<TileType>;
-
+TileType char_to_tileType(const char c);
 MapState makeMapState();
-
+char tileType_to_char(TileType tileType);
 
 ivec2 get_tile_index(vec2 position);
 #endif

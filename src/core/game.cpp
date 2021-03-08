@@ -6,7 +6,8 @@
 // stlib
 #include <cassert>
 #include <sstream>
-#include <iostream>
+
+
 
 // Game configuration
 const size_t TURTLE_DELAY_MS = 2000;
@@ -350,9 +351,44 @@ void Game::imgui_level_selection_menu(){
     }
 };
 
+void Game::imgui_save_level(){
+    std::string map;
+    for(int j = 0; j < tile_matrix_dimension.y; j++){
+        for(int i = 0; i< tile_matrix_dimension.x; i++){
+            map += tileType_to_char(mapState[ivec2(i,j)]);
+        }
+    }
+    nlohmann::json json;
+    json["map"] = map;
+    std::ofstream o("sandbox.json");
+    o << std::setw(4) << json << std::endl;
+}
+
+void Game::load_grid(std::string map_string) {
+    auto entities = m_registry.view<Tile>();
+    for (int i = 0; i < tile_matrix_dimension.x; i++) {
+        for (int j = 0; j < tile_matrix_dimension.y; j++) {
+            int index = i + j * tile_matrix_dimension.x;
+            TileType tileType =  char_to_tileType(map_string[index]);
+            mapState[ivec2(i,j)] = tileType;
+            auto entity = entities[get_entity_index_from_tile_index(i,j)];
+            swap_tile_texture(entity, tileType);
+        }
+    }
+}
+
+void Game::imgui_load_level(){
+    std::ifstream i("sandbox.json");
+    nlohmann::json json;
+    i >> json;
+    load_grid(json["map"]);
+}
+
 void Game::imgui_sandbox_menu(){
     if (level == Level::sandbox && ImGui::CollapsingHeader("sandbox"))
     {
+        if (ImGui::Button("Save Level")) imgui_save_level();
+        if (ImGui::Button("Load Level")) imgui_load_level();
         if (ImGui::CollapsingHeader("tiles"))
         {
             ImGui::Text("Choose a tile type and click on map to change tiles");
