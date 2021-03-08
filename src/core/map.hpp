@@ -1,10 +1,10 @@
-#ifndef CORE_MAZE_HPP
-#define CORE_MAZE_HPP
+#ifndef CORE_MAP_HPP
+#define CORE_MAP_HPP
 
 #include <cstdint>
 #include "utils/grid.hpp"
 #include "constants.hpp"
-#include "factories.hpp"
+//#include "factories.hpp"
 
 //Copied from entt pacman
 

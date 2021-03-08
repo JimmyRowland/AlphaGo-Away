@@ -93,23 +93,6 @@ void Game::init_audio()
 void Game::update(float elapsed_ms, vec2 window_size_in_game_units)
 {
 
-	// Spawning new turtles
-	next_turtle_spawn -= elapsed_ms * current_speed;
-	if (next_turtle_spawn < 0.f)
-	{
-		// Reset timer
-		next_turtle_spawn = (TURTLE_DELAY_MS / 2) + uniform_dist(rng) * (TURTLE_DELAY_MS / 2);
-		// Create turtle
-		entt::entity entity = unit_factory({0, 0});
-		// Setting random initial position and constant velocity
-		auto& motion = m_registry.get<Motion>(entity);
-        auto& position = m_registry.get<Position>(entity);
-
-        position.position = vec2(window_size_in_game_units.x - 150.f, 50.f + uniform_dist(rng) * (window_size_in_game_units.y - 100.f));
-		motion.velocity = vec2(-100.f, 0.f );
-
-	}
-
     imgui();
 
 }
@@ -123,8 +106,8 @@ void Game::restart()
 
 
     init_level();
-    init_grid();
-    unit_factory(vec2(80, 80));
+    init_map_grid();
+    init_unit_grid();
 
 }
 
@@ -294,11 +277,12 @@ void Game::sandbox_on_click(int button, int action, int mods){
             auto cursor_position = get_cursor_position();
             ivec2 tile_index = get_tile_index(cursor_position);
             if(!is_tile_out_of_index(tile_index)){
-                if(imgui_entity_selection < 4){
+                if(imgui_entity_selection < 4 && unitMapState[tile_index]==UnitType::empty){
                     auto entity = get_tile_entity_at_position(cursor_position);
                     swap_tile_texture(entity, imgui_entity_selection_to_tileType());
                     mapState[ivec2(tile_index.x, tile_index.y)] = imgui_entity_selection_to_tileType();
-                }else if(imgui_entity_selection < 12 && imgui_entity_selection>3){
+                }else if(imgui_entity_selection < 12 && imgui_entity_selection>3 && mapState[tile_index]==TileType::basic && unitMapState[tile_index]==UnitType::empty){
+                    unitMapState[tile_index]=imgui_entity_selection_to_unitType();
                     unit_factory(get_tile_center_from_index(tile_index), imgui_entity_selection_to_unitType());
                 }
             }
@@ -313,10 +297,11 @@ void Game::on_mouse_move(vec2 mouse_pos)
 
 void Game::init_level() {
     mapState = makeMapState();
+    unitMapState = makeUnitState();
 }
 
 
-void Game::init_grid() {
+void Game::init_map_grid() {
     for (int i = 0; i < tile_matrix_dimension.x; i++) {
         float xpos = tile_size.x/2 + tile_size.x * i;
         for (int j = 0; j < tile_matrix_dimension.y; j++) {
@@ -325,7 +310,17 @@ void Game::init_grid() {
         }
     }
 }
-
+void Game::init_unit_grid() {
+    for (int i = 0; i < tile_matrix_dimension.x; i++) {
+        float xpos = tile_size.x/2 + tile_size.x * i;
+        for (int j = 0; j < tile_matrix_dimension.y; j++) {
+            float ypos = tile_size.y/2 + tile_size.y * j;
+            if(unitMapState[ivec2(i,j)]!=UnitType::empty){
+                unit_factory(vec2(xpos,ypos), unitMapState[ivec2(i,j)]);
+            }
+        }
+    }
+}
 
 namespace {
     void imgui_help_menu(){

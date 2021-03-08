@@ -4,20 +4,10 @@
 #include <system/render.hpp>
 #include "registry.hpp"
 #include "components/units.hpp"
-#include "core/map.hpp"
 #include "components/tile.hpp"
 #include "constants.hpp"
-enum class UnitType : std::uint8_t {
-    human_terminator,
-    human_monitor,
-    human_archer,
-    human_healer,
-    ai_terminator,
-    ai_monitor,
-    ai_archer,
-    ai_healer,
-    empty,
-};
+#include "unitmap.hpp"
+
 
 entt::entity unit_factory(vec2 pos, UnitType unitType = UnitType::human_terminator);
 entt::entity tile_factory(vec2 pos, TileType tileType);

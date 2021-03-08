@@ -78,7 +78,7 @@ private:
 	void on_mouse_move(vec2 mouse_pos);
     void on_mouse_click(int button, int action, int mods);
     void sandbox_on_click(int button, int action, int mods);
-    void init_grid();
+    void init_map_grid();
 
     // Loads the audio
     void init_audio();
@@ -101,6 +101,7 @@ private:
 	std::default_random_engine rng;
 	std::uniform_real_distribution<float> uniform_dist; // number between 0..1
 	MapState mapState;
+	UnitMapState unitMapState;
     Level level = Level::sandbox;
     bool show_imgui = false;
 
@@ -125,5 +126,7 @@ private:
     void imgui_enemy_menu();
 
     UnitType imgui_entity_selection_to_unitType();
+
+    void init_unit_grid();
 };
 

@@ -4,7 +4,9 @@
 
 #ifndef ALPHAGO_AWAY_TILE_HPP
 #define ALPHAGO_AWAY_TILE_HPP
+
 #include "core/map.hpp"
+
 struct Tile{
     TileType type;
 };

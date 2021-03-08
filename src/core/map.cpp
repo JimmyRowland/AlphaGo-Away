@@ -1,11 +1,4 @@
-//
-//  maze.cpp
-//  EnTT Pacman
-//
-//  Created by Indiana Kernick on 22/9/18.
-//  Copyright © 2018 Indiana Kernick. All rights reserved.
-//
-
+//copied from entt pacman
 #include "map.hpp"
 
 namespace {
@@ -16,14 +9,8 @@ void stateStr_to_tileType(MapState &state, const char (&str)[Size]) {
     state[i] = char_to_tileType(str[i]);
   }
 }
-//    template <std::size_t Size>
-//    void stateStr_to_unitType(UnitMapState &state, const char (&str)[Size]) {
-//        assert(state.area() + 1 == Size);
-//        for (std::size_t i = 0; i != Size - 1; ++i) {
-//            state[i] = char_to_unitType(str[i]);
-//        }
-//    }
 }
+
 TileType char_to_tileType(const char c) {
     switch (c) {
         case ' ': return TileType::basic;
@@ -34,22 +21,7 @@ TileType char_to_tileType(const char c) {
             return {};
     }
 }
-UnitType char_to_unitType(const char c) {
-    switch (c) {
-        case '0': return UnitType::empty;
-        case '1': return UnitType::human_terminator;
-        case '2': return UnitType::human_monitor;
-        case '3': return UnitType::human_archer;
-        case '4': return UnitType::human_healer;
-        case '5': return UnitType:: ai_terminator;               
-        case '6': return UnitType:: ai_monitor;
-        case '7': return UnitType:: ai_archer;
-        case '8': return UnitType:: ai_healer;
-        default:
-            assert(false);
-            return {};
-    }
-}
+
 MapState makeMapState() {
   MapState state{tile_matrix_dimension};
 //  const char str[] = {
@@ -66,38 +38,21 @@ MapState makeMapState() {
 //  };
 
     const char str[] = {
-           "###############"
-           "###############"
-           "###############"
-           "###############"
-           "###############"
-           "###############"
-           "###############"
-           "###############"
-           "###############"
-           "###############"
+           "               "
+           "               "
+           "               "
+           "               "
+           "               "
+           "               "
+           "               "
+           "               "
+           "               "
+           "               "
     };
     stateStr_to_tileType(state, str);
   return state;
 }
 
-//UnitMapState makeUnitState() {
-//    UnitMapState state{tile_matrix_dimension};
-//    const char str[] = {
-//            "               "
-//            "               "
-//            "               "
-//            "               "
-//            "               "
-//            "               "
-//            "               "
-//            "               "
-//            "               "
-//            "               "
-//    };
-//    stateStr_to_unitType(state, str);
-//    return state;
-//}
 
 ivec2 get_tile_index(vec2 position){
     return ivec2(floor(position.x / tile_size.x), floor(position.y / tile_size.y));
