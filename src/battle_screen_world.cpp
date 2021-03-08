@@ -440,10 +440,14 @@ void BattleWorldSystem::on_collision(ECS::Entity entity_i, ECS::Entity entity_j)
         property_i.hp -= property_j.damage;
         property_j.hp -= property_i.damage;
         if (property_i.hp <= 0) {
+            auto& motion = ECS::registry<Motion>.get(entity_i);
+            motion.state = 2;
             ECS::ContainerInterface::remove_all_components_of(entity_i);
             Mix_PlayChannel(-1, salmon_dead_sound, 0);
         }
         if (property_j.hp <= 0) {
+            auto& motion = ECS::registry<Motion>.get(entity_j);
+            motion.state = 2;
             ECS::ContainerInterface::remove_all_components_of(entity_j);
             Mix_PlayChannel(-1, salmon_dead_sound, 0);
         }
