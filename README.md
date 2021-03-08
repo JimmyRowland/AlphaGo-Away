@@ -29,6 +29,9 @@ git clone https://github.com/microsoft/vcpkg
 ./vcpkg/bootstrap-vcpkg.sh
 
 ./vcpkg/vcpkg install entt
+./vcpkg/vcpkg install gl3w
+./vcpkg/vcpkg install imgui
+./vcpkg/vcpkg install nlohmann-json
 
 Open the Toolchains settings (File > Settings on Windows and Linux, CLion > Preferences on macOS), and go to the CMake settings (Build, Execution, Deployment > CMake). Finally, in CMake options, add the following line:
 
@@ -52,17 +55,15 @@ https://github.com/skypjack/entt/wiki/Crash-Course:-entity-component-system
 
 https://github.com/ocornut/imgui
 
-- Games:
+- Utils:
 
-https://github.com/tyrannicaltoucan/destroid
+https://github.com/nlohmann/json
+
+- Games:
 
 https://github.com/guillaume-haerinck/imac-tower-defense
 
-https://github.com/bfeldpw/battlesub
-
-https://github.com/DomRe/EnttPong
-
-https://github.com/carlfindahl/wacman
+https://github.com/Kerndog73/EnTT-Pacman
 
 
 
