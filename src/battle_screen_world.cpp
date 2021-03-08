@@ -321,6 +321,10 @@ void BattleWorldSystem::on_key(int key, int, int action, int mod) {
         restart();
     }
 
+    if (action == GLFW_PRESS && key == GLFW_KEY_U)
+    {
+        should_place = !should_place;
+    }
     // Debugging
     if (key == GLFW_KEY_B)
         DebugSystem::in_debug_mode = (action != GLFW_RELEASE);
@@ -356,7 +360,7 @@ void BattleWorldSystem::on_mouse_click(int button, int action, int mods) {
         auto gridWidth = (floor((winWidth - 20) / grid.size())) / 2;
         auto gridHeight = (floor((winWidth - 20) / grid[0].size())) / 2;
         //auto& selected_unit = ECS::registry<Unit>.entities[0];
-        if (physicsSystem->should_pause) {
+        if (should_place) {
             if (action == GLFW_PRESS) {
                 for (auto entity : ECS::registry<Property>.entities) {
                     auto &motion = ECS::registry<Motion>.get(entity);
@@ -365,11 +369,16 @@ void BattleWorldSystem::on_mouse_click(int button, int action, int mods) {
                     if (dis_x < gridWidth && dis_y < gridHeight) {
                         //Propertyed_unit = entity;
                         auto &property = ECS::registry<Property>.get(entity);
+                        DebugSystem::in_debug_mode = true;
                         property.selected = true;
                         property.init_pos = motion.position;
                         glfwGetCursorPos(window, &xpos, &ypos);
                         motion.position.x = xpos;
                         motion.position.y = ypos;
+//                        vec2 tri_pos = {(motion.position.x-property.init_pos.x)/2, (motion.position.y-property.init_pos.y)/2};
+//
+//                        DebugSystem::createDirectTri(motion.position, {100,100});
+
                         break;
                     }
                 }
@@ -400,12 +409,13 @@ void BattleWorldSystem::on_mouse_click(int button, int action, int mods) {
 
 
                                         //Draw the move trajectory
+
                                         vec2 tri_pos = {(motion.position.x-property.init_pos.x)/2, (motion.position.y-property.init_pos.y)/2};
 
                                         DebugSystem::createDirectTri(tri_pos, {100,100});
 
 
-
+                                        DebugSystem::in_debug_mode = false;
                                         property.selected = false;
                                         break;
                                     }

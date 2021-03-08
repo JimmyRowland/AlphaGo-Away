@@ -52,6 +52,7 @@ public:
     bool is_over() const;
     // OpenGL window handle
     GLFWwindow* window;
+    bool should_place = false;
 private:
     // Input callback functions
     void on_key(int key, int, int action, int mod);

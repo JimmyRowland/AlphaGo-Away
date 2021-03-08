@@ -3,6 +3,7 @@
 #include "physics.hpp"
 #include "tiny_ecs.hpp"
 #include "kd-tree.hpp"
+#include "unit_factory.hpp"
 #include <iostream>
   
 bool satHelper(const ECS::Entity& e1, const ECS::Entity& e2) {
@@ -124,7 +125,17 @@ void PhysicsSystem::step(float elapsed_ms, vec2 window_size_in_game_units, std::
             }
 
 
+//        for (auto entity : ECS::registry<Unit>.entities) {
+//            auto &property = ECS::registry<Property>.get(entity);
+//            if (property.selected) {
+//                auto &motion = ECS::registry<Motion>.get(entity);
+//                DebugSystem::createLine(motion.position, motion.scale);
+//            }
+//        }
+
+
         }
+
 
 
     // for (auto [i, motion_i] : enumerate(motion_container.components)) // in c++ 17 we will be able to do this instead of the next three lines
