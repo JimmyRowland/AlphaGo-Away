@@ -4,6 +4,7 @@
 #include "tiny_ecs.hpp"
 #include "kd-tree.hpp"
 #include "unit_factory.hpp"
+#include <math.h>
 #include <iostream>
   
 bool satHelper(const ECS::Entity& e1, const ECS::Entity& e2) {
@@ -58,6 +59,43 @@ bool collides(const ECS::Entity& e1, const ECS::Entity& e2)
 
 void PhysicsSystem::step(float elapsed_ms, vec2 window_size_in_game_units, std::tuple<float, int, int> grid_dim)
 {
+
+    for (auto entity : ECS::registry<Unit>.entities) {
+        auto &property = ECS::registry<Property>.get(entity);
+        if (property.selected) {
+            // Mark the selected unit
+            auto& bb = ECS::registry<BoundingBox>.get(entity);
+            for (auto& vertices : bb.transformed_vertices) {
+                auto dotSize = vec2(5.f, 5.f);
+                DebugSystem::createLine(vertices, dotSize);
+            }
+        }else if(property.selected_release){
+            //draw the moving  trajectory
+            auto &motion= ECS::registry<Motion>.get(entity);
+            vec2 tri_pos = {(motion.position.x-property.init_pos.x)/2+property.init_pos.x, (motion.position.y-property.init_pos.y)/2+property.init_pos.y};
+            float x1 = motion.position.x-property.init_pos.x;
+            float y1 = motion.position.y-property.init_pos.y;
+            // use dot product to calculate the angle
+
+            vec2 v1 = normalize(vec2({x1, y1}));
+
+            float angle = acos(dot(v1, {1.f, 0.f}));
+            if (y1 < 0.f) {
+                //clock wise
+                angle *= -1.f;
+            }
+            if (y1==0){
+                DebugSystem::createDirectTri(tri_pos,{x1/2,30},0.f);
+            } else if (x1==0){
+                DebugSystem::createDirectTri(tri_pos,{30,y1/2},M_PI/2*y1/abs(y1));
+            }else {
+                DebugSystem::createDirectTri(tri_pos, {abs((motion.position.x-property.init_pos.x)/2),abs((motion.position.y-property.init_pos.y)/2)},angle);
+
+            }
+            property.selected_release = false;
+        }
+    }
+
     if (should_pause) return;
 
     // Check for collisions between all moving entities
@@ -111,31 +149,23 @@ void PhysicsSystem::step(float elapsed_ms, vec2 window_size_in_game_units, std::
 //                DebugSystem::createLine(vertices, dotSize);
 //            }
 //        }
-
-            for (auto& motion : ECS::registry<Motion>.components)
-            {
-                // draw a cross at the position of all objects
-
-                auto scale_horizontal_line = motion.scale;
-                scale_horizontal_line.y *= 0.1f;
-                auto scale_vertical_line = motion.scale;
-                scale_vertical_line.x *= 0.1f;
-                DebugSystem::createLine(motion.position, scale_horizontal_line);
-                DebugSystem::createLine(motion.position, scale_vertical_line);
-            }
-
-
-//        for (auto entity : ECS::registry<Unit>.entities) {
-//            auto &property = ECS::registry<Property>.get(entity);
-//            if (property.selected) {
-//                auto &motion = ECS::registry<Motion>.get(entity);
-//                DebugSystem::createLine(motion.position, motion.scale);
+//
+//            for (auto& motion : ECS::registry<Motion>.components)
+//            {
+//                // draw a cross at the position of all objects
+//
+//                auto scale_horizontal_line = motion.scale;
+//                scale_horizontal_line.y *= 0.1f;
+//                auto scale_vertical_line = motion.scale;
+//                scale_vertical_line.x *= 0.1f;
+//                DebugSystem::createLine(motion.position, scale_horizontal_line);
+//                DebugSystem::createLine(motion.position, scale_vertical_line);
 //            }
-//        }
+
+
 
 
         }
-
 
 
     // for (auto [i, motion_i] : enumerate(motion_container.components)) // in c++ 17 we will be able to do this instead of the next three lines
@@ -199,7 +229,7 @@ void PhysicsSystem::step(float elapsed_ms, vec2 window_size_in_game_units, std::
 void PhysicsSystem::on_key_click(int key, int action) {
     if (action == GLFW_PRESS && key == GLFW_KEY_P)
     {
-        should_pause = !should_pause;
+        //should_pause = !should_pause;
     }
 }
 

@@ -324,6 +324,13 @@ void BattleWorldSystem::on_key(int key, int, int action, int mod) {
     if (action == GLFW_PRESS && key == GLFW_KEY_U)
     {
         should_place = !should_place;
+        //physicsSystem->should_pause = should_place;
+    }
+
+    if (action == GLFW_PRESS && key == GLFW_KEY_P)
+    {
+        physicsSystem->should_pause = !physicsSystem->should_pause;
+        should_place = physicsSystem->should_pause;
     }
     // Debugging
     if (key == GLFW_KEY_B)
@@ -360,7 +367,7 @@ void BattleWorldSystem::on_mouse_click(int button, int action, int mods) {
         auto gridWidth = (floor((winWidth - 20) / grid.size())) / 2;
         auto gridHeight = (floor((winWidth - 20) / grid[0].size())) / 2;
         //auto& selected_unit = ECS::registry<Unit>.entities[0];
-        if (should_place) {
+        if (should_place && physicsSystem->should_pause) {
             if (action == GLFW_PRESS) {
                 for (auto entity : ECS::registry<Property>.entities) {
                     auto &motion = ECS::registry<Motion>.get(entity);
@@ -375,9 +382,6 @@ void BattleWorldSystem::on_mouse_click(int button, int action, int mods) {
                         glfwGetCursorPos(window, &xpos, &ypos);
                         motion.position.x = xpos;
                         motion.position.y = ypos;
-//                        vec2 tri_pos = {(motion.position.x-property.init_pos.x)/2, (motion.position.y-property.init_pos.y)/2};
-//
-//                        DebugSystem::createDirectTri(motion.position, {100,100});
 
                         break;
                     }
@@ -395,6 +399,45 @@ void BattleWorldSystem::on_mouse_click(int button, int action, int mods) {
                         if (dis_x > gridWidth || dis_y > gridHeight) {
 
                             property.selected = false;
+                            property.selected_release = true;
+                        } else {
+                            for (int i = 0; i < grid[0].size(); i++) {
+                                for (int j = 0; j < grid[0].size(); j++) {
+                                    grid_pos_x = std::get<0>(grid[i][j]);
+                                    grid_pos_y = std::get<1>(grid[i][j]);
+                                    glfwGetCursorPos(window, &xpos, &ypos);
+                                    dis_x = abs(xpos - grid_pos_x);
+                                    dis_y = abs(ypos - grid_pos_y);
+                                    if (dis_x < gridWidth && dis_y < gridHeight) {
+                                        motion.position.x = grid_pos_x;
+                                        motion.position.y = grid_pos_y;
+                                        
+                                        DebugSystem::in_debug_mode = false;
+                                        property.selected = false;
+                                        property.selected_release = true;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
+
+
+                    }
+                }
+            }else if(action == GLFW_REPEAT){
+                for (auto entity : ECS::registry<Unit>.entities) {
+                    auto &property = ECS::registry<Property>.get(entity);
+                    if (property.selected) {
+                        auto &motion = ECS::registry<Motion>.get(entity);
+                        int grid_pos_x = std::get<0>(grid[grid[0].size() - 1][0]);
+                        int grid_pos_y = std::get<1>(grid[0][grid[0].size() - 1]);
+                        glfwGetCursorPos(window, &xpos, &ypos);
+                        auto dis_x = xpos - grid_pos_x;
+                        auto dis_y = ypos - grid_pos_y;
+                        if (dis_x > gridWidth || dis_y > gridHeight) {
+
+                            property.selected = false;
+                            property.selected_release = true;
                         } else {
                             for (int i = 0; i < grid[0].size(); i++) {
                                 for (int j = 0; j < grid[0].size(); j++) {
@@ -407,16 +450,9 @@ void BattleWorldSystem::on_mouse_click(int button, int action, int mods) {
                                         motion.position.x = grid_pos_x;
                                         motion.position.y = grid_pos_y;
 
-
-                                        //Draw the move trajectory
-
-                                        vec2 tri_pos = {(motion.position.x-property.init_pos.x)/2, (motion.position.y-property.init_pos.y)/2};
-
-                                        DebugSystem::createDirectTri(tri_pos, {100,100});
-
-
                                         DebugSystem::in_debug_mode = false;
-                                        property.selected = false;
+                                        //property.selected = false;
+                                        property.selected_release = true;
                                         break;
                                     }
                                 }
@@ -426,11 +462,9 @@ void BattleWorldSystem::on_mouse_click(int button, int action, int mods) {
 
                     }
                 }
-
-
             }
-        } else {
-            if (action==GLFW_PRESS && xpos > 30.f && xpos < 570.f && ypos > 30.f && ypos < 570.f) {
+        } else if (!should_place && physicsSystem->should_pause){
+            if (action==GLFW_PRESS && xpos > std::get<0>(grid[0][0]) && xpos < std::get<0>(grid[grid[0].size() - 1][0]) && ypos > std::get<1>(grid[0][0]) && ypos < std::get<1>(grid[grid[0].size() - 1][grid[0].size() - 1])) {
                 unitFactory.create_unit({xpos, ypos}, UnitFactory::curType, vec2((xpos - 30)/30, (ypos - 30)/30));
             }
         }

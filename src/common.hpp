@@ -74,6 +74,7 @@ struct Property {
 	int isEnemy = ALLY;
 	ECS::Entity target;
 	bool selected = false;
+	bool selected_release = false;
 	vec2 init_pos={0,0};
 
 	int attackRangeScale = 1; // This is only for M2, will use attack Range for later 

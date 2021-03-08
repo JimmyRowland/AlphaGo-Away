@@ -67,7 +67,7 @@ namespace DebugSystem
 	}
 
 	//Everytime when you move a unit, it will draw the move trajectory for you
-    void createDirectTri(vec2 position, vec2 scale) {
+    void createDirectTri(vec2 position, vec2 scale,float angle) {
         auto entity = ECS::Entity();
 
         std::string key = "direct_triangle";
@@ -82,23 +82,22 @@ namespace DebugSystem
             v.position = {-0.5,-0.5,z};
             v.color = red;
             resource.mesh.vertices.push_back(v);
-            v.position = { -0.5,0.5,z };
-            v.color = red;
-            resource.mesh.vertices.push_back(v);
-            v.position = { 0.5,0.5,z };
-            v.color = red;
-            resource.mesh.vertices.push_back(v);
-            v.position = { 0.5,-0.5,z };
+
+            v.position = { 0.5,0,z };
             v.color = red;
             resource.mesh.vertices.push_back(v);
 
+            v.position = { -0.5,0.5,z };
+            v.color = red;
+            resource.mesh.vertices.push_back(v);
+
+
+
             // Two triangles
             resource.mesh.vertex_indices.push_back(0);
-            resource.mesh.vertex_indices.push_back(1);
-            resource.mesh.vertex_indices.push_back(3);
-            resource.mesh.vertex_indices.push_back(1);
             resource.mesh.vertex_indices.push_back(2);
-            resource.mesh.vertex_indices.push_back(3);
+            resource.mesh.vertex_indices.push_back(1);
+
 
 
             RenderSystem::createColoredMesh(resource, "colored_mesh");
@@ -110,7 +109,7 @@ namespace DebugSystem
         //mesh_ref.depth = -1;
         // Create motion
         auto& motion = ECS::registry<Motion>.emplace(entity);
-        motion.angle = 0.f;
+        motion.angle = angle;
         motion.velocity = { 0, 0 };
         motion.position = position;
         motion.scale = scale;
