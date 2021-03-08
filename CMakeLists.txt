@@ -41,8 +41,6 @@ set_target_properties(${PROJECT_NAME} PROPERTIES ENABLE_EXPORTS 0)
 
 # External header-only libraries in the ext/
 target_include_directories(${PROJECT_NAME} PUBLIC ext/stb_image/)
-#target_include_directories(${PROJECT_NAME} PUBLIC ext/gl3w)
-target_include_directories(${PROJECT_NAME} PUBLIC ext/imgui_backend)
 
 # Find OpenGL
 find_package(OpenGL REQUIRED)
@@ -166,6 +164,7 @@ find_package(EnTT CONFIG REQUIRED)
 target_link_libraries(${PROJECT_NAME} PRIVATE EnTT::EnTT)
 find_package(gl3w CONFIG REQUIRED)
 target_link_libraries(${PROJECT_NAME}  PRIVATE unofficial::gl3w::gl3w)
+
 
 target_link_libraries(${PROJECT_NAME} PUBLIC ${GLFW_LIBRARIES} ${SDL2_LIBRARIES} ${SDL2MIXER_LIBRARIES} glm::glm)
 

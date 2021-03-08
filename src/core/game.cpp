@@ -159,7 +159,7 @@ void Game::on_key(int key, int, int action, int mod)
 	// Debugging
 	if (action == GLFW_RELEASE && key == GLFW_KEY_D){
         DebugSystem::in_debug_mode = !DebugSystem::in_debug_mode;
-        is_debug = DebugSystem::in_debug_mode;
+        show_imgui = DebugSystem::in_debug_mode;
 	}
 
 	// Control the current speed with `<` `>`
@@ -296,7 +296,7 @@ void Game::init_grid() {
 }
 
 void Game::imgui(){
-    if(is_debug) level_selection_menu([&](){on_select_sandbox();});
+    if(show_imgui) level_selection_menu([&](){on_select_sandbox();});
 }
 
 void Game::on_select_sandbox(){

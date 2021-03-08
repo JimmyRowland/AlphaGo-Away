@@ -91,7 +91,7 @@ private:
 	std::uniform_real_distribution<float> uniform_dist; // number between 0..1
 	MapState mapState;
     Level level = Level::sandbox;
-    bool is_debug = false;
+    bool show_imgui = false;
 
     void imgui();
 
