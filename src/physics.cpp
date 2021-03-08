@@ -67,6 +67,9 @@ void PhysicsSystem::step(float elapsed_ms, vec2 window_size_in_game_units, std::
         if (ECS::registry<Property>.has(entity)) {
             Property& property = ECS::registry<Property>.get(entity);
             if (ECS::registry<Motion>.has(property.target)) {
+                if (motion.state != 2) {
+                    motion.state = 1;
+                }
                 Motion& motion_j = ECS::registry<Motion>.get(property.target);
                 vec2 acceleration = (motion_j.position - motion.position) * vec2(0.1, 0.1);
                 motion.velocity += acceleration;

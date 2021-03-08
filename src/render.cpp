@@ -32,6 +32,8 @@ void RenderSystem::drawTexturedMesh(ECS::Entity entity, const mat3& projection)
 	GLint transform_uloc = glGetUniformLocation(texmesh.effect.program, "transform");
 	GLint projection_uloc = glGetUniformLocation(texmesh.effect.program, "projection");
     GLint frame_uloc = glGetUniformLocation(texmesh.effect.program, "frame");
+    GLint anime_state_uloc = glGetUniformLocation(texmesh.effect.program, "anime_state");
+    GLuint dead_timer_uloc = glGetUniformLocation(texmesh.effect.program, "darken_factor");
 	gl_has_errors();
 
 	// Setting vertex and index buffers
@@ -100,6 +102,8 @@ void RenderSystem::drawTexturedMesh(ECS::Entity entity, const mat3& projection)
 	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform.mat);
 	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
     glUniform1i(frame_uloc, ((int) (floor(frame_num)) % 6));
+    glUniform1f(dead_timer_uloc, motion.darken_factor);
+    glUniform1i(anime_state_uloc, motion.state);
 	gl_has_errors();
 
 	// Drawing of num_indices/3 triangles specified in the index buffer
