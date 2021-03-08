@@ -4,12 +4,10 @@
 
 #ifndef ALPHAGO_AWAY_UNITS_HPP
 #define ALPHAGO_AWAY_UNITS_HPP
-struct GroundUnit{
-
-};
-struct RangedUnit{
-
-};
+struct Terminator{};
+struct Archer{};
+struct Monitor{};
+struct Healer{};
 struct Projectile{
 
 };

@@ -1,8 +1,5 @@
 // Header
 #include "game.hpp"
-#include "system/physics.hpp"
-#include "logger/debug.hpp"
-#include "system/render_components.hpp"
 // stlib
 #include <cassert>
 #include <sstream>
@@ -59,7 +56,7 @@ Game::Game(ivec2 window_size_px) :
 
 	// Playing background music indefinitely
 	init_audio();
-	Mix_PlayMusic(background_music, -1);
+//	Mix_PlayMusic(background_music, -1);
 	std::cout << "Loaded music\n";
 }
 
@@ -103,7 +100,7 @@ void Game::update(float elapsed_ms, vec2 window_size_in_game_units)
 		// Reset timer
 		next_turtle_spawn = (TURTLE_DELAY_MS / 2) + uniform_dist(rng) * (TURTLE_DELAY_MS / 2);
 		// Create turtle
-		entt::entity entity = ground_unit_factory({0,0});
+		entt::entity entity = unit_factory({0, 0});
 		// Setting random initial position and constant velocity
 		auto& motion = m_registry.get<Motion>(entity);
         auto& position = m_registry.get<Position>(entity);
@@ -127,7 +124,7 @@ void Game::restart()
 
     init_level();
     init_grid();
-    ground_unit_factory(vec2(80,80));
+    unit_factory(vec2(80, 80));
 
 }
 
@@ -268,8 +265,8 @@ void Game::on_mouse_click(int button, int action, int mods) {
     }
 }
 
-TileType Game::imgui_tile_type_selection_to_tileType(){
-    switch(imgui_tile_type_selection){
+TileType Game::imgui_entity_selection_to_tileType(){
+    switch(imgui_entity_selection){
         case 1: return TileType::basic;
         case 2: return TileType::water;
         case 3: return TileType::forest;
@@ -277,15 +274,33 @@ TileType Game::imgui_tile_type_selection_to_tileType(){
     }
 }
 
+UnitType Game::imgui_entity_selection_to_unitType(){
+    switch(imgui_entity_selection){
+        case 4: return UnitType::human_terminator;
+        case 5: return UnitType::human_monitor;
+        case 6: return UnitType::human_archer;
+        case 7: return UnitType::human_healer;
+        case 8: return UnitType::ai_terminator;
+        case 9: return UnitType::ai_monitor;
+        case 10: return UnitType::ai_archer;
+        case 11: return UnitType::ai_healer;
+        default: assert(false);
+    }
+}
+
 void Game::sandbox_on_click(int button, int action, int mods){
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-        if(imgui_tile_type_selection > 0 && imgui_tile_type_selection < 4){
+        if(imgui_entity_selection > 0){
             auto cursor_position = get_cursor_position();
             ivec2 tile_index = get_tile_index(cursor_position);
-            if(tile_index.x > -1 && tile_index.x < tile_matrix_dimension.x && tile_index.y > -1 && tile_index.y < tile_matrix_dimension.y){
-                auto entity = get_tile_entity_at_position(cursor_position);
-                swap_tile_texture(entity, imgui_tile_type_selection_to_tileType());
-                mapState[ivec2(tile_index.x, tile_index.y)] = imgui_tile_type_selection_to_tileType();
+            if(!is_tile_out_of_index(tile_index)){
+                if(imgui_entity_selection < 4){
+                    auto entity = get_tile_entity_at_position(cursor_position);
+                    swap_tile_texture(entity, imgui_entity_selection_to_tileType());
+                    mapState[ivec2(tile_index.x, tile_index.y)] = imgui_entity_selection_to_tileType();
+                }else if(imgui_entity_selection < 12 && imgui_entity_selection>3){
+                    unit_factory(get_tile_center_from_index(tile_index), imgui_entity_selection_to_unitType());
+                }
             }
         }
     }
@@ -389,25 +404,63 @@ void Game::imgui_sandbox_menu(){
     {
         if (ImGui::Button("Save Level")) imgui_save_level();
         if (ImGui::Button("Load Level")) imgui_load_level();
-        if (ImGui::CollapsingHeader("tiles"))
-        {
-            ImGui::Text("Choose a tile type and click on map to change tiles");
-            ImGui::RadioButton("disabled", &imgui_tile_type_selection, 0);
-            ImGui::RadioButton("basic", &imgui_tile_type_selection, 1);
-            ImGuiImage(get_tile_texture_id(TileType::basic));
-            ImGui::RadioButton("water", &imgui_tile_type_selection, 2);
-            ImGuiImage(get_tile_texture_id(TileType::water));
-            ImGui::RadioButton("forest", &imgui_tile_type_selection, 3);
-            ImGuiImage(get_tile_texture_id(TileType::forest));
-        }
+        imgui_tile_menu();
+        imgui_enemy_menu();
     }
 };
+
+void Game::imgui_tile_menu(){
+    if (ImGui::CollapsingHeader("Tiles"))
+    {
+        ImGui::Text("Choose a tile type and click on map to change tiles");
+        ImGui::RadioButton("disabled", &imgui_entity_selection, 0);
+        ImGui::RadioButton("basic", &imgui_entity_selection, 1);
+        ImGuiImage(get_tile_texture_id(TileType::basic));
+        ImGui::RadioButton("water", &imgui_entity_selection, 2);
+        ImGuiImage(get_tile_texture_id(TileType::water));
+        ImGui::RadioButton("forest", &imgui_entity_selection, 3);
+        ImGuiImage(get_tile_texture_id(TileType::forest));
+    }
+}
+
+void Game::imgui_ally_menu(){
+    if (ImGui::CollapsingHeader("Ally"))
+    {
+        ImGui::Text("Choose an ally type and click on map to place the unit");
+        ImGui::RadioButton("disabled", &imgui_entity_selection, 0);
+        ImGui::RadioButton("terminator", &imgui_entity_selection, 4);
+//        ImGuiImage(get_tile_texture_id(TileType::basic));
+        ImGui::RadioButton("monitor", &imgui_entity_selection, 5);
+//        ImGuiImage(get_tile_texture_id(TileType::water));
+        ImGui::RadioButton("archer", &imgui_entity_selection, 6);
+//        ImGuiImage(get_tile_texture_id(TileType::forest));
+        ImGui::RadioButton("healer", &imgui_entity_selection, 7);
+//        ImGuiImage(get_tile_texture_id(TileType::forest));
+    }
+}
+
+void Game::imgui_enemy_menu(){
+    if (ImGui::CollapsingHeader("Enemy"))
+    {
+        ImGui::Text("Choose an enemy type and click on map to place the unit");
+        ImGui::RadioButton("disabled", &imgui_entity_selection, 0);
+        ImGui::RadioButton("terminator", &imgui_entity_selection, 8);
+//        ImGuiImage(get_tile_texture_id(TileType::basic));
+        ImGui::RadioButton("monitor", &imgui_entity_selection, 9);
+//        ImGuiImage(get_tile_texture_id(TileType::water));
+        ImGui::RadioButton("archer", &imgui_entity_selection, 10);
+//        ImGuiImage(get_tile_texture_id(TileType::forest));
+        ImGui::RadioButton("healer", &imgui_entity_selection, 11);
+//        ImGuiImage(get_tile_texture_id(TileType::forest));
+    }
+}
 
 void Game::imgui(){
     if(show_imgui){
         ImGui::Begin("Menu");
         imgui_help_menu();
         imgui_level_selection_menu();
+        imgui_ally_menu();
         imgui_sandbox_menu();
         ImGui::End();
     }

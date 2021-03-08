@@ -7,7 +7,10 @@
 #include "core/constants.hpp"
 #include "factories.hpp"
 #include "gui/gui.hpp"
-#include <nlohmann/json.hpp>
+#include "system/physics.hpp"
+#include "logger/debug.hpp"
+#include "system/render_components.hpp"
+
 // stlib
 #include <vector>
 #include <random>
@@ -21,6 +24,7 @@
 #include <utility>
 #include <entt/entt.hpp>
 #include "components/motion.hpp"
+#include <nlohmann/json.hpp>
 
 enum Level{
     sandbox,
@@ -103,15 +107,23 @@ private:
     void imgui();
     void imgui_level_selection_menu();
 
-    int imgui_tile_type_selection = 0;
+    int imgui_entity_selection = 0;
     void imgui_sandbox_menu();
 
-    TileType imgui_tile_type_selection_to_tileType();
+    TileType imgui_entity_selection_to_tileType();
 
     void imgui_save_level();
 
     void imgui_load_level();
 
     void load_grid(std::string);
+
+    void imgui_tile_menu();
+
+    void imgui_ally_menu();
+
+    void imgui_enemy_menu();
+
+    UnitType imgui_entity_selection_to_unitType();
 };
 

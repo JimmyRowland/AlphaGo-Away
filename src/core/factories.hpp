@@ -2,14 +2,24 @@
 #define ALPHAGO_AWAY_FACTORIES_HPP
 #include "core/common.hpp"
 #include <system/render.hpp>
-#include "factories.hpp"
 #include "registry.hpp"
 #include "components/units.hpp"
-#include "map.hpp"
+#include "core/map.hpp"
 #include "components/tile.hpp"
 #include "constants.hpp"
-entt::entity ground_unit_factory(vec2 pos, bool should_place_enemy = false);
+enum class UnitType : std::uint8_t {
+    human_terminator,
+    human_monitor,
+    human_archer,
+    human_healer,
+    ai_terminator,
+    ai_monitor,
+    ai_archer,
+    ai_healer,
+    empty,
+};
 
+entt::entity unit_factory(vec2 pos, UnitType unitType = UnitType::human_terminator);
 entt::entity tile_factory(vec2 pos, TileType tileType);
 void swap_tile_texture(entt::entity tile, TileType tileType);
 GLuint get_tile_texture_id(TileType tileType);
