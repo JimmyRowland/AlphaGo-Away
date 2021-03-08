@@ -53,7 +53,7 @@ ECS::Entity UnitFactory::create_unit(vec2 position, UnitType unittype = curType,
 				break;
 			case H_Archer:
 				resource = ShadedMesh();
-				RenderSystem::createSprite(resource, textures_path("long-d-001.png"), "textured");
+				RenderSystem::createSprite(resource, textures_path("walking_unit.png"), "anime_textured");
 				break;
 			case H_Healer:
 				resource = ShadedMesh();
@@ -81,6 +81,8 @@ ECS::Entity UnitFactory::create_unit(vec2 position, UnitType unittype = curType,
 
     // Store a reference to the potentially re-used mesh object (the value is stored in the resource cache)
     ECS::registry<ShadedMeshRef>.emplace(entity, resource);
+    ShadedMeshRef& mesh_ref = ECS::registry<ShadedMeshRef>.get(entity);
+    mesh_ref.depth = 1;
 
     // Setting initial motion values
     Motion& motion = ECS::registry<Motion>.emplace(entity);
@@ -88,7 +90,7 @@ ECS::Entity UnitFactory::create_unit(vec2 position, UnitType unittype = curType,
     motion.angle = 0.f;
     motion.velocity = { 0.f, 0.f };
 	motion.coor = coor;
-    motion.scale = resource.mesh.original_size * 150.f;
+    motion.scale = resource.mesh.original_size * 1.f;
     ECS::registry<Unit>.emplace(entity);
     Property& property = ECS::registry<Property>.emplace(entity);
 
@@ -101,35 +103,35 @@ ECS::Entity UnitFactory::create_unit(vec2 position, UnitType unittype = curType,
 
 	switch (unittype) {
 		case H_Terminator:
-            motion.scale = vec2(gridWidth*2.5, gridHeight*2.5);
+            motion.scale = vec2(100.f, 100.f);
             property.hp = 1000;
 			break;
 		case H_Monitor:
-			motion.scale = vec2(gridWidth, gridHeight);
+			motion.scale = vec2(100.f, 100.f);
 			property.hp = 1000;
 			break;
 		case H_Archer:
-			motion.scale = vec2(gridWidth*3, gridHeight*3);
+			motion.scale = vec2(100.f, 100.f);
 			property.attackRangeScale = 3;
 			break;
 		case H_Healer:
-			motion.scale = vec2(gridWidth*2.5, gridHeight*2.5);
+			motion.scale = vec2(100.f, 100.f);
 			property.attackRangeScale = 3;
 			break;
         case A_Terminator:
-            motion.scale = vec2(gridWidth*1.5, gridHeight*1.5);
+            motion.scale = vec2(100.f, 100.f);
             property.hp = 1000;
             break;
         case A_Monitor:
-            motion.scale = vec2(gridWidth, gridHeight);
+            motion.scale = vec2(100.f, 100.f);
             property.hp = 1000;
             break;
         case A_Archer:
-            motion.scale = vec2(gridWidth, gridHeight);
+            motion.scale = vec2(100.f, 100.f);
             property.attackRangeScale = 3;
             break;
         case A_Healer:
-            motion.scale = vec2(gridWidth, gridHeight);
+            motion.scale = vec2(100.f, 100.f);
             property.attackRangeScale = 3;
             break;
 	}
