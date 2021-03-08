@@ -366,6 +366,7 @@ void BattleWorldSystem::on_mouse_click(int button, int action, int mods) {
                         //Propertyed_unit = entity;
                         auto &property = ECS::registry<Property>.get(entity);
                         property.selected = true;
+                        property.init_pos = motion.position;
                         glfwGetCursorPos(window, &xpos, &ypos);
                         motion.position.x = xpos;
                         motion.position.y = ypos;
@@ -396,6 +397,15 @@ void BattleWorldSystem::on_mouse_click(int button, int action, int mods) {
                                     if (dis_x < gridWidth && dis_y < gridHeight) {
                                         motion.position.x = grid_pos_x;
                                         motion.position.y = grid_pos_y;
+
+
+                                        //Draw the move trajectory
+                                        vec2 tri_pos = {(motion.position.x-property.init_pos.x)/2, (motion.position.y-property.init_pos.y)/2};
+
+                                        DebugSystem::createDirectTri(tri_pos, {100,100});
+
+
+
                                         property.selected = false;
                                         break;
                                     }

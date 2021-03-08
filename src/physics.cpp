@@ -102,15 +102,30 @@ void PhysicsSystem::step(float elapsed_ms, vec2 window_size_in_game_units, std::
     // Visualization for debugging the position and scale of objects
     if (DebugSystem::in_debug_mode)
     {
-        for (auto& bb : ECS::registry<BoundingBox>.components)
-        {
-            // draw a cross at the position of all objects
-            for (auto& vertices : bb.transformed_vertices) {
-                auto dotSize = vec2(5.f, 5.f);
-                DebugSystem::createLine(vertices, dotSize);
+//        for (auto& bb : ECS::registry<BoundingBox>.components)
+//        {
+//            // draw a cross at the position of all objects
+//            for (auto& vertices : bb.transformed_vertices) {
+//                auto dotSize = vec2(5.f, 5.f);
+//                DebugSystem::createLine(vertices, dotSize);
+//            }
+//        }
+
+            for (auto& motion : ECS::registry<Motion>.components)
+            {
+                // draw a cross at the position of all objects
+
+                auto scale_horizontal_line = motion.scale;
+                scale_horizontal_line.y *= 0.1f;
+                auto scale_vertical_line = motion.scale;
+                scale_vertical_line.x *= 0.1f;
+                DebugSystem::createLine(motion.position, scale_horizontal_line);
+                DebugSystem::createLine(motion.position, scale_vertical_line);
             }
+
+
         }
-    }
+
 
     // for (auto [i, motion_i] : enumerate(motion_container.components)) // in c++ 17 we will be able to do this instead of the next three lines
     auto& motion_container = ECS::registry<Motion>;

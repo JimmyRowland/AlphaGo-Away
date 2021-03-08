@@ -9,6 +9,8 @@ namespace DebugSystem {
 	// draw a red line for debugging purposes
 	void createLine(vec2 position, vec2 size);
 
+
+    void createDirectTri(vec2 position, vec2 scale);
 	// !!! TODO A2: implement debugging of bounding boxes
 	void createBox(ECS::Entity entity, vec2 scale);
 
