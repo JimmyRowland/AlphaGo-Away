@@ -3,6 +3,7 @@
 
 #include <cstdint>
 #include "utils/grid.hpp"
+#include "constants.hpp"
 
 //Copied from entt pacman
 
@@ -14,4 +15,6 @@ using MapState = Grid<TileType>;
 
 MapState makeMapState();
 
+
+ivec2 get_tile_index(vec2 position);
 #endif

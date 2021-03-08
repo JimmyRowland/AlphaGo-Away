@@ -6,9 +6,6 @@
 #define ALPHAGO_AWAY_GUI_HPP
 #include "core/common.hpp"
 #include "core/game.hpp"
-
-//void render_gui(Game &game);
-void level_selection_menu(const std::function<void()>&);
-void init_assets();
+void ImGuiImage(GLuint texture_id);
 
 #endif //ALPHAGO_AWAY_GUI_HPP

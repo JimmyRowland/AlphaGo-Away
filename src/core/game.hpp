@@ -28,6 +28,10 @@ enum Level{
     level5,
     start_screen,
 };
+
+struct ImguiState{
+//    PlaceTileType place_tile_type = PlaceTileType::disabled;
+};
 // Container for all our entities and game logic. Individual rendering / update is 
 // deferred to the relative update() methods]
 class Game
@@ -94,7 +98,11 @@ private:
     bool show_imgui = false;
 
     void imgui();
+    void imgui_level_selection_menu();
 
-    void on_select_sandbox();
+    int imgui_tile_type_selection = 0;
+    void imgui_sandbox_menu();
+
+    TileType imgui_tile_type_selection_to_tileType();
 };
 

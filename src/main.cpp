@@ -13,6 +13,7 @@
 #include <imgui.h>
 #include "gui/imgui_impl_glfw.h"
 #include "gui/imgui_impl_opengl3.h"
+#include "gui/gui.hpp"
 
 using Clock = std::chrono::high_resolution_clock;
 static void glfw_error_callback(int error, const char* description)
@@ -49,7 +50,6 @@ int main()
     ImGui_ImplGlfw_InitForOpenGL(game.window, true);
     ImGui_ImplOpenGL3_Init(glsl_version);
     bool show_demo_window = true;
-    init_assets();
 
     game.restart();
 	// Variable timestep loop

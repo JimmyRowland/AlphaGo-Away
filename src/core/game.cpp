@@ -267,11 +267,26 @@ void Game::on_mouse_click(int button, int action, int mods) {
     }
 }
 
+TileType Game::imgui_tile_type_selection_to_tileType(){
+    switch(imgui_tile_type_selection){
+        case 1: return TileType::basic;
+        case 2: return TileType::water;
+        case 3: return TileType::forest;
+        default: assert(false);
+    }
+}
+
 void Game::sandbox_on_click(int button, int action, int mods){
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-        auto cursor_position = get_cursor_position();
-        auto entity = get_tile_entity_at_position(cursor_position);
-        swap_tile_texture(entity, TileType::basic);
+        if(imgui_tile_type_selection > 0 && imgui_tile_type_selection < 4){
+            auto cursor_position = get_cursor_position();
+            ivec2 tile_index = get_tile_index(cursor_position);
+            if(tile_index.x > -1 && tile_index.x < tile_matrix_dimension.x && tile_index.y > -1 && tile_index.y < tile_matrix_dimension.y){
+                auto entity = get_tile_entity_at_position(cursor_position);
+                swap_tile_texture(entity, imgui_tile_type_selection_to_tileType());
+                mapState[ivec2(tile_index.x, tile_index.y)] = imgui_tile_type_selection_to_tileType();
+            }
+        }
     }
 }
 
@@ -295,10 +310,70 @@ void Game::init_grid() {
     }
 }
 
-void Game::imgui(){
-    if(show_imgui) level_selection_menu([&](){on_select_sandbox();});
+
+namespace {
+    void imgui_help_menu(){
+        if (ImGui::CollapsingHeader("Help"))
+        {
+            ImGui::Text("ABOUT THIS DEMO:");
+            ImGui::BulletText("Sections below are demonstrating many aspects of the library.");
+            ImGui::BulletText("The \"Examples\" menu above leads to more demo contents.");
+            ImGui::BulletText("The \"Tools\" menu above gives access to: About Box, Style Editor,\n"
+                              "and Metrics/Debugger (general purpose Dear ImGui debugging tool).");
+            ImGui::Separator();
+
+            ImGui::Text("PROGRAMMER GUIDE:");
+            ImGui::BulletText("See the ShowDemoWindow() code in imgui_demo.cpp. <- you are here!");
+            ImGui::BulletText("See comments in imgui.cpp.");
+            ImGui::BulletText("See example applications in the examples/ folder.");
+            ImGui::BulletText("Read the FAQ at http://www.dearimgui.org/faq/");
+            ImGui::BulletText("Set 'io.ConfigFlags |= NavEnableKeyboard' for keyboard controls.");
+            ImGui::BulletText("Set 'io.ConfigFlags |= NavEnableGamepad' for gamepad controls.");
+            ImGui::Separator();
+
+            ImGui::Text("USER GUIDE:");
+            ImGui::ShowUserGuide();
+        }
+    }
 }
 
-void Game::on_select_sandbox(){
-    level = Level::sandbox;
+void Game::imgui_level_selection_menu(){
+    if (ImGui::CollapsingHeader("Select a level"))
+    {
+        if (ImGui::Button("Sandbox")) level = Level::sandbox;
+        if (ImGui::Button("level1")) level = Level::level1;
+        if (ImGui::Button("level2")) level = Level::level2;
+        if (ImGui::Button("level3")) level = Level::level3;
+        if (ImGui::Button("level4")) level = Level::level4;
+        if (ImGui::Button("level5")) level = Level::level5;
+        if (ImGui::Button("Start Screen")) level = Level::start_screen;
+    }
+};
+
+void Game::imgui_sandbox_menu(){
+    if (level == Level::sandbox && ImGui::CollapsingHeader("sandbox"))
+    {
+        if (ImGui::CollapsingHeader("tiles"))
+        {
+            ImGui::Text("Choose a tile type and click on map to change tiles");
+            ImGui::RadioButton("disabled", &imgui_tile_type_selection, 0);
+            ImGui::RadioButton("basic", &imgui_tile_type_selection, 1);
+            ImGuiImage(get_tile_texture_id(TileType::basic));
+            ImGui::RadioButton("water", &imgui_tile_type_selection, 2);
+            ImGuiImage(get_tile_texture_id(TileType::water));
+            ImGui::RadioButton("forest", &imgui_tile_type_selection, 3);
+            ImGuiImage(get_tile_texture_id(TileType::forest));
+        }
+    }
+};
+
+void Game::imgui(){
+    if(show_imgui){
+        ImGui::Begin("Menu");
+        imgui_help_menu();
+        imgui_level_selection_menu();
+        imgui_sandbox_menu();
+        ImGui::End();
+    }
 }
+

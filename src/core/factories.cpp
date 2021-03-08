@@ -68,7 +68,13 @@ entt::entity tile_factory(vec2 pos, TileType tileType){
 void swap_tile_texture(entt::entity entity, TileType tileType){
     auto& tile_comp = m_registry.get<Tile>(entity);
     if(tile_comp.type != tileType){
+        tile_comp.type = tileType;
         ShadedMesh& resource = create_tile_mesh_resource(tileType);
         m_registry.replace<ShadedMeshRef>(entity, resource);
     }
+};
+
+GLuint get_tile_texture_id(TileType tileType){
+    ShadedMesh& resource = create_tile_mesh_resource(tileType);
+    return resource.texture.texture_id;
 };

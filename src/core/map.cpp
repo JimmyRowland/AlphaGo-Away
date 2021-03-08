@@ -63,3 +63,7 @@ MapState makeMapState() {
   stateStr(state, str);
   return state;
 }
+
+ivec2 get_tile_index(vec2 position){
+    return ivec2(floor(position.x / tile_size.x), floor(position.y / tile_size.y));
+}
