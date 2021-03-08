@@ -88,14 +88,11 @@ private:
 
 	// Game state
 	float current_speed;
-    //TODO remove
-    float next_turtle_spawn;
 	
 	// music references
 	Mix_Music* background_music;
-    //TODO remove
-    Mix_Chunk* salmon_dead_sound;
-	Mix_Chunk* salmon_eat_sound;
+
+    bool has_battle_started;
 
 	// C++ random number generator
 	std::default_random_engine rng;
@@ -128,5 +125,7 @@ private:
     UnitType imgui_entity_selection_to_unitType();
 
     void init_unit_grid();
+
+    void imgui_battle_control_menu();
 };
 

@@ -12,8 +12,7 @@ const size_t TURTLE_DELAY_MS = 2000;
 // Create the fish world
 // Note, this has a lot of OpenGL specific things, could be moved to the renderer; but it also defines the callbacks to the mouse and keyboard. That is why it is called here.
 Game::Game(ivec2 window_size_px) :
-	points(0),
-	next_turtle_spawn(0.f)
+	points(0)
 {
 	// Seeding rng with random device
 	rng = std::default_random_engine(std::random_device()());
@@ -102,13 +101,10 @@ void Game::restart()
 {
 	std::cout << "Restarting\n";
 	current_speed = 1.f;
-
-
-
+    has_battle_started = false;
     init_level();
     init_map_grid();
     init_unit_grid();
-
 }
 
 // Compute collisions between entities
@@ -361,6 +357,14 @@ void Game::imgui_level_selection_menu(){
     }
 };
 
+void Game::imgui_battle_control_menu(){
+    if (ImGui::CollapsingHeader("Battle"))
+    {
+        if (ImGui::Button("Start battle")) has_battle_started = true;
+        if (ImGui::Button("Restart level")) restart();
+    }
+};
+
 void Game::imgui_save_level(){
     std::string map;
     for(int j = 0; j < tile_matrix_dimension.y; j++){
@@ -453,6 +457,7 @@ void Game::imgui_enemy_menu(){
 void Game::imgui(){
     if(show_imgui){
         ImGui::Begin("Menu");
+        imgui_battle_control_menu();
         imgui_help_menu();
         imgui_level_selection_menu();
         imgui_ally_menu();
