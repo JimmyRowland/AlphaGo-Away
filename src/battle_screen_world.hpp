@@ -52,6 +52,7 @@ public:
     bool is_over() const;
     // OpenGL window handle
     GLFWwindow* window;
+    bool should_place = false;
 private:
     // Input callback functions
     void on_key(int key, int, int action, int mod);
@@ -68,6 +69,7 @@ private:
     
     int state = 0;
     ECS::Entity background;
+
     ECS::Entity battle_background;
     bool grid_initialized = false;
     // counter to update background frame
@@ -78,6 +80,16 @@ private:
     ECS::Entity button_play;
     ECS::Entity button_help;
     ECS::Entity button_quit;
+
+    ECS::Entity u1;
+    ECS::Entity human_s_intro;
+    ECS::Entity human_l_intro;
+    ECS::Entity human_t_intro;
+    ECS::Entity human_h_intro;
+    ECS::Entity ai_s_intro;
+    ECS::Entity ai_l_intro;
+    ECS::Entity ai_t_intro;
+    ECS::Entity ai_h_intro;
 
 
     // Number of fish eaten by the salmon, displayed in the window title

@@ -82,7 +82,7 @@ ECS::Entity UnitFactory::create_unit(vec2 position, UnitType unittype = curType,
     // Store a reference to the potentially re-used mesh object (the value is stored in the resource cache)
     ECS::registry<ShadedMeshRef>.emplace(entity, resource);
     ShadedMeshRef& mesh_ref = ECS::registry<ShadedMeshRef>.get(entity);
-    mesh_ref.depth = 1;
+    mesh_ref.depth = 2;
 
     // Setting initial motion values
     Motion& motion = ECS::registry<Motion>.emplace(entity);
@@ -107,11 +107,11 @@ ECS::Entity UnitFactory::create_unit(vec2 position, UnitType unittype = curType,
             property.hp = 1000;
 			break;
 		case H_Monitor:
-			motion.scale = vec2(100.f, 100.f);
+			motion.scale = vec2(50.f, 50.f);
 			property.hp = 1000;
 			break;
 		case H_Archer:
-			motion.scale = vec2(100.f, 100.f);
+			motion.scale = vec2(50.f, 50.f);
 			property.attackRangeScale = 3;
 			break;
 		case H_Healer:
@@ -119,19 +119,19 @@ ECS::Entity UnitFactory::create_unit(vec2 position, UnitType unittype = curType,
 			property.attackRangeScale = 3;
 			break;
         case A_Terminator:
-            motion.scale = vec2(100.f, 100.f);
+            motion.scale = vec2(50.f, 50.f);
             property.hp = 1000;
             break;
         case A_Monitor:
-            motion.scale = vec2(100.f, 100.f);
+            motion.scale = vec2(50.f, 50.f);
             property.hp = 1000;
             break;
         case A_Archer:
-            motion.scale = vec2(100.f, 100.f);
+            motion.scale = vec2(50.f, 50.f);
             property.attackRangeScale = 3;
             break;
         case A_Healer:
-            motion.scale = vec2(100.f, 100.f);
+            motion.scale = vec2(50.f, 50.f);
             property.attackRangeScale = 3;
             break;
 	}

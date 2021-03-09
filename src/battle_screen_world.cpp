@@ -14,7 +14,7 @@
 // Game configuration
 // TODO: Add any needed contant here
 enum GRID_TYPE {
-    BASIC, WATER, FOREST
+    BASIC, WATER, FOREST, GROUND
 };
 std::vector<std::vector<std::tuple<int, int>>> grid(10, std::vector<std::tuple<int, int>>(10));
 
@@ -147,7 +147,44 @@ void BattleWorldSystem::init_grid() {
     }
     grid_initialized = true;
 
-    //ECS::Entity entity = Grid::createGrid({0.5, 0.5}, GRID_TYPE::BASIC, "basic_grid.png");
+    //To showcase the 8 types of unit (4 for human side, 4 for ai side), when click on each unit will popup the corresponding introduction.
+    // Will replace the hardcode way with imgui in M3
+    // M3 TO-DO: replace with imgui
+    
+     Grid::createGrid({gridWidth*1.5, winHeight/2-gridHeight*2}, GRID_TYPE::GROUND, "ground_grid.png",
+                                          vec2(gridWidth, gridHeight), std::make_pair(-100, -100));
+    Grid::createGrid({gridWidth*1.5, winHeight/2-gridHeight*1}, GRID_TYPE::GROUND, "ground_grid.png",
+                                          vec2(gridWidth, gridHeight), std::make_pair(-100, -100));
+    Grid::createGrid({gridWidth*1.5, winHeight/2}, GRID_TYPE::GROUND, "ground_grid.png",
+                                          vec2(gridWidth, gridHeight), std::make_pair(-100, -100));
+    Grid::createGrid({gridWidth*1.5, winHeight/2+gridHeight}, GRID_TYPE::GROUND, "ground_grid.png",
+                                          vec2(gridWidth, gridHeight), std::make_pair(-100, -100));
+    Grid::createGrid({winWidth-gridWidth*1.5, winHeight/2-gridHeight*2}, GRID_TYPE::GROUND, "ground_grid.png",
+                                      vec2(gridWidth, gridHeight), std::make_pair(-100, -100));
+     Grid::createGrid({winWidth-gridWidth*1.5, winHeight/2-gridHeight}, GRID_TYPE::GROUND, "ground_grid.png",
+                                      vec2(gridWidth, gridHeight), std::make_pair(-100, -100));
+   Grid::createGrid({winWidth-gridWidth*1.5, winHeight/2}, GRID_TYPE::GROUND, "ground_grid.png",
+                                      vec2(gridWidth, gridHeight), std::make_pair(-100, -100));
+    Grid::createGrid({winWidth-gridWidth*1.5, winHeight/2+gridHeight}, GRID_TYPE::GROUND, "ground_grid.png",
+                                      vec2(gridWidth, gridHeight), std::make_pair(-100, -100));
+
+     //u1 = unitFactory.create_unit({gridWidth*1.5, winHeight/2-gridHeight*2}, H_Terminator, {-100, -100});
+     u1 =  ScreenComponent::createScreenComponent({gridWidth*1.5, winHeight/2-gridHeight*2}, "close-001.png", {100,100}, 1, COMPONENT_TYPE::BASICBG);
+
+    ECS::Entity u2 = ScreenComponent::createScreenComponent({gridWidth*1.5, winHeight/2-gridHeight*1}, "tank-001.png", {50,50}, 1, COMPONENT_TYPE::BASICBG);
+
+    ECS::Entity u3 = ScreenComponent::createScreenComponent({gridWidth*1.5, winHeight/2}, "walk.png", {50,50}, 1, COMPONENT_TYPE::BASICBG);
+
+    ECS::Entity u4 = ScreenComponent::createScreenComponent({gridWidth*1.5, winHeight/2+gridHeight}, "recover-001.png", {100,100}, 1, COMPONENT_TYPE::BASICBG);
+
+    ECS::Entity u5 = ScreenComponent::createScreenComponent({winWidth-gridWidth*1.5, winHeight/2-gridHeight*2}, "ai_short-d.png", {50,50}, 1, COMPONENT_TYPE::BASICBG);
+
+    ECS::Entity u6 = ScreenComponent::createScreenComponent({winWidth-gridWidth*1.5, winHeight/2-gridHeight}, "ai_tank-2.png", {50,50}, 1, COMPONENT_TYPE::BASICBG);
+
+    ECS::Entity u7 = ScreenComponent::createScreenComponent({winWidth-gridWidth*1.5, winHeight/2}, "ai_long-d.png", {50,50}, 1, COMPONENT_TYPE::BASICBG);
+
+    ECS::Entity u8 = ScreenComponent::createScreenComponent({winWidth-gridWidth*1.5, winHeight/2+gridHeight}, "ai_recover.png", {50,50}, 1, COMPONENT_TYPE::BASICBG);
+
 }
 
 // Reset the world state to its initial state
@@ -192,6 +229,8 @@ void BattleWorldSystem::restart() {
 void BattleWorldSystem::step(float elapsed_ms, vec2 window_size_in_game_units) {
     int winWidth = window_size_in_game_units.x;
     int winHeight = window_size_in_game_units.y;
+    int gridWidth = floor((winWidth - 20) / grid.size());
+    int gridHeight = floor((winWidth - 20) / grid[0].size());
     if (state == 0) {
         frame += 0.11;
         int bg_num = ((int) floor(frame)) % 32;
@@ -215,8 +254,8 @@ void BattleWorldSystem::step(float elapsed_ms, vec2 window_size_in_game_units) {
             init_grid();
             int winWidth, winHeight;
             glfwGetWindowSize(window, &winWidth, &winHeight);
-            int gridWidth = floor((winWidth - 20) / grid.size());
-            int gridHeight = floor((winWidth - 20) / grid[0].size());
+            //int gridWidth = floor((winWidth - 20) / grid.size());
+            //int gridHeight = floor((winWidth - 20) / grid[0].size());
             unitFactory.setGridHeight(gridHeight);
             unitFactory.setGridWidth(gridWidth);
 
@@ -228,6 +267,12 @@ void BattleWorldSystem::step(float elapsed_ms, vec2 window_size_in_game_units) {
             //init_ai_2 = unitFactory.create_unit({ 38 + 9 * gridWidth, 30 + 4 * gridHeight }, A_Archer, { 10,5 });
 //            init_ai_3 = unitFactory.create_unit({ 38 + 9 * gridWidth, 30 + 5 * gridHeight }, H_Archer, { 10,5 });
         }
+    } else if ( state == 11 ) {
+
+
+    } else if ( state==10 ) {
+
+
     }
 
     
@@ -236,8 +281,8 @@ void BattleWorldSystem::step(float elapsed_ms, vec2 window_size_in_game_units) {
     std::stringstream title_ss;
     title_ss << "Points: " << points << " Gold: " << unitFactory.getLevelState().getGold() << " Health: " << unitFactory.getLevelState().getHealthTotal();
     glfwSetWindowTitle(window, title_ss.str().c_str());
-    int gridWidth = floor((window_size_in_game_units.x - 20) / grid.size());
-    int gridHeight = floor((window_size_in_game_units.y - 20) / grid[0].size());
+//    int gridWidth = floor((window_size_in_game_units.x - 20) / grid.size());
+   // int gridHeight = floor((window_size_in_game_units.y - 20) / grid[0].size());
     float boardWidth = 9 * gridWidth + 38;
     float boardHeight = 9 * gridHeight - 150;
     for (auto entity: ECS::view<Motion, Property>()) {
@@ -340,6 +385,17 @@ void BattleWorldSystem::on_key(int key, int, int action, int mod) {
         restart();
     }
 
+    if (action == GLFW_PRESS && key == GLFW_KEY_U)
+    {
+        should_place = !should_place;
+        //physicsSystem->should_pause = should_place;
+    }
+
+    if (action == GLFW_PRESS && key == GLFW_KEY_P)
+    {
+        physicsSystem->should_pause = !physicsSystem->should_pause;
+        should_place = physicsSystem->should_pause;
+    }
     // Debugging
     if (key == GLFW_KEY_B)
         DebugSystem::in_debug_mode = (action != GLFW_RELEASE);
@@ -367,15 +423,16 @@ void BattleWorldSystem::on_mouse_move(vec2 mouse_pos) {
 }
 
 void BattleWorldSystem::on_mouse_click(int button, int action, int mods) {
+    int winWidth, winHeight;
+    glfwGetWindowSize(window, &winWidth, &winHeight);
+    auto gridWidth = (floor((winWidth - 20) / grid.size())) / 2;
+    auto gridHeight = (floor((winWidth - 20) / grid[0].size())) / 2;
     if (button == GLFW_MOUSE_BUTTON_LEFT) {
         double xpos, ypos;
         glfwGetCursorPos(window, &xpos, &ypos);
-        int winWidth, winHeight;
-        glfwGetWindowSize(window, &winWidth, &winHeight);
-        auto gridWidth = (floor((winWidth - 20) / grid.size())) / 2;
-        auto gridHeight = (floor((winWidth - 20) / grid[0].size())) / 2;
+
         //auto& selected_unit = ECS::registry<Unit>.entities[0];
-        if (physicsSystem->should_pause) {
+        if (should_place && physicsSystem->should_pause) {
             if (action == GLFW_PRESS) {
                 for (auto entity : ECS::registry<Property>.entities) {
                     auto &motion = ECS::registry<Motion>.get(entity);
@@ -384,10 +441,13 @@ void BattleWorldSystem::on_mouse_click(int button, int action, int mods) {
                     if (dis_x < gridWidth && dis_y < gridHeight) {
                         //Propertyed_unit = entity;
                         auto &property = ECS::registry<Property>.get(entity);
+                        DebugSystem::in_debug_mode = true;
                         property.selected = true;
+                        property.init_pos = motion.position;
                         glfwGetCursorPos(window, &xpos, &ypos);
                         motion.position.x = xpos;
                         motion.position.y = ypos;
+
                         break;
                     }
                 }
@@ -404,6 +464,7 @@ void BattleWorldSystem::on_mouse_click(int button, int action, int mods) {
                         if (dis_x > gridWidth || dis_y > gridHeight) {
 
                             property.selected = false;
+                            property.selected_release = true;
                         } else {
                             for (int i = 0; i < grid[0].size(); i++) {
                                 for (int j = 0; j < grid[0].size(); j++) {
@@ -415,7 +476,10 @@ void BattleWorldSystem::on_mouse_click(int button, int action, int mods) {
                                     if (dis_x < gridWidth && dis_y < gridHeight) {
                                         motion.position.x = grid_pos_x;
                                         motion.position.y = grid_pos_y;
+                                        
+                                        DebugSystem::in_debug_mode = false;
                                         property.selected = false;
+                                        property.selected_release = true;
                                         break;
                                     }
                                 }
@@ -425,13 +489,169 @@ void BattleWorldSystem::on_mouse_click(int button, int action, int mods) {
 
                     }
                 }
+            }else if(action == GLFW_REPEAT){
+                for (auto entity : ECS::registry<Unit>.entities) {
+                    auto &property = ECS::registry<Property>.get(entity);
+                    if (property.selected) {
+                        auto &motion = ECS::registry<Motion>.get(entity);
+                        int grid_pos_x = std::get<0>(grid[grid[0].size() - 1][0]);
+                        int grid_pos_y = std::get<1>(grid[0][grid[0].size() - 1]);
+                        glfwGetCursorPos(window, &xpos, &ypos);
+                        auto dis_x = xpos - grid_pos_x;
+                        auto dis_y = ypos - grid_pos_y;
+                        if (dis_x > gridWidth || dis_y > gridHeight) {
+
+                            property.selected = false;
+                            property.selected_release = true;
+                        } else {
+                            for (int i = 0; i < grid[0].size(); i++) {
+                                for (int j = 0; j < grid[0].size(); j++) {
+                                    grid_pos_x = std::get<0>(grid[i][j]);
+                                    grid_pos_y = std::get<1>(grid[i][j]);
+                                    glfwGetCursorPos(window, &xpos, &ypos);
+                                    dis_x = abs(xpos - grid_pos_x);
+                                    dis_y = abs(ypos - grid_pos_y);
+                                    if (dis_x < gridWidth && dis_y < gridHeight) {
+                                        motion.position.x = grid_pos_x;
+                                        motion.position.y = grid_pos_y;
+
+                                        DebugSystem::in_debug_mode = false;
+                                        //property.selected = false;
+                                        property.selected_release = true;
+                                        break;
+                                    }
+                                }
+                            }
+                        }
 
 
+                    }
+                }
             }
-        } else {
-            if (action==GLFW_PRESS && xpos > 30.f && xpos < 570.f && ypos > 30.f && ypos < 570.f) {
+        } else if (!should_place && physicsSystem->should_pause){
+            if (action==GLFW_PRESS && xpos > std::get<0>(grid[0][0]) && xpos < std::get<0>(grid[grid[0].size() - 1][0]) && ypos > std::get<1>(grid[0][0]) && ypos < std::get<1>(grid[grid[0].size() - 1][grid[0].size() - 1])) {
                 unitFactory.create_unit({xpos, ypos}, UnitFactory::curType, vec2((xpos - 30)/30, (ypos - 30)/30));
             }
+        }
+
+        // Showcase the introduction of each units
+        if(state==10){
+            double xpos, ypos;
+            glfwGetCursorPos(window, &xpos, &ypos);
+
+             if ((xpos <= gridWidth * 2) && (xpos >= gridWidth) && (ypos <= (winHeight / 2 - 1.5 * gridHeight)) && (ypos >= (winHeight / 2 - 2.5 * gridHeight))){
+                state = 11;
+                ECS::ContainerInterface::remove_all_components_of(human_s_intro);
+
+            }else if ((xpos <= gridWidth * 2) && (xpos >= gridWidth) && (ypos <= (winHeight / 2 - 0.5 * gridHeight)) && (ypos >= (winHeight / 2 - 1.5 * gridHeight))
+                    ){
+                 state = 11;
+                 ECS::ContainerInterface::remove_all_components_of(human_t_intro);
+
+
+             }
+//             else if ((xpos <= gridWidth * 2) && (xpos >= gridWidth) && (ypos <= (winHeight / 2 +0.5 * gridHeight)) && (ypos >= (winHeight / 2 - 0.5 * gridHeight))
+//                    ){
+//                 state = 11;
+//                 ECS::ContainerInterface::remove_all_components_of(human_l_intro);
+//
+//
+//             }
+             else if ((xpos <= gridWidth * 2) && (xpos >= gridWidth) && (ypos <= (winHeight / 2 +1.5 * gridHeight)) && (ypos >= (winHeight / 2 +0.5 * gridHeight))
+                    ){
+                 state = 11;
+                 ECS::ContainerInterface::remove_all_components_of(human_h_intro);
+
+             }else if ((xpos <= winWidth-gridWidth ) && (xpos >= winWidth-gridWidth*2) && (ypos <= (winHeight / 2 - 1.5 * gridHeight)) && (ypos >= (winHeight / 2 - 2.5 * gridHeight))){
+                 state = 11;
+                 ECS::ContainerInterface::remove_all_components_of(ai_s_intro);
+
+             }else if ((xpos <= winWidth-gridWidth ) && (xpos >= winWidth-gridWidth*2) && (ypos <= (winHeight / 2 - 0.5 * gridHeight)) && (ypos >= (winHeight / 2 - 1.5 * gridHeight))
+                     ){
+                 state = 11;
+                 ECS::ContainerInterface::remove_all_components_of(ai_t_intro);
+
+
+             }
+             else if ((xpos <= winWidth-gridWidth ) && (xpos >= winWidth-gridWidth*2) && (ypos <= (winHeight / 2 +0.5 * gridHeight)) && (ypos >= (winHeight / 2 - 0.5 * gridHeight))
+                     ){
+                 state = 11;
+                 ECS::ContainerInterface::remove_all_components_of(ai_l_intro);
+
+
+             }
+             else if ((xpos <= winWidth-gridWidth ) && (xpos >= winWidth-gridWidth*2) && (ypos <= (winHeight / 2 +1.5 * gridHeight)) && (ypos >= (winHeight / 2 +0.5 * gridHeight))
+                     ){
+                 state = 11;
+                 ECS::ContainerInterface::remove_all_components_of(ai_h_intro);
+
+
+             }
+        }else if (state ==1 || state ==11){
+            double xpos, ypos;
+            glfwGetCursorPos(window, &xpos, &ypos);
+
+//            bool x_button = (xpos <= gridWidth * 2) && (xpos >= gridWidth);
+//            bool y_button =
+//                    (ypos <= (winHeight / 2 - 1.5 * gridHeight)) && (ypos >= (winHeight / 2 - 2.5 * gridHeight));
+
+          if ((xpos <= gridWidth * 2) && (xpos >= gridWidth) && (ypos <= (winHeight / 2 - 1.5 * gridHeight)) && (ypos >= (winHeight / 2 - 2.5 * gridHeight))){
+                state = 10;
+
+              human_s_intro = ScreenComponent::createScreenComponent({gridWidth*5, winHeight/2-gridHeight}, "human-s-intro.png", {winWidth/4, winHeight/4}, 10, COMPONENT_TYPE::BASICBG);
+
+       }else if ((xpos <= gridWidth * 2) && (xpos >= gridWidth) && (ypos <= (winHeight / 2 - 0.5 * gridHeight)) && (ypos >= (winHeight / 2 - 1.5 * gridHeight))
+              ){
+              state = 10;
+
+              human_t_intro = ScreenComponent::createScreenComponent({gridWidth*5, winHeight/2}, "human-t-intro.png", {winWidth/4, winHeight/4}, 10, COMPONENT_TYPE::BASICBG);
+
+
+          }
+//          else if ((xpos <= gridWidth * 2) && (xpos >= gridWidth) && (ypos <= (winHeight / 2 +0.5 * gridHeight)) && (ypos >= (winHeight / 2 - 0.5 * gridHeight))
+//                  ){
+//              state = 10;
+//
+//              human_l_intro = ScreenComponent::createScreenComponent({gridWidth*5, winHeight/2+gridHeight}, "human-l-intro.png", {winWidth/5, winHeight/5}, 10, COMPONENT_TYPE::BASICBG);
+//
+//
+//          }
+          else if ((xpos <= gridWidth * 2) && (xpos >= gridWidth) && (ypos <= (winHeight / 2 +1.5 * gridHeight)) && (ypos >= (winHeight / 2 +0.5 * gridHeight))
+                  ){
+              state = 10;
+
+              human_h_intro = ScreenComponent::createScreenComponent({gridWidth*5, winHeight/2+2*gridHeight}, "human-h-intro.png", {winWidth/4, winHeight/4}, 10, COMPONENT_TYPE::BASICBG);
+
+
+          } else if ((xpos <= winWidth-gridWidth ) && (xpos >= winWidth-gridWidth*2) && (ypos <= (winHeight / 2 - 1.5 * gridHeight)) && (ypos >= (winHeight / 2 - 2.5 * gridHeight))){
+              state = 10;
+
+              ai_s_intro = ScreenComponent::createScreenComponent({winWidth-gridWidth*5, winHeight/2-gridHeight}, "AI-S-Intro.png", {winWidth/4, winHeight/4}, 10, COMPONENT_TYPE::BASICBG);
+
+          }else if ((xpos <= winWidth-gridWidth ) && (xpos >= winWidth-gridWidth*2) && (ypos <= (winHeight / 2 - 0.5 * gridHeight)) && (ypos >= (winHeight / 2 - 1.5 * gridHeight))
+                  ){
+              state = 10;
+
+              ai_t_intro = ScreenComponent::createScreenComponent({winWidth-gridWidth*5, winHeight/2}, "AI-T-Intro.png", {winWidth/4, winHeight/4}, 10, COMPONENT_TYPE::BASICBG);
+
+
+          }
+          else if ((xpos <= winWidth-gridWidth ) && (xpos >= winWidth-gridWidth*2) && (ypos <= (winHeight / 2 +0.5 * gridHeight)) && (ypos >= (winHeight / 2 - 0.5 * gridHeight))
+                  ){
+              state = 10;
+
+              ai_l_intro = ScreenComponent::createScreenComponent({winWidth-gridWidth*5, winHeight/2+gridHeight}, "AI-L-Intro.png", {winWidth/4, winHeight/4}, 10, COMPONENT_TYPE::BASICBG);
+
+
+          }
+          else if ((xpos <= winWidth-gridWidth ) && (xpos >= winWidth-gridWidth*2) && (ypos <= (winHeight / 2 +1.5 * gridHeight)) && (ypos >= (winHeight / 2 +0.5 * gridHeight))
+                  ){
+              state = 10;
+
+              ai_h_intro = ScreenComponent::createScreenComponent({winWidth-gridWidth*5, winHeight/2+2*gridHeight}, "AI-H-Intro.png", {winWidth/4, winHeight/4}, 10, COMPONENT_TYPE::BASICBG);
+
+
+          }
         }
     }
     
@@ -449,6 +669,7 @@ void BattleWorldSystem::on_mouse_click(int button, int action, int mods) {
         }
         
     }
+
 }
 
 void BattleWorldSystem::on_collision(ECS::Entity entity_i, ECS::Entity entity_j) {
