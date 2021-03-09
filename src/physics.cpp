@@ -100,11 +100,13 @@ void PhysicsSystem::step(float elapsed_ms, vec2 window_size_in_game_units, std::
 
     // Check for collisions between all moving entities
     // for (auto [i, motion_i] : enumerate(motion_container.components)) // in c++ 17 we will be able to do this instead of the next three lines
+
     for (auto entity : ECS::view<Property, Motion>())
     {
         Motion& motion = ECS::registry<Motion>.get(entity);
         if (ECS::registry<Property>.has(entity)) {
             Property& property = ECS::registry<Property>.get(entity);
+            if(!property.sample){
             if (ECS::registry<Motion>.has(property.target)) {
                 Motion& motion_j = ECS::registry<Motion>.get(property.target);
                 vec2 acceleration = (motion_j.position - motion.position) * vec2(0.1, 0.1);
@@ -115,6 +117,7 @@ void PhysicsSystem::step(float elapsed_ms, vec2 window_size_in_game_units, std::
                     motion.velocity.y = sin(angle) * 40;
                 }
             }
+            }
         }
         if (motion.velocity.x > 0 && motion.scale.x > 0) {
             motion.scale.x *= -1;
@@ -122,16 +125,23 @@ void PhysicsSystem::step(float elapsed_ms, vec2 window_size_in_game_units, std::
         else if (motion.velocity.x < 0 && motion.scale.x < 0) {
             motion.scale.x *= -1;
         }
-
-        float step_seconds = 1.0f * (elapsed_ms / 1000.f);
-        motion.velocity = vec2(get_velocity_after_drag(motion.velocity.x), get_velocity_after_drag(motion.velocity.y));
-        motion.position += motion.velocity * step_seconds;
-        float grid_sq_width = std::get<0>(grid_dim) / std::get<1>(grid_dim);
-        float grid_sq_height = std::get<0>(grid_dim) / std::get<2>(grid_dim);
-        motion.gridPos = std::make_pair(
-            floor((motion.position.x - (window_size_in_game_units.x - std::get<0>(grid_dim))) / grid_sq_width),
-            floor((motion.position.y - (window_size_in_game_units.x - std::get<0>(grid_dim))) / grid_sq_height));
-        motion.gridPos = motion.gridPos;
+        if (ECS::registry<Property>.has(entity)) {
+            Property &property = ECS::registry<Property>.get(entity);
+            if (!property.sample) {
+                float step_seconds = 1.0f * (elapsed_ms / 1000.f);
+                motion.velocity = vec2(get_velocity_after_drag(motion.velocity.x),
+                                       get_velocity_after_drag(motion.velocity.y));
+                motion.position += motion.velocity * step_seconds;
+                float grid_sq_width = std::get<0>(grid_dim) / std::get<1>(grid_dim);
+                float grid_sq_height = std::get<0>(grid_dim) / std::get<2>(grid_dim);
+                motion.gridPos = std::make_pair(
+                        floor((motion.position.x - (window_size_in_game_units.x - std::get<0>(grid_dim))) /
+                              grid_sq_width),
+                        floor((motion.position.y - (window_size_in_game_units.x - std::get<0>(grid_dim))) /
+                              grid_sq_height));
+                motion.gridPos = motion.gridPos;
+            }
+        }
 
     }
 

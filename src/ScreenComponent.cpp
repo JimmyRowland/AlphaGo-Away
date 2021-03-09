@@ -30,6 +30,7 @@ ECS::Entity ScreenComponent::createScreenComponent(vec2 position, std::string te
     motion.scale = size;
     
     ECS::registry<ScreenComponent>.emplace(entity);
+
     
     switch (c_type) {
         case BUTTON:

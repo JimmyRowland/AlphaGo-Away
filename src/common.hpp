@@ -63,6 +63,7 @@ struct Motion {
 	int movable = 0;
 	vec2 coor = { 0,0 };
 	std::pair<int, int> gridPos = std::make_pair(0, 0);
+    bool sample_click = false;
 };
 
 struct Property {
@@ -75,6 +76,9 @@ struct Property {
 	ECS::Entity target;
 	bool selected = false;
 	bool selected_release = false;
+	// whether if it is a sample unit, if it is, we can never move it, since it is only for showcase
+	bool sample = false;
+	//bool sample_click = false;
 	vec2 init_pos={0,0};
 
 	int attackRangeScale = 1; // This is only for M2, will use attack Range for later 
