@@ -67,9 +67,9 @@ namespace {
             motion_i.velocity.y = sin(angle) * 40;
         }
         if (motion_i.velocity.x > 0 && position_i.scale.x > 0) {
-            position_i.scale.x *= -1;
+//            position_i.scale.x *= -1;
         } else if (motion_i.velocity.x < 0 && position_i.scale.x < 0) {
-            position_i.scale.x *= -1;
+//            position_i.scale.x *= -1;
         }
     }
 
@@ -104,7 +104,32 @@ namespace {
                 m_registry.destroy(entity_j);
             }
         }
-
+    }
+    
+    void boundry_checking(entt::entity entity){
+        auto &&[position, motion] = m_registry.get<Position, Motion>(entity);
+        if (position.position.y < map_y_min) {
+            position.position.y = map_y_min;
+            if (motion.velocity.y < 0) {
+                motion.velocity.y = 0;
+            }
+        } else if (position.position.y > map_y_max) {
+            position.position.y = map_y_max;
+            if (motion.velocity.y > 0) {
+                motion.velocity.y = 0;
+            }
+        }
+        if (position.position.x  < map_x_min) {
+            position.position.x = map_x_min;
+            if (motion.velocity.x < 0) {
+                motion.velocity.x = 0;
+            }
+        } else if (position.position.x > map_x_max) {
+            position.position.x = map_x_max;
+            if (motion.velocity.x > 0) {
+                motion.velocity.x = 0;
+            }
+        }
     }
 
 }
@@ -133,6 +158,7 @@ void physicsUpdate(float elapsed_ms, vec2 window_size_in_game_units) {
                 position.position += motion.velocity * step_seconds;
             }
             set_transformed_bounding_box(entity);
+            boundry_checking(entity);
         }
     }
 

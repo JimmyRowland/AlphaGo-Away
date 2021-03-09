@@ -49,7 +49,7 @@ int main()
     ImGui::StyleColorsDark();
     ImGui_ImplGlfw_InitForOpenGL(game.window, true);
     ImGui_ImplOpenGL3_Init(glsl_version);
-    bool show_demo_window = true;
+//    bool show_demo_window = true;
 
     game.restart();
 	// Variable timestep loop
@@ -62,8 +62,8 @@ int main()
         ImGui::NewFrame();
 
 
-        if (show_demo_window)
-            ImGui::ShowDemoWindow(&show_demo_window);
+//        if (show_demo_window)
+//            ImGui::ShowDemoWindow(&show_demo_window);
 
 
 
@@ -72,9 +72,9 @@ int main()
 		float elapsed_ms = static_cast<float>((std::chrono::duration_cast<std::chrono::microseconds>(now - t)).count()) / 1000.f;
 		t = now;
         DebugSystem::clearDebugComponents();
-        aiUpdate(elapsed_ms, window_size_in_game_units);
+
         game.update(elapsed_ms, window_size_in_game_units);
-        physicsUpdate(elapsed_ms, window_size_in_game_units);
+
         renderer.draw(window_size_in_game_units);
 	}
     ImGui_ImplGlfw_Shutdown();

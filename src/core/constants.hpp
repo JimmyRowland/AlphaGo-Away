@@ -9,8 +9,8 @@ constexpr ivec2 window_size_in_px = {1200, 800};
 constexpr vec2 window_size_in_game_units = { 1200, 800 };
 constexpr ivec2 tile_matrix_dimension = {15 , 10};
 constexpr vec2 tile_size = {80, 80};
-constexpr float map_x_min = 0;
-constexpr float map_x_max = tile_matrix_dimension.x*tile_size.x;
-constexpr float map_y_min = 0;
-constexpr float map_y_max = tile_matrix_dimension.y*tile_size.y;
+constexpr float map_x_min = tile_size.x/2;
+constexpr float map_x_max = tile_matrix_dimension.x*tile_size.x - tile_size.x/2;
+constexpr float map_y_min = tile_size.y/2;
+constexpr float map_y_max = tile_matrix_dimension.y*tile_size.y- tile_size.y/2;
 #endif //ALPHAGO_AWAY_CONSTANTS_HPP

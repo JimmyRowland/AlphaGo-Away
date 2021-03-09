@@ -7,5 +7,5 @@
 #include "core/common.hpp"
 #include "core/game.hpp"
 void ImGuiImage(GLuint texture_id);
-
+void ImGuiHelpImage(std::string screen_texture_path);
 #endif //ALPHAGO_AWAY_GUI_HPP

@@ -55,7 +55,7 @@ Game::Game(ivec2 window_size_px) :
 
 	// Playing background music indefinitely
 	init_audio();
-//	Mix_PlayMusic(background_music, -1);
+	Mix_PlayMusic(background_music, -1);
 	std::cout << "Loaded music\n";
 }
 
@@ -91,20 +91,32 @@ void Game::init_audio()
 // Update our game world
 void Game::update(float elapsed_ms, vec2 window_size_in_game_units)
 {
-
+    if(has_battle_started){
+        aiUpdate(elapsed_ms, window_size_in_game_units);
+        physicsUpdate(elapsed_ms, window_size_in_game_units);
+    }
     imgui();
 
 }
 
 // Reset the world state to its initial state
-void Game::restart()
+void Game::restart(Level level)
 {
-	std::cout << "Restarting\n";
-	current_speed = 1.f;
+
+    for(auto entity : m_registry.view<ShadedMeshRef>()){
+        m_registry.destroy(entity);
+    }
+    std::cout << "Restarting\n";
+    current_speed = 1.f;
     has_battle_started = false;
-    init_level();
-    init_map_grid();
-    init_unit_grid();
+
+    if(level == Level::start_screen){
+        loading_screen_factory();
+    }else{
+        init_level();
+        init_map_grid();
+        init_unit_grid();
+    }
 }
 
 // Compute collisions between entities
@@ -328,23 +340,10 @@ namespace {
         if (ImGui::CollapsingHeader("Help"))
         {
             ImGui::Text("ABOUT THIS DEMO:");
-            ImGui::BulletText("Sections below are demonstrating many aspects of the library.");
-            ImGui::BulletText("The \"Examples\" menu above leads to more demo contents.");
-            ImGui::BulletText("The \"Tools\" menu above gives access to: About Box, Style Editor,\n"
-                              "and Metrics/Debugger (general purpose Dear ImGui debugging tool).");
-            ImGui::Separator();
-
-            ImGui::Text("PROGRAMMER GUIDE:");
-            ImGui::BulletText("See the ShowDemoWindow() code in imgui_demo.cpp. <- you are here!");
-            ImGui::BulletText("See comments in imgui.cpp.");
-            ImGui::BulletText("See example applications in the examples/ folder.");
-            ImGui::BulletText("Read the FAQ at http://www.dearimgui.org/faq/");
-            ImGui::BulletText("Set 'io.ConfigFlags |= NavEnableKeyboard' for keyboard controls.");
-            ImGui::BulletText("Set 'io.ConfigFlags |= NavEnableGamepad' for gamepad controls.");
-            ImGui::Separator();
-
-            ImGui::Text("USER GUIDE:");
-            ImGui::ShowUserGuide();
+            ImGui::BulletText("Click ally dropdown and select a unit. Click map to add a unit");
+            ImGuiHelpImage("help/place_ally.png");
+            ImGui::BulletText("Click sandbox and then ally dropdown and select a unit. Click map to add a unit");
+            ImGuiHelpImage("help/place_enemy.png");
         }
     }
 }
@@ -352,13 +351,16 @@ namespace {
 void Game::imgui_level_selection_menu(){
     if (ImGui::CollapsingHeader("Select a level"))
     {
-        if (ImGui::Button("Sandbox")) level = Level::sandbox;
-        if (ImGui::Button("level1")) level = Level::level1;
-        if (ImGui::Button("level2")) level = Level::level2;
-        if (ImGui::Button("level3")) level = Level::level3;
-        if (ImGui::Button("level4")) level = Level::level4;
-        if (ImGui::Button("level5")) level = Level::level5;
-        if (ImGui::Button("Start Screen")) level = Level::start_screen;
+        if (ImGui::Button("Sandbox")) {
+            level = Level::sandbox;
+            restart(level);
+        }
+        if (ImGui::Button("level1")) { level = Level::level1;  restart(level);}
+        if (ImGui::Button("level2")) { level = Level::level2;  restart(level);}
+        if (ImGui::Button("level3")) { level = Level::level3;  restart(level);}
+        if (ImGui::Button("level4")) { level = Level::level4;  restart(level);}
+        if (ImGui::Button("level5")) { level = Level::level5;  restart(level);}
+        if (ImGui::Button("Start Screen")) { level = Level::start_screen; restart(level); }
     }
 };
 

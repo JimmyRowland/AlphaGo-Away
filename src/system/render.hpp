@@ -7,6 +7,7 @@
 #include "components/motion.hpp"
 #include "components/tile.hpp"
 #include "components/units.hpp"
+#include "components/ui.hpp"
 struct InstancedMesh;
 struct ShadedMesh;
 

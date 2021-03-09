@@ -155,6 +155,14 @@ namespace {
         position.scale = get_unit_scale(resource);
         UnitProperty &property = m_registry.emplace<UnitProperty>(entity);
     }
+
+    ShadedMesh& create_ui_mesh(std::string screen_texture_path){
+        std::string key = screen_texture_path;
+        ShadedMesh &resource = cache_resource(key);
+        if (resource.effect.program.resource == 0)
+            RenderSystem::createSprite(resource, textures_path(screen_texture_path), "textured");
+        return resource;
+    }
 }
 
 entt::entity unit_factory(vec2 pos, UnitType unitType) {
@@ -180,6 +188,28 @@ entt::entity tile_factory(vec2 pos, TileType tileType) {
     tile_comp.type = tileType;
     return entity;
 };
+
+void ui_factory(std::string texture_path, vec2 pos, vec2 size){
+    auto entity = m_registry.create();
+    m_registry.emplace<ShadedMeshRef>(entity, create_ui_mesh(texture_path));
+    auto &position = m_registry.emplace<Position>(entity);
+    position.position = pos;
+    position.angle = 0.f;
+    position.scale = size;
+    m_registry.emplace<ScreenComponent>(entity);
+    if(texture_path == "buttons/PlayButton.jpg"){
+        m_registry.emplace<ButtonComponent>(entity);
+    }
+}
+
+void loading_screen_factory(){
+    ui_factory( "gameTitle.png", {map_x_max/2, map_y_max/2- 160}, {360, 200});
+    ui_factory("buttons/PlayButton.jpg", {map_x_max/2, map_y_max/2 + 70}, {150, 70});
+    ui_factory("buttons/HelpButton.jpg", {map_x_max/2, map_y_max/2 + 160},  {150, 70});
+    ui_factory("buttons/QuitButton.jpg", {map_x_max/2, map_y_max/2+ 250},  {150, 70});
+    ui_factory( "BgScreens/frame_0_delay-0.11s.png", {map_x_max/2, map_y_max/2}, {map_x_max, map_y_max});
+
+}
 
 void swap_tile_texture(entt::entity entity, TileType tileType) {
     auto &tile_comp = m_registry.get<Tile>(entity);

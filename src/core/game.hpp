@@ -10,6 +10,7 @@
 #include "system/physics.hpp"
 #include "logger/debug.hpp"
 #include "system/render_components.hpp"
+#include "system/ai.hpp"
 
 // stlib
 #include <vector>
@@ -52,7 +53,7 @@ public:
 
 
 	// restart level
-    void restart();
+    void restart(Level level= Level::start_screen);
 
 	// Steps the game ahead by ms milliseconds
 	void update(float elapsed_ms, vec2 window_size_in_game_units);
@@ -100,6 +101,7 @@ private:
 	MapState mapState;
 	UnitMapState unitMapState;
     Level level = Level::sandbox;
+    bool is_paused = true;
     bool show_imgui = false;
 
     void imgui();
