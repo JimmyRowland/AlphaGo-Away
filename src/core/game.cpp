@@ -133,11 +133,14 @@ void Game::on_key(int key, int, int action, int mod)
 //		restart();
 	}
 
-	// Debugging
+//    game menu toggle
 	if (action == GLFW_RELEASE && key == GLFW_KEY_D){
-        DebugSystem::in_debug_mode = !DebugSystem::in_debug_mode;
-        show_imgui = DebugSystem::in_debug_mode;
+        show_imgui = !show_imgui;
 	}
+
+    // Debugging
+    if (key == GLFW_KEY_B)
+        DebugSystem::in_debug_mode = (action != GLFW_RELEASE);
 
 	// Control the current speed with `<` `>`
 	if (action == GLFW_RELEASE && (mod & GLFW_MOD_SHIFT) && key == GLFW_KEY_COMMA)

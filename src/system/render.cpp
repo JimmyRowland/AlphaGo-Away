@@ -184,17 +184,22 @@ void RenderSystem::draw(vec2 window_size_in_game_units)
 	// Draw all textured meshes that have a position and size component
 	for (entt::entity entity : m_registry.view<ShadedMeshRef, Tile>())
 	{
-		// Note, its not very efficient to access elements indirectly via the entity albeit iterating through all Sprites in sequence
         drawTexturedMesh(entity, projection_2D);
 		gl_has_errors();
 	}
 
     for (entt::entity entity : m_registry.view<ShadedMeshRef, UnitProperty>())
     {
-        // Note, its not very efficient to access elements indirectly via the entity albeit iterating through all Sprites in sequence
         drawTexturedMesh(entity, projection_2D);
         gl_has_errors();
     }
+
+    for (entt::entity entity : m_registry.view<ShadedMeshRef, DebugComponent>())
+    {
+        drawTexturedMesh(entity, projection_2D);
+        gl_has_errors();
+    }
+
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 	// Truely render to the screen

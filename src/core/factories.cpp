@@ -114,6 +114,38 @@ namespace {
         }
     }
 
+    void init_unit_bounding_box(entt::entity entity, UnitType unitType){
+        BoundingBox& boundingBox =m_registry.emplace<BoundingBox>(entity);
+        boundingBox.vertices = { vec2(-0.5, -0.5), vec2(0.5, -0.5), vec2(0.5, 0.5), vec2(-0.5, 0.5) };
+        switch (unitType) {
+            case UnitType::human_terminator:
+                boundingBox.vertices = { vec2(-0.1, -0.2), vec2(0.1, -0.2), vec2(0.2, 0.f), vec2(0.15, 0.3), vec2(-0.2, 0.3)};
+                return;
+            case UnitType::human_monitor:
+                return;
+            case UnitType::human_archer:
+                return ;
+            case UnitType::human_healer:
+                boundingBox.vertices = { vec2(-0.15, -0.25), vec2(0.1, -0.25), vec2(0.25, 0.1), vec2(0.25, 0.25), vec2(-0.15, 0.25) };
+                return ;
+            case UnitType::ai_terminator:
+                boundingBox.vertices = { vec2(-0.5, -0.1), vec2(-0.25, -0.5), vec2(0.3, -0.5), vec2(0.3, 0.5),
+                                         vec2(-0.25, 0.5), vec2(-0.5, 0.15) };
+                return ;
+            case UnitType::ai_monitor:
+                return ;
+            case UnitType::ai_archer:
+                boundingBox.vertices = { vec2(-0.5, -0.25), vec2(0.f, -0.5), vec2(0.5, -0.25),
+                                         vec2(0.5, 0.25), vec2(0.f, 0.5), vec2(-0.5, 0.25) };
+                return ;
+            case UnitType::ai_healer:
+                return;
+            default:
+                assert(false);
+                return;
+        }
+    }
+
     void init_unit(entt::entity entity, ShadedMesh &resource, vec2 pos, UnitType unitType){
         auto &motion = m_registry.emplace<Motion>(entity);
         motion.velocity = {0.f, 0.f};
@@ -130,6 +162,7 @@ entt::entity unit_factory(vec2 pos, UnitType unitType) {
     ShadedMesh &resource = create_unit_mesh_resource(unitType);
     m_registry.emplace<ShadedMeshRef>(entity, resource);
     init_unit_flag_components(entity, unitType);
+    init_unit_bounding_box(entity, unitType);
     init_unit(entity, resource, pos, unitType);
     return entity;
 };
