@@ -30,6 +30,8 @@ void RenderSystem::drawTexturedMesh(entt::entity entity, const mat3 &projection)
 
 	GLint transform_uloc = glGetUniformLocation(texmesh.effect.program, "transform");
 	GLint projection_uloc = glGetUniformLocation(texmesh.effect.program, "projection");
+    GLint frame_uloc = glGetUniformLocation(texmesh.effect.program, "frame");
+    GLint one_over_number_of_frame = glGetUniformLocation(texmesh.effect.program, "one_over_number_of_frame");
 	gl_has_errors();
 
 	// Setting vertex and index buffers
@@ -80,6 +82,8 @@ void RenderSystem::drawTexturedMesh(entt::entity entity, const mat3 &projection)
 	// Setting uniform values to the currently bound program
 	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform.mat);
 	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
+    glUniform1i(frame_uloc, ((int) (floor(frame_num)) % 6));
+    glUniform1f(one_over_number_of_frame, ((float)   texmesh.texture.size.y / texmesh.texture.size.x));
 	gl_has_errors();
 
 	// Drawing of num_indices/3 triangles specified in the index buffer
@@ -148,6 +152,7 @@ void RenderSystem::drawToScreen()
 // http://www.opengl-tutorial.org/intermediate-tutorials/tutorial-14-render-to-texture/
 void RenderSystem::draw(vec2 window_size_in_game_units)
 {
+    frame_num += 0.2f;
 	// Getting size of window
 	ivec2 frame_buffer_size; // in pixels
 	glfwGetFramebufferSize(&window, &frame_buffer_size.x, &frame_buffer_size.y);

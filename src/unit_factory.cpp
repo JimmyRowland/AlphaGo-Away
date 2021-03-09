@@ -61,7 +61,7 @@
 //				break;
 //            case A_Terminator:
 //                resource = ShadedMesh();
-//                RenderSystem::createSprite(resource, textures_path("ai_short-d.png"), "textured");
+//                RenderSystem::createSprite(resource, textures_path("ai_short-walk.png"), "textured");
 //
 //                break;
 //            case A_Monitor:

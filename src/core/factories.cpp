@@ -30,10 +30,27 @@ namespace {
             case UnitType::human_monitor:return "tank-001.png";
             case UnitType::human_archer:return "walking_unit.png";
             case UnitType::human_healer:return "recover-001.png";
-            case UnitType::ai_terminator:return "ai_short-d.png";
+            case UnitType::ai_terminator:return "ai_short-walk.png";
             case UnitType::ai_monitor:return "ai_tank-2.png";
             case UnitType::ai_archer:return "ai_long-d.png";
             case UnitType::ai_healer:return "ai_recover.png";
+            default:
+                assert(false);
+                return {};
+        }
+    }
+
+    std::string get_texture_type(UnitType unitType) {
+        switch (unitType) {
+            case UnitType::human_terminator: return "textured";
+            case UnitType::human_monitor:return "textured";
+            case UnitType::human_archer:return "anime_textured";
+            case UnitType::human_healer:return "textured";
+            case UnitType::ai_terminator:return "walking_robot_textured";
+            case UnitType::ai_monitor:return "textured";
+            case UnitType::ai_archer:return "textured";
+            case UnitType::ai_healer:return "textured";
+
             default:
                 assert(false);
                 return {};
@@ -45,7 +62,7 @@ namespace {
         std::string key = tile_texture_path;
         ShadedMesh &resource = cache_resource(key);
         if (resource.effect.program.resource == 0)
-            RenderSystem::createSprite(resource, textures_path(tile_texture_path), "textured");
+            RenderSystem::createSprite(resource, textures_path(tile_texture_path), get_texture_type(unitType));
         return resource;
     }
     

@@ -273,10 +273,12 @@ void Game::sandbox_on_click(int button, int action, int mods){
             auto cursor_position = get_cursor_position();
             ivec2 tile_index = get_tile_index(cursor_position);
             if(!is_tile_out_of_index(tile_index)){
+//                TODO refactor sandbox_swap_tile
                 if(imgui_entity_selection < 4 && unitMapState[tile_index]==UnitType::empty){
                     auto entity = get_tile_entity_at_position(cursor_position);
                     swap_tile_texture(entity, imgui_entity_selection_to_tileType());
                     mapState[ivec2(tile_index.x, tile_index.y)] = imgui_entity_selection_to_tileType();
+                    //                TODO refactor  sandbox_add_unit
                 }else if(imgui_entity_selection < 12 && imgui_entity_selection>3 && mapState[tile_index]==TileType::basic && unitMapState[tile_index]==UnitType::empty){
                     unitMapState[tile_index]=imgui_entity_selection_to_unitType();
                     unit_factory(get_tile_center_from_index(tile_index), imgui_entity_selection_to_unitType());
