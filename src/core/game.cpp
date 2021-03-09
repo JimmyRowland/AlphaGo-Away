@@ -191,6 +191,7 @@ ivec2 Game::get_window_size(){
 void Game::on_mouse_click(int button, int action, int mods) {
     if(level == Level::sandbox) return sandbox_on_click(button, action, mods);
     if (button == GLFW_MOUSE_BUTTON_LEFT) {
+//        TODO restore relocating units
 //        double xpos, ypos;
 //        glfwGetCursorPos(window, &xpos, &ypos);
 //        int winWidth, winHeight;
