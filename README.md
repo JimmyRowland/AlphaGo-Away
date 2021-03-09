@@ -1,17 +1,30 @@
 Group 09
 Game title: AIphaGo Away
 
-*****For Milestone 1 submission, please look at our ‘milestone1’ branch*****
-###M1 instruction
+*****Milstone2 Insturction*****
 
-First press p to start the game, then game is in the 'start' mode.
 
-Left click to place a unit
+1.From the start screen, press the start to entre the battle scene.
 
-After user press H(player 1), left click will place orange units
+2.On the left and right side, we list 8 types unit, 4 types for human side (Left), 4 types for AI side (right).
+Press on each unit will showcase the introduction of the unit.
 
-After user press E(player 2), left click will place blue AI, once you have placed at lease one ai, the battle will be automatically triggered. (Will improve the auto-battle mechanism in the next milestone)
+3. Two Player, one player represent human side, while the other one player represent the AI side. Each player use mouse left click to place the unit on the grids.
 
-press P to pause/start the game
+***For human side***: 
+Press W to place short-distance terminator,
+A:Tank
+S:Long-distance archer
+D:Healer
+***For AI side***:
+Press UP to place short-distance terminator,
+DOWN:Tank
+LEFT:Long-distance archer
+RIGHT:Healer
 
-When game is paused, left click can let players drag the units and AI then to arrange their locations on the map
+Each player place one unit at each time and then take turns.
+Press U can drag the unit to adjust the unit's position.
+When each player place at least 5 units, they can press P to trigger the auto-battle start
+During the auto-battle, player cannot add unit and adjust their locations
+
+
