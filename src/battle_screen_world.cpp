@@ -325,6 +325,25 @@ void BattleWorldSystem::step(float elapsed_ms, vec2 window_size_in_game_units) {
         }
     }
     
+    for (auto entity : ECS::registry<DeathTimer>.entities)
+    {
+        // Progress timer
+        auto& counter = ECS::registry<DeathTimer>.get(entity);
+        counter.counter_ms -= elapsed_ms;
+
+        auto& motion = ECS::registry<Motion>.get(entity);
+        // Reduce window brightness if any of the present salmons is dying
+        motion.darken_factor = 1-counter.counter_ms/3000.f;
+
+        // Restart the game once the death timer expired
+        if (counter.counter_ms < 0)
+        {
+            ECS::registry<DeathTimer>.remove(entity);
+            ECS::ContainerInterface::remove_all_components_of(entity);
+            return;
+        }
+    }
+    
 
 }
 
@@ -661,12 +680,28 @@ void BattleWorldSystem::on_collision(ECS::Entity entity_i, ECS::Entity entity_j)
         property_i.hp -= property_j.damage;
         property_j.hp -= property_i.damage;
         if (property_i.hp <= 0) {
-            ECS::ContainerInterface::remove_all_components_of(entity_i);
-            Mix_PlayChannel(-1, salmon_dead_sound, 0);
+            auto& motion = ECS::registry<Motion>.get(entity_i);
+            motion.state = 2;
+            motion.angle = PI/2;
+            motion.velocity = {0,0};
+            if (!ECS::registry<DeathTimer>.has(entity_i))
+            {
+                // Scream, reset timer, and make the salmon sink
+                ECS::registry<DeathTimer>.emplace(entity_i);
+                Mix_PlayChannel(-1, salmon_dead_sound, 0);
+            }
         }
         if (property_j.hp <= 0) {
-            ECS::ContainerInterface::remove_all_components_of(entity_j);
-            Mix_PlayChannel(-1, salmon_dead_sound, 0);
+            auto& motion = ECS::registry<Motion>.get(entity_j);
+            motion.state = 2;
+            motion.angle = PI/2;
+            motion.velocity = {0,0};
+            if (!ECS::registry<DeathTimer>.has(entity_j))
+            {
+                // Scream, reset timer, and make the salmon sink
+                ECS::registry<DeathTimer>.emplace(entity_j);
+                Mix_PlayChannel(-1, salmon_dead_sound, 0);
+            }
         }
     }
 }
