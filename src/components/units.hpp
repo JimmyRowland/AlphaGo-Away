@@ -4,18 +4,18 @@
 
 #ifndef ALPHAGO_AWAY_UNITS_HPP
 #define ALPHAGO_AWAY_UNITS_HPP
-#include "core/factories.hpp"
+#include "core/unitmap.hpp"
 struct Terminator{
-//    UnitType unit_type = UnitType::human_terminator;
+    UnitType unit_type = UnitType::human_terminator;
 };
 struct Archer{
-//    UnitType unit_type = UnitType::human_archer;
+    UnitType unit_type = UnitType::human_archer;
 };
 struct Monitor{
-//    UnitType unit_type = UnitType::human_monitor;
+    UnitType unit_type = UnitType::human_monitor;
 };
 struct Healer{
-//    UnitType unit_type = UnitType::human_healer;
+    UnitType unit_type = UnitType::human_healer;
 };
 struct Attack{};
 struct Walk{};

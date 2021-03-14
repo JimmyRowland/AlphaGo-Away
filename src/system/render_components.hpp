@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ALPHAGO_AWAY_RENDER_COMPONENT_HPP
+#define ALPHAGO_AWAY_RENDER_COMPONENT_HPP
 #include "core/common.hpp"
 #include <vector>
 #include <unordered_map>
@@ -145,3 +146,4 @@ struct DeathTimer
 {
 	float counter_ms = 1000;
 };
+#endif //ALPHAGO_AWAY_RENDER_COMPONENT_HPP

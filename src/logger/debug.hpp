@@ -1,5 +1,5 @@
-#pragma once
-
+#ifndef ALPHAGO_AWAY_DEBUG_HPP
+#define ALPHAGO_AWAY_DEBUG_HPP
 #include "core/common.hpp"
 #include "core/registry.hpp"
 #include  <entt/entt.hpp>
@@ -15,3 +15,4 @@ namespace DebugSystem {
 	// Removes all debugging graphics in ECS, called at every iteration of the game loop
     void clearDebugComponents();
 };
+#endif //ALPHAGO_AWAY_DEBUG_HPP

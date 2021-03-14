@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ALPHAGO_AWAY_RENDER_HPP
+#define ALPHAGO_AWAY_RENDER_HPP
 
 #include "core/common.hpp"
 #include <entt/entt.hpp>
@@ -50,3 +51,4 @@ private:
     entt::entity screen_state_entity;
     float frame_num = 0.f;
 };
+#endif //ALPHAGO_AWAY_RENDER_HPP

@@ -1,5 +1,5 @@
-#pragma once
-
+#ifndef ALPHAGO_AWAY_PHYSICS_HPP
+#define ALPHAGO_AWAY_PHYSICS_HPP
 #include "core/common.hpp"
 #include "core/registry.hpp"
 #include "components/units.hpp"
@@ -10,3 +10,4 @@
 
 void physicsUpdate(float elapsed_ms, vec2 window_size_in_game_units);
 
+#endif //ALPHAGO_AWAY_PHYSICS_HPP

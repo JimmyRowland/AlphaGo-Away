@@ -1,5 +1,5 @@
-#pragma once
-
+#ifndef ALPHAGO_AWAY_GAME_HPP
+#define ALPHAGO_AWAY_GAME_HPP
 // internal
 #include "core/common.hpp"
 #include "core/registry.hpp"
@@ -133,3 +133,4 @@ private:
     void imgui_battle_control_menu();
 };
 
+#endif //ALPHAGO_AWAY_GAME_HPP

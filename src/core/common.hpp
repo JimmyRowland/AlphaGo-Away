@@ -1,4 +1,5 @@
-#pragma once
+#ifndef ALPHAGO_AWAY_COMMON_HPP
+#define ALPHAGO_AWAY_COMMON_HPP
 
 // stlib
 #include <string>
@@ -51,3 +52,4 @@ struct Transform {
 	void translate(vec2 offset);
 };
 
+#endif //ALPHAGO_AWAY_COMMON_HPP
