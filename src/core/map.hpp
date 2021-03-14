@@ -8,7 +8,7 @@
 
 //Copied from entt pacman
 
-enum class TileType : std::uint8_t {
+enum TileType{
     basic, water, forest
 };
 

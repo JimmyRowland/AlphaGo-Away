@@ -9,7 +9,9 @@
 void RenderSystem::drawTexturedMesh(entt::entity entity, const mat3 &projection)
 {
 	auto& position = m_registry.get<Position>(entity);
-	auto& texmesh = *m_registry.get<ShadedMeshRef>(entity).reference_to_cache;
+	auto& mesh_ref = m_registry.get<ShadedMeshRef>(entity);
+    auto& texmesh = *mesh_ref.reference_to_cache;
+    int number_of_frames = texmesh.number_of_frames;
 	// Transformation code, see Rendering and Transformation in the template specification for more info
 	// Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
 	Transform transform;
@@ -83,7 +85,7 @@ void RenderSystem::drawTexturedMesh(entt::entity entity, const mat3 &projection)
 	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform.mat);
 	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
     glUniform1i(frame_uloc, ((int) (floor(frame_num)) % 6));
-    glUniform1f(one_over_number_of_frame, ((float)   texmesh.texture.size.y / texmesh.texture.size.x));
+    glUniform1f(one_over_number_of_frame, 1.f / number_of_frames);
 	gl_has_errors();
 
 	// Drawing of num_indices/3 triangles specified in the index buffer

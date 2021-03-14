@@ -1,8 +1,6 @@
 // Header
 #include "game.hpp"
-// stlib
-#include <cassert>
-#include <sstream>
+
 
 
 
@@ -55,7 +53,7 @@ Game::Game(ivec2 window_size_px) :
 
 	// Playing background music indefinitely
 	init_audio();
-	Mix_PlayMusic(background_music, -1);
+//	Mix_PlayMusic(background_music, -1);
 	std::cout << "Loaded music\n";
 }
 
@@ -382,8 +380,7 @@ void Game::imgui_save_level(){
     }
     nlohmann::json json;
     json["map"] = map;
-    std::ofstream o("sandbox.json");
-    o << std::setw(4) << json << std::endl;
+    save_json("sandbox.json", json);
 }
 
 void Game::load_grid(std::string map_string) {
@@ -400,9 +397,8 @@ void Game::load_grid(std::string map_string) {
 }
 
 void Game::imgui_load_level(){
-    std::ifstream i("sandbox.json");
     nlohmann::json json;
-    i >> json;
+    load_json("sandbox.json", json);
     load_grid(json["map"]);
 }
 

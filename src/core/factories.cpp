@@ -1,6 +1,7 @@
 #include "factories.hpp"
 
 namespace {
+    nlohmann::json unit_meshes;
     std::string get_tile_path(TileType tileType) {
         switch (tileType) {
             case TileType::basic:
@@ -24,22 +25,6 @@ namespace {
         return resource;
     }
 
-    std::string get_unit_path(UnitType unitType) {
-        switch (unitType) {
-            case UnitType::human_terminator: return "close-001.png";
-            case UnitType::human_monitor:return "tank-001.png";
-            case UnitType::human_archer:return "walking_unit.png";
-            case UnitType::human_healer:return "recover-001.png";
-            case UnitType::ai_terminator:return "ai_short-walk.png";
-            case UnitType::ai_monitor:return "ai_tank-2.png";
-            case UnitType::ai_archer:return "ai_long-d.png";
-            case UnitType::ai_healer:return "ai_recover.png";
-            default:
-                assert(false);
-                return {};
-        }
-    }
-
     std::string get_texture_type(UnitType unitType) {
         switch (unitType) {
             case UnitType::human_terminator: return "textured";
@@ -57,10 +42,12 @@ namespace {
         }
     }
 
-    ShadedMesh &create_unit_mesh_resource(UnitType unitType) {
-        std::string tile_texture_path = get_unit_path(unitType);
+    ShadedMesh &create_unit_mesh_resource(UnitType unitType, const std::string& unit_state) {
+        nlohmann::json stand_mesh_json = unit_meshes[get_unit_mesh_key[unitType]][unit_state];
+        std::string tile_texture_path = stand_mesh_json["texture"];
         std::string key = tile_texture_path;
         ShadedMesh &resource = cache_resource(key);
+        resource.number_of_frames = stand_mesh_json["number_of_frame"];
         if (resource.effect.program.resource == 0)
             RenderSystem::createSprite(resource, textures_path(tile_texture_path), get_texture_type(unitType));
         return resource;
@@ -154,6 +141,7 @@ namespace {
         position.angle = 0.f;
         position.scale = get_unit_scale(resource);
         UnitProperty &property = m_registry.emplace<UnitProperty>(entity);
+        m_registry.emplace<Stand>(entity);
     }
 
     ShadedMesh& create_ui_mesh(std::string screen_texture_path){
@@ -165,14 +153,8 @@ namespace {
     }
 }
 
-entt::entity unit_factory(vec2 pos, UnitType unitType) {
-    auto entity = m_registry.create();
-    ShadedMesh &resource = create_unit_mesh_resource(unitType);
-    m_registry.emplace<ShadedMeshRef>(entity, resource);
-    init_unit_flag_components(entity, unitType);
-    init_unit_bounding_box(entity, unitType);
-    init_unit(entity, resource, pos, unitType);
-    return entity;
+void init_factories(){
+    load_json("textures.json", unit_meshes);
 };
 
 
@@ -186,6 +168,16 @@ entt::entity tile_factory(vec2 pos, TileType tileType) {
     position.scale = tile_size;
     auto &tile_comp = m_registry.emplace<Tile>(entity);
     tile_comp.type = tileType;
+    return entity;
+};
+
+entt::entity unit_factory(vec2 pos, UnitType unitType) {
+    auto entity = m_registry.create();
+    ShadedMesh &resource = create_unit_mesh_resource(unitType, "stand");
+    m_registry.emplace<ShadedMeshRef>(entity, resource);
+    init_unit_flag_components(entity, unitType);
+    init_unit_bounding_box(entity, unitType);
+    init_unit(entity, resource, pos, unitType);
     return entity;
 };
 
@@ -208,7 +200,6 @@ void loading_screen_factory(){
     ui_factory("buttons/HelpButton.jpg", {map_x_max/2, map_y_max/2 + 160},  {150, 70});
     ui_factory("buttons/QuitButton.jpg", {map_x_max/2, map_y_max/2+ 250},  {150, 70});
     ui_factory( "BgScreens/frame_0_delay-0.11s.png", {map_x_max/2, map_y_max/2}, {map_x_max, map_y_max});
-
 }
 
 void swap_tile_texture(entt::entity entity, TileType tileType) {

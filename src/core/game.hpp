@@ -18,6 +18,8 @@
 #include <iostream>
 #include <fstream>
 #include <iomanip>
+#include <cassert>
+#include <sstream>
 
 #define SDL_MAIN_HANDLED
 #include <SDL.h>

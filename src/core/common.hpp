@@ -18,7 +18,12 @@
 #include <glm/mat3x3.hpp>           // mat3
 #include <glm/ext/vector_uint2.hpp>  // uvec2
 #include <imgui.h>
-
+#include <nlohmann/json.hpp>
+#include <fstream>
+#include <iomanip>
+#include <cassert>
+#include <sstream>
+#include <iostream>
 
 #include <entt/entt.hpp>
 
@@ -32,7 +37,10 @@ inline std::string data_path() { return "data"; };
 inline std::string shader_path(const std::string& name) { return data_path() + "/shaders/" + name;};
 inline std::string textures_path(const std::string& name) { return data_path() + "/textures/" + name; };
 inline std::string audio_path(const std::string& name) { return data_path() + "/audio/" + name; };
+inline std::string json_path(const std::string& name){ return data_path() + "/json/" + name; };
 inline std::string mesh_path(const std::string& name) { return data_path() + "/meshes/" + name; };
+void load_json(const std::string& file_name, nlohmann::json& json);
+void save_json(const std::string& file_name, nlohmann::json& json);
 
 // The 'Transform' component handles transformations passed to the Vertex shader
 // (similar to the gl Immediate mode equivalent, e.g., glTranslate()...)

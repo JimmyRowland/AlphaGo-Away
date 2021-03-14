@@ -120,6 +120,7 @@ struct ShadedMesh
 	Mesh mesh;
 	Effect effect;
 	Texture texture;
+    int number_of_frames = 1;
 };
 
 // Cache for ShadedMesh resources (mesh consisting of vertex and index buffer, the vertex and fragment shaders, and the texture)
