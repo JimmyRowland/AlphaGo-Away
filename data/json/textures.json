@@ -89,22 +89,22 @@
     },
     "ai_terminator":{
         "attack": {
-            "texture": "unit/ai-terminator-attack.png",
+            "texture": "unit/ai_terminator_attack.png",
             "number_of_frame": 3,
             "shader": "walking_robot_textured"
         },
         "stand": {
-            "texture": "unit/ai-terminator-stand.png",
+            "texture": "unit/ai_terminator_stand.png",
             "number_of_frame": 1,
             "shader": "textured"
         },
         "walk": {
-            "texture": "unit/ai-terminator-walk.png",
+            "texture": "unit/ai_terminator_walk.png",
             "number_of_frame": 8,
             "shader": "walking_robot_textured"
         },
         "die": {
-            "texture": "unit/ai-terminator-die.png",
+            "texture": "unit/ai_terminator_die.png",
             "number_of_frame": 1,
             "shader": "textured"
         }
