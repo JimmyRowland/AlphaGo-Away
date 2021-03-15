@@ -42,23 +42,55 @@ namespace {
         }
     }
 
-    ShadedMesh &create_unit_mesh_resource(UnitType unitType, const std::string& unit_state) {
-        nlohmann::json stand_mesh_json = unit_meshes[get_unit_mesh_key[unitType]][unit_state];
-        std::string tile_texture_path = stand_mesh_json["texture"];
-        std::string key = tile_texture_path;
-        ShadedMesh &resource = cache_resource(key);
-        resource.number_of_frames = stand_mesh_json["number_of_frame"];
-        if (resource.effect.program.resource == 0)
-            RenderSystem::createSprite(resource, textures_path(tile_texture_path), get_texture_type(unitType));
-        return resource;
+    void init_unit_bounding_box(entt::entity entity, UnitType unitType){
+        BoundingBox& boundingBox =m_registry.emplace<BoundingBox>(entity);
+        boundingBox.vertices = { vec2(-0.5, -0.5), vec2(0.5, -0.5), vec2(0.5, 0.5), vec2(-0.5, 0.5) };
+        switch (unitType) {
+            case UnitType::human_terminator:
+                boundingBox.vertices = { vec2(-0.1, -0.2), vec2(0.1, -0.2), vec2(0.2, 0.f), vec2(0.15, 0.3), vec2(-0.2, 0.3)};
+                return;
+            case UnitType::human_monitor:
+                return;
+            case UnitType::human_archer:
+                return ;
+            case UnitType::human_healer:
+                boundingBox.vertices = { vec2(-0.15, -0.25), vec2(0.1, -0.25), vec2(0.25, 0.1), vec2(0.25, 0.25), vec2(-0.15, 0.25) };
+                return ;
+            case UnitType::ai_terminator:
+                boundingBox.vertices = { vec2(-0.5, -0.1), vec2(-0.25, -0.5), vec2(0.3, -0.5), vec2(0.3, 0.5),
+                                         vec2(-0.25, 0.5), vec2(-0.5, 0.15) };
+                return ;
+            case UnitType::ai_monitor:
+                return ;
+            case UnitType::ai_archer:
+                boundingBox.vertices = { vec2(-0.5, -0.25), vec2(0.f, -0.5), vec2(0.5, -0.25),
+                                         vec2(0.5, 0.25), vec2(0.f, 0.5), vec2(-0.5, 0.25) };
+                return ;
+            case UnitType::ai_healer:
+                return;
+            default:
+                assert(false);
+                return;
+        }
     }
-    
+
     vec2 get_unit_scale(ShadedMesh &resource){
         vec2 scale = tile_size;
         float aspect_ratio = resource.mesh.original_size.x / resource.mesh.original_size.y;
         if(aspect_ratio>0) scale.y = tile_size.x/aspect_ratio;
         else scale.x = tile_size.y*aspect_ratio;
         return scale;
+    }
+
+    void init_unit(entt::entity entity, ShadedMesh &resource, vec2 pos, UnitType unitType){
+        auto &motion = m_registry.emplace<Motion>(entity);
+        motion.velocity = {0.f, 0.f};
+        auto &position = m_registry.emplace<Position>(entity);
+        position.position = pos;
+        position.angle = 0.f;
+        position.scale = get_unit_scale(resource);
+        UnitProperty &property = m_registry.emplace<UnitProperty>(entity);
+        m_registry.emplace<Stand>(entity);
     }
 
     void init_unit_flag_components(entt::entity entity, UnitType unitType){
@@ -101,49 +133,6 @@ namespace {
         }
     }
 
-    void init_unit_bounding_box(entt::entity entity, UnitType unitType){
-        BoundingBox& boundingBox =m_registry.emplace<BoundingBox>(entity);
-        boundingBox.vertices = { vec2(-0.5, -0.5), vec2(0.5, -0.5), vec2(0.5, 0.5), vec2(-0.5, 0.5) };
-        switch (unitType) {
-            case UnitType::human_terminator:
-                boundingBox.vertices = { vec2(-0.1, -0.2), vec2(0.1, -0.2), vec2(0.2, 0.f), vec2(0.15, 0.3), vec2(-0.2, 0.3)};
-                return;
-            case UnitType::human_monitor:
-                return;
-            case UnitType::human_archer:
-                return ;
-            case UnitType::human_healer:
-                boundingBox.vertices = { vec2(-0.15, -0.25), vec2(0.1, -0.25), vec2(0.25, 0.1), vec2(0.25, 0.25), vec2(-0.15, 0.25) };
-                return ;
-            case UnitType::ai_terminator:
-                boundingBox.vertices = { vec2(-0.5, -0.1), vec2(-0.25, -0.5), vec2(0.3, -0.5), vec2(0.3, 0.5),
-                                         vec2(-0.25, 0.5), vec2(-0.5, 0.15) };
-                return ;
-            case UnitType::ai_monitor:
-                return ;
-            case UnitType::ai_archer:
-                boundingBox.vertices = { vec2(-0.5, -0.25), vec2(0.f, -0.5), vec2(0.5, -0.25),
-                                         vec2(0.5, 0.25), vec2(0.f, 0.5), vec2(-0.5, 0.25) };
-                return ;
-            case UnitType::ai_healer:
-                return;
-            default:
-                assert(false);
-                return;
-        }
-    }
-
-    void init_unit(entt::entity entity, ShadedMesh &resource, vec2 pos, UnitType unitType){
-        auto &motion = m_registry.emplace<Motion>(entity);
-        motion.velocity = {0.f, 0.f};
-        auto &position = m_registry.emplace<Position>(entity);
-        position.position = pos;
-        position.angle = 0.f;
-        position.scale = get_unit_scale(resource);
-        UnitProperty &property = m_registry.emplace<UnitProperty>(entity);
-        m_registry.emplace<Stand>(entity);
-    }
-
     ShadedMesh& create_ui_mesh(std::string screen_texture_path){
         std::string key = screen_texture_path;
         ShadedMesh &resource = cache_resource(key);
@@ -154,7 +143,7 @@ namespace {
 }
 
 void init_factories(){
-    load_json("textures.json", unit_meshes);
+    init_unit_resources();
 };
 
 

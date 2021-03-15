@@ -8,6 +8,7 @@
 #include "constants.hpp"
 #include "unitmap.hpp"
 #include "components/ui.hpp"
+#include "entities/unit.hpp"
 
 
 void init_factories();

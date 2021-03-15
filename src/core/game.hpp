@@ -11,6 +11,7 @@
 #include "logger/debug.hpp"
 #include "system/render_components.hpp"
 #include "system/ai.hpp"
+#include "entities/unit.hpp"
 
 // stlib
 #include <vector>

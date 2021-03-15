@@ -59,12 +59,10 @@ namespace {
     void update_velocity_and_facing_dir(entt::entity entity_i, entt::entity entity_j) {
         auto &&[position_i, motion_i] = m_registry.get<Position, Motion>(entity_i);
         auto &&[position_j, motion_j] = m_registry.get<Position, Motion>(entity_j);
-        vec2 acceleration = (position_j.position - position_i.position) * vec2(0.1, 0.1);
+        vec2 acceleration = glm::normalize(position_j.position - position_i.position) * vec2(1.f, 1.f);
         motion_i.velocity += acceleration;
         if (pow(motion_i.velocity.x, 2) + pow(motion_i.velocity.y, 2) > 1600) {
-            float angle = atan2(motion_i.velocity.y, motion_i.velocity.x);
-            motion_i.velocity.x = cos(angle) * 40;
-            motion_i.velocity.y = sin(angle) * 40;
+            motion_i.velocity = glm::normalize(motion_i.velocity) * 40.f;
         }
         if (motion_i.velocity.x > 0 && position_i.scale.x > 0) {
 //            position_i.scale.x *= -1;
@@ -95,13 +93,17 @@ namespace {
         bool is_entity_i_enemy = m_registry.has<Enemy>(entity_i);
         bool is_entity_j_enemy = m_registry.has<Enemy>(entity_j);
         if (is_entity_j_enemy != is_entity_i_enemy) {
+            unit_attack(entity_i, UnitType::ai_terminator);
+            unit_attack(entity_j, UnitType::ai_terminator);
             property_i.hp -= property_j.damage;
             property_j.hp -= property_i.damage;
             if (property_i.hp <= 0) {
                 m_registry.destroy(entity_i);
+//                unit_stand(entity_j, UnitType::ai_terminator);
             }
             if (property_j.hp <= 0) {
                 m_registry.destroy(entity_j);
+//                unit_stand(entity_i, UnitType::ai_terminator);
             }
         }
     }
@@ -163,7 +165,6 @@ void physicsUpdate(float elapsed_ms, vec2 window_size_in_game_units) {
     }
 
 
-
 //        TODO move to ai
     auto entities = m_registry.view<UnitProperty>();
     for (int i = 0; i < entities.size(); i++) {
@@ -176,6 +177,11 @@ void physicsUpdate(float elapsed_ms, vec2 window_size_in_game_units) {
                 KD_Tree kdtree = KD_Tree(!isEnemy);
                 kdtree.nearest(kdtree.root, entity_i, unit_property_i.actualTarget);
                 if (m_registry.valid(unit_property_i.actualTarget)) {
+//                    If target is not in attack range
+                    auto targetProperty = m_registry.get<UnitProperty>(unit_property_i.actualTarget);
+                    if(targetProperty.hp == targetProperty.maxhp ){
+                        unit_walk(entity_i, UnitType::ai_terminator);
+                    }
                     for (unsigned int j = i + 1; j < entities.size(); j++) {
                         auto entity_j = entities[j];
                         if (m_registry.valid(entity_j) && m_registry.valid(entity_i)) {
@@ -188,8 +194,8 @@ void physicsUpdate(float elapsed_ms, vec2 window_size_in_game_units) {
                                     if (direction.x == 0 && direction.y == 0) {
                                         direction.x = 20;
                                     }
-                                    position_j.position += direction * step_seconds * 10.f;
-                                    position_i.position += direction * step_seconds * -10.f;
+                                    motion_i.velocity = direction * step_seconds * -10.f;
+                                    motion_j.velocity = direction * step_seconds * 10.f;
                                     on_collision_resolve_damage(entity_i, entity_j);
                                 }
                             }
