@@ -90,8 +90,8 @@ void Game::init_audio()
 void Game::update(float elapsed_ms, vec2 window_size_in_game_units)
 {
     if(has_battle_started){
-        aiUpdate(elapsed_ms, window_size_in_game_units);
-        physicsUpdate(elapsed_ms, window_size_in_game_units);
+        ai_update(elapsed_ms);
+        physics_update(elapsed_ms);
     }
     imgui();
 
@@ -344,7 +344,7 @@ void Game::on_mouse_move(vec2 mouse_pos)
 }
 
 void Game::init_level() {
-    mapState = makeMapState();
+    mapState = makeMapState(level);
     unitMapState = makeUnitState();
 }
 
@@ -395,6 +395,7 @@ void Game::imgui_level_selection_menu(){
         if (ImGui::Button("level3")) { level = Level::level3;  restart(level);}
         if (ImGui::Button("level4")) { level = Level::level4;  restart(level);}
         if (ImGui::Button("level5")) { level = Level::level5;  restart(level);}
+        if (ImGui::Button("debug path finding")) { level = Level::path_finding_debug;  restart(level);}
         if (ImGui::Button("Start Screen")) { level = Level::start_screen; restart(level); }
     }
 };

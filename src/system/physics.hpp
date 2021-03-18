@@ -5,10 +5,10 @@
 #include "components/units.hpp"
 #include <entt/entt.hpp>
 #include "components/motion.hpp"
-#include "core/kd-tree.hpp"
+#include "system/utils/kd-tree.hpp"
 #include "entities/unit.hpp"
 // A simple physics system that moves rigid bodies and checks for collision
 
-void physicsUpdate(float elapsed_ms, vec2 window_size_in_game_units);
+void physics_update(float elapsed_ms);
 
 #endif //ALPHAGO_AWAY_PHYSICS_HPP

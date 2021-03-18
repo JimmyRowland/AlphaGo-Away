@@ -3,11 +3,11 @@
 #define KD_TREE_H
 
 
-#include "common.hpp"
+#include "core/common.hpp"
 #include <iostream>
 #include <utility>
 #include <vector>
-#include "registry.hpp"
+#include "core/registry.hpp"
 #include "components/motion.hpp"
 #include "components/units.hpp"
 

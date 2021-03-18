@@ -57,17 +57,33 @@ namespace {
     }
 
     void update_velocity_and_facing_dir(entt::entity entity_i, entt::entity entity_j) {
-        auto &&[position_i, motion_i] = m_registry.get<Position, Motion>(entity_i);
+        auto &&[position_i, motion_i, property_i] = m_registry.get<Position, Motion, UnitProperty>(entity_i);
         auto &&[position_j, motion_j] = m_registry.get<Position, Motion>(entity_j);
-        vec2 acceleration = glm::normalize(position_j.position - position_i.position) * vec2(1.f, 1.f);
-        motion_i.velocity += acceleration;
-        if (pow(motion_i.velocity.x, 2) + pow(motion_i.velocity.y, 2) > 1600) {
-            motion_i.velocity = glm::normalize(motion_i.velocity) * 40.f;
+        if (!property_i.path.empty()) {
+            std::pair<int, int> nextStep = property_i.path[0];
+            auto tile_index = get_tile_index(position_i.position);
+            if (tile_index.x == nextStep.first && tile_index.y == nextStep.second) {
+                property_i.path.erase(property_i.path.begin());
+            }
+            vec2 next_position = get_tile_center_from_index(ivec2(nextStep.first, nextStep.second));
+            motion_i.velocity = glm::normalize(next_position - position_i.position) * property_i.max_velocity;
         }
-        if (motion_i.velocity.x > 0 && position_i.scale.x > 0) {
-//            position_i.scale.x *= -1;
-        } else if (motion_i.velocity.x < 0 && position_i.scale.x < 0) {
-//            position_i.scale.x *= -1;
+
+
+//        vec2 acceleration = glm::normalize(position_j.position - position_i.position) * vec2(1.f, 1.f);
+//        motion_i.velocity += acceleration;
+//        if (pow(motion_i.velocity.x, 2) + pow(motion_i.velocity.y, 2) > 1600) {
+//            motion_i.velocity = glm::normalize(motion_i.velocity) * 40.f;
+//        }
+
+
+
+
+
+        if ((position_j.position-position_i.position).x > 0) {
+            position_i.scale.x = -abs(position_i.scale.x);
+        } else{
+            position_i.scale.x = abs(position_i.scale.x);
         }
     }
 
@@ -134,10 +150,11 @@ namespace {
         }
     }
 
+
 }
 
 
-void physicsUpdate(float elapsed_ms, vec2 window_size_in_game_units) {
+void physics_update(float elapsed_ms) {
 
     if (DebugSystem::in_debug_mode) {
         for (auto&&[entity, boundingBox] :m_registry.view<BoundingBox>().each()) {
@@ -150,10 +167,7 @@ void physicsUpdate(float elapsed_ms, vec2 window_size_in_game_units) {
         }
     }
     float step_seconds = 1.0f * (elapsed_ms / 1000.f);
-    for (auto entity: m_registry.view<Motion, Position, UnitProperty, BoundingBox>()) {
-        if (m_registry.valid(entity) && m_registry.has<Motion, Position, UnitProperty, BoundingBox>(entity)) {
-            auto &&[motion, position, unit_property, bounding_box] = m_registry.get<Motion, Position, UnitProperty, BoundingBox>(
-                    entity);
+    for (auto&& [entity, motion, position, unit_property, bounding_box]: m_registry.view<Motion, Position, UnitProperty, BoundingBox>().each()) {
             if (m_registry.valid(unit_property.actualTarget) &&
                 m_registry.has<UnitProperty, Motion, Position, BoundingBox>(unit_property.actualTarget)) {
                 update_velocity_and_facing_dir(entity, unit_property.actualTarget);
@@ -161,7 +175,6 @@ void physicsUpdate(float elapsed_ms, vec2 window_size_in_game_units) {
             }
             set_transformed_bounding_box(entity);
             boundry_checking(entity);
-        }
     }
 
 
@@ -190,12 +203,12 @@ void physicsUpdate(float elapsed_ms, vec2 window_size_in_game_units) {
                                         entity_j);
 //                   TODO iterate over m_register.view<Enemy/Ally> instead
                                 if (collides(entity_i, entity_j)) {
-                                    vec2 direction = position_j.position - position_i.position;
-                                    if (direction.x == 0 && direction.y == 0) {
-                                        direction.x = 20;
-                                    }
-                                    motion_i.velocity = direction * step_seconds * -10.f;
-                                    motion_j.velocity = direction * step_seconds * 10.f;
+//                                    vec2 direction = position_j.position - position_i.position;
+//                                    if (direction.x == 0 && direction.y == 0) {
+//                                        direction.x = 20;
+//                                    }
+//                                    motion_i.velocity = direction * step_seconds * -10.f;
+//                                    motion_j.velocity = direction * step_seconds * 10.f;
                                     on_collision_resolve_damage(entity_i, entity_j);
                                 }
                             }

@@ -22,7 +22,39 @@ TileType char_to_tileType(const char c) {
     }
 }
 
-MapState makeMapState() {
+MapState makeMapStatePathFinding() {
+    MapState state{tile_matrix_dimension};
+//  const char str[] = {
+//    "###############"
+//    "#        #     "
+//    "# ## ### # ### "
+//    "# ## ### # ### "
+//    "#              "
+//    "# ## # ##### # "
+//    "#    #   #   # "
+//    "#### ### # ### "
+//    "   # #       # "
+//    "#### # ----- # "
+//  };
+
+    const char str[] = {
+            " #             "
+            "               "
+            " #             "
+            " #          ###"
+            " #          #  "
+            "##          #  "
+            "            #  "
+            "            #  "
+            "               "
+            "            #  "
+    };
+    stateStr_to_tileType(state, str);
+    return state;
+}
+
+MapState makeMapState(Level level) {
+    if(level == Level::path_finding_debug) return makeMapStatePathFinding();
   MapState state{tile_matrix_dimension};
 //  const char str[] = {
 //    "###############"
@@ -62,9 +94,9 @@ vec2 get_tile_center_from_position(vec2 position){
     vec2 index = get_tile_index(position);
     return index*tile_size+(tile_size/2.f);
 };
-vec2 get_tile_center_from_index(ivec2 position){
-    vec2 index = position;
-    return index*tile_size+(tile_size/2.f);
+vec2 get_tile_center_from_index(ivec2 tile_index){
+    vec2 index_in_float = tile_index;
+    return index_in_float * tile_size + (tile_size / 2.f);
 };
 
 bool is_tile_out_of_index(ivec2 tile_index){

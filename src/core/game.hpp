@@ -12,6 +12,7 @@
 #include "system/render_components.hpp"
 #include "system/ai.hpp"
 #include "entities/unit.hpp"
+#include "enum.hpp"
 
 // stlib
 #include <vector>
@@ -29,16 +30,6 @@
 #include <entt/entt.hpp>
 #include "components/motion.hpp"
 #include <nlohmann/json.hpp>
-
-enum Level{
-    sandbox,
-    level1,
-    level2,
-    level3,
-    level4,
-    level5,
-    start_screen,
-};
 
 struct ImguiState{
 //    PlaceTileType place_tile_type = PlaceTileType::disabled;
