@@ -69,15 +69,11 @@ namespace {
             motion_i.velocity = glm::normalize(next_position - position_i.position) * property_i.max_velocity;
         }
 
-
-
-
-
-        if(motion_i.velocity.x != 0){
-            position_i.scale.x = -1*sign(motion_i.velocity.x)*abs(position_i.scale.x);
-        }else if ((position_j.position-position_i.position).x > 0) {
+        if (motion_i.velocity.x != 0) {
+            position_i.scale.x = -1 * sign(motion_i.velocity.x) * abs(position_i.scale.x);
+        } else if ((position_j.position - position_i.position).x > 0) {
             position_i.scale.x = -abs(position_i.scale.x);
-        } else{
+        } else {
             position_i.scale.x = abs(position_i.scale.x);
         }
     }
@@ -118,8 +114,8 @@ namespace {
             }
         }
     }
-    
-    void boundry_checking(entt::entity entity){
+
+    void boundry_checking(entt::entity entity) {
         auto &&[position, motion] = m_registry.get<Position, Motion>(entity);
         if (position.position.y < map_y_min) {
             position.position.y = map_y_min;
@@ -132,7 +128,7 @@ namespace {
                 motion.velocity.y = 0;
             }
         }
-        if (position.position.x  < map_x_min) {
+        if (position.position.x < map_x_min) {
             position.position.x = map_x_min;
             if (motion.velocity.x < 0) {
                 motion.velocity.x = 0;
@@ -162,14 +158,14 @@ void physics_update(float elapsed_ms) {
         }
     }
     float step_seconds = 1.0f * (elapsed_ms / 1000.f);
-    for (auto&& [entity, motion, position, unit_property, bounding_box]: m_registry.view<Motion, Position, UnitProperty, BoundingBox>().each()) {
-            if (m_registry.valid(unit_property.actualTarget) &&
-                m_registry.has<UnitProperty, Motion, Position, BoundingBox>(unit_property.actualTarget)) {
-                update_velocity_and_facing_dir(entity, unit_property.actualTarget);
-                position.position += motion.velocity * step_seconds;
-            }
-            set_transformed_bounding_box(entity);
-            boundry_checking(entity);
+    for (auto&&[entity, motion, position, unit_property, bounding_box]: m_registry.view<Motion, Position, UnitProperty, BoundingBox>().each()) {
+        if (m_registry.valid(unit_property.actualTarget) &&
+            m_registry.has<UnitProperty, Motion, Position, BoundingBox>(unit_property.actualTarget)) {
+            update_velocity_and_facing_dir(entity, unit_property.actualTarget);
+            position.position += motion.velocity * step_seconds;
+        }
+        set_transformed_bounding_box(entity);
+        boundry_checking(entity);
     }
 
 
@@ -187,7 +183,7 @@ void physics_update(float elapsed_ms) {
                 if (m_registry.valid(unit_property_i.actualTarget)) {
 //                    If target is not in attack range
                     auto targetProperty = m_registry.get<UnitProperty>(unit_property_i.actualTarget);
-                    if(targetProperty.hp == targetProperty.maxhp ){
+                    if (targetProperty.hp == targetProperty.maxhp) {
                         unit_walk(entity_i, UnitType::ai_terminator);
                     }
                     for (unsigned int j = i + 1; j < entities.size(); j++) {
