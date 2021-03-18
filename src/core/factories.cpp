@@ -25,22 +25,6 @@ namespace {
         return resource;
     }
 
-    std::string get_texture_type(UnitType unitType) {
-        switch (unitType) {
-            case UnitType::human_terminator: return "textured";
-            case UnitType::human_monitor:return "textured";
-            case UnitType::human_archer:return "anime_textured";
-            case UnitType::human_healer:return "textured";
-            case UnitType::ai_terminator:return "walking_robot_textured";
-            case UnitType::ai_monitor:return "textured";
-            case UnitType::ai_archer:return "textured";
-            case UnitType::ai_healer:return "textured";
-
-            default:
-                assert(false);
-                return {};
-        }
-    }
 
     void init_unit_bounding_box(entt::entity entity, UnitType unitType){
         BoundingBox& boundingBox =m_registry.emplace<BoundingBox>(entity);

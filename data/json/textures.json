@@ -16,9 +16,9 @@
             "shader": "textured"
         },
         "die": {
-            "texture": "close-001.png",
-            "number_of_frame": 1,
-            "shader": "textured"
+            "texture": "unit/explosion.png",
+            "number_of_frame": 12,
+            "shader": "animation_textured"
         }
     },
     "human_monitor": {
@@ -38,9 +38,9 @@
             "shader": "textured"
         },
         "die": {
-            "texture": "close-001.png",
-            "number_of_frame": 1,
-            "shader": "textured"
+            "texture": "unit/explosion.png",
+            "number_of_frame": 12,
+            "shader": "animation_textured"
         }
     },
     "human_archer":{
@@ -60,9 +60,9 @@
             "shader": "textured"
         },
         "die": {
-            "texture": "close-001.png",
-            "number_of_frame": 1,
-            "shader": "textured"
+            "texture": "unit/explosion.png",
+            "number_of_frame": 12,
+            "shader": "animation_textured"
         }
     },
     "human_healer":{
@@ -82,16 +82,16 @@
             "shader": "textured"
         },
         "die": {
-            "texture": "close-001.png",
-            "number_of_frame": 1,
-            "shader": "textured"
+            "texture": "unit/explosion.png",
+            "number_of_frame": 12,
+            "shader": "animation_textured"
         }
     },
     "ai_terminator":{
         "attack": {
             "texture": "unit/ai_terminator_attack.png",
-            "number_of_frame": 3,
-            "shader": "walking_robot_textured"
+            "number_of_frame": 5,
+            "shader": "animation_textured"
         },
         "stand": {
             "texture": "unit/ai_terminator_stand.png",
@@ -101,10 +101,10 @@
         "walk": {
             "texture": "unit/ai_terminator_walk.png",
             "number_of_frame": 8,
-            "shader": "walking_robot_textured"
+            "shader": "animation_textured"
         },
         "die": {
-            "texture": "unit/ai_terminator_die.png",
+            "texture": "unit/explosion.png",
             "number_of_frame": 1,
             "shader": "textured"
         }
@@ -126,31 +126,31 @@
             "shader": "textured"
         },
         "die": {
-            "texture": "close-001.png",
-            "number_of_frame": 1,
-            "shader": "textured"
+            "texture": "unit/explosion.png",
+            "number_of_frame": 12,
+            "shader": "animation_textured"
         }
     },
     "ai_archer":{
         "attack": {
-            "texture": "close-001.png",
-            "number_of_frame": 1,
-            "shader": "textured"
+            "texture": "unit/ai_archer_attack.png",
+            "number_of_frame": 5,
+            "shader": "animation_textured"
         },
         "stand": {
-            "texture": "close-001.png",
-            "number_of_frame": 1,
-            "shader": "textured"
+            "texture": "unit/ai_archer_stand.png",
+            "number_of_frame": 5,
+            "shader": "animation_textured"
         },
         "walk": {
-            "texture": "close-001.png",
-            "number_of_frame": 1,
-            "shader": "textured"
+            "texture": "unit/ai_archer_walk.png",
+            "number_of_frame": 5,
+            "shader": "animation_textured"
         },
         "die": {
-            "texture": "close-001.png",
-            "number_of_frame": 1,
-            "shader": "textured"
+            "texture": "unit/explosion.png",
+            "number_of_frame": 12,
+            "shader": "animation_textured"
         }
     },
     "ai_healer":{
@@ -170,9 +170,9 @@
             "shader": "textured"
         },
         "die": {
-            "texture": "close-001.png",
-            "number_of_frame": 1,
-            "shader": "textured"
+            "texture": "unit/explosion.png",
+            "number_of_frame": 12,
+            "shader": "animation_textured"
         }
     }
 }
