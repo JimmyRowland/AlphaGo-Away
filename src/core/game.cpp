@@ -100,6 +100,7 @@ void Game::update(float elapsed_ms, vec2 window_size_in_game_units)
 // Reset the world state to its initial state
 void Game::restart(Level level)
 {
+    this->level = level;
 
     for(auto entity : m_registry.view<ShadedMeshRef>()){
         m_registry.destroy(entity);
@@ -188,6 +189,9 @@ ivec2 Game::get_window_size(){
 
 void Game::on_mouse_click(int button, int action, int mods) {
     if(level == Level::sandbox) return sandbox_on_click(button, action, mods);
+    if(level == Level::level1 || level == Level::level2 ||level == Level::level3 ||level == Level::level4 ||level == Level::level5){
+        return level_on_click(button, action, mods);
+    }
     if (button == GLFW_MOUSE_BUTTON_LEFT) {
 //        TODO restore relocating units
 //        double xpos, ypos;
@@ -281,21 +285,53 @@ UnitType Game::imgui_entity_selection_to_unitType(){
     }
 }
 
+void Game::place_an_ally(ivec2 tile_index){
+    if(imgui_entity_selection < 8 && imgui_entity_selection>3 && mapState[tile_index]==TileType::basic && unitMapState[tile_index]==UnitType::empty){
+        unitMapState[tile_index]=imgui_entity_selection_to_unitType();
+        unit_factory(get_tile_center_from_index(tile_index), imgui_entity_selection_to_unitType());
+    }
+}
+
+void Game::place_an_enemy(ivec2 tile_index){
+    if(imgui_entity_selection < 12 && imgui_entity_selection>7 && mapState[tile_index]==TileType::basic && unitMapState[tile_index]==UnitType::empty){
+        unitMapState[tile_index]=imgui_entity_selection_to_unitType();
+        unit_factory(get_tile_center_from_index(tile_index), imgui_entity_selection_to_unitType());
+    }
+}
+
 void Game::sandbox_on_click(int button, int action, int mods){
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-        if(imgui_entity_selection > 0){
-            auto cursor_position = get_cursor_position();
-            ivec2 tile_index = get_tile_index(cursor_position);
-            if(!is_tile_out_of_index(tile_index)){
+        if(!has_battle_started){
+            if(imgui_entity_selection > 0){
+                auto cursor_position = get_cursor_position();
+                ivec2 tile_index = get_tile_index(cursor_position);
+                if(!is_tile_out_of_index(tile_index)){
 //                TODO refactor sandbox_swap_tile
-                if(imgui_entity_selection < 4 && unitMapState[tile_index]==UnitType::empty){
-                    auto entity = get_tile_entity_at_position(cursor_position);
-                    swap_tile_texture(entity, imgui_entity_selection_to_tileType());
-                    mapState[ivec2(tile_index.x, tile_index.y)] = imgui_entity_selection_to_tileType();
-                    //                TODO refactor  sandbox_add_unit
-                }else if(imgui_entity_selection < 12 && imgui_entity_selection>3 && mapState[tile_index]==TileType::basic && unitMapState[tile_index]==UnitType::empty){
-                    unitMapState[tile_index]=imgui_entity_selection_to_unitType();
-                    unit_factory(get_tile_center_from_index(tile_index), imgui_entity_selection_to_unitType());
+                    if(imgui_entity_selection < 4 && unitMapState[tile_index]==UnitType::empty){
+                        auto entity = get_tile_entity_at_position(cursor_position);
+                        swap_tile_texture(entity, imgui_entity_selection_to_tileType());
+                        mapState[ivec2(tile_index.x, tile_index.y)] = imgui_entity_selection_to_tileType();
+                        //                TODO refactor  sandbox_add_unit
+                    }else{
+                        place_an_ally(tile_index);
+                        place_an_enemy(tile_index);
+                    }
+                }
+            }
+        }
+    }
+}
+
+void Game::level_on_click(int button, int action, int mods){
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+        if(!has_battle_started){
+            std::cout << imgui_entity_selection << '\n';
+            if(imgui_entity_selection < 8 && imgui_entity_selection>3){
+                auto cursor_position = get_cursor_position();
+                ivec2 tile_index = get_tile_index(cursor_position);
+                std::cout << "tile_index" << tile_index.x << tile_index.y << !is_tile_out_of_index(tile_index) << '\n';
+                if(!is_tile_out_of_index(tile_index)){
+                    place_an_ally(tile_index);
                 }
             }
         }
@@ -367,7 +403,7 @@ void Game::imgui_battle_control_menu(){
     if (ImGui::CollapsingHeader("Battle"))
     {
         if (ImGui::Button("Start battle")) has_battle_started = true;
-        if (ImGui::Button("Restart level")) restart();
+        if (ImGui::Button("Restart level")) restart(level);
     }
 };
 

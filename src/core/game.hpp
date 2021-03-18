@@ -132,6 +132,12 @@ private:
     void init_unit_grid();
 
     void imgui_battle_control_menu();
+
+    void place_an_ally(ivec2 tile_index);
+
+    void place_an_enemy(ivec2 tile_index);
+
+    void level_on_click(int button, int action, int mods);
 };
 
 #endif //ALPHAGO_AWAY_GAME_HPP
