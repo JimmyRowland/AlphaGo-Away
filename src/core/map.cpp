@@ -40,13 +40,13 @@ MapState makeMapStatePathFinding() {
     const char str[] = {
             " #             "
             "               "
-            " #             "
+            " ##########    "
             " #          ###"
-            " #          #  "
+            " # ##########  "
             "##          #  "
+            "########### #  "
             "            #  "
-            "            #  "
-            "            #  "
+            " ############  "
             "               "
     };
     stateStr_to_tileType(state, str);

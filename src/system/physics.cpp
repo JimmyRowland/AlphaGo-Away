@@ -70,17 +70,12 @@ namespace {
         }
 
 
-//        vec2 acceleration = glm::normalize(position_j.position - position_i.position) * vec2(1.f, 1.f);
-//        motion_i.velocity += acceleration;
-//        if (pow(motion_i.velocity.x, 2) + pow(motion_i.velocity.y, 2) > 1600) {
-//            motion_i.velocity = glm::normalize(motion_i.velocity) * 40.f;
-//        }
 
 
 
-
-
-        if ((position_j.position-position_i.position).x > 0) {
+        if(motion_i.velocity.x != 0){
+            position_i.scale.x = -1*sign(motion_i.velocity.x)*abs(position_i.scale.x);
+        }else if ((position_j.position-position_i.position).x > 0) {
             position_i.scale.x = -abs(position_i.scale.x);
         } else{
             position_i.scale.x = abs(position_i.scale.x);
