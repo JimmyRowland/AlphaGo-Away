@@ -1,4 +1,5 @@
 #include "factories.hpp"
+#include <iostream>
 
 namespace {
     nlohmann::json unit_meshes;
@@ -170,25 +171,33 @@ entt::entity unit_factory(vec2 pos, UnitType unitType) {
     return entity;
 };
 
-void ui_factory(std::string texture_path, vec2 pos, vec2 size){
+void ui_factory(std::string texture_path, vec2 pos, vec2 size, float depth){
     auto entity = m_registry.create();
     m_registry.emplace<ShadedMeshRef>(entity, create_ui_mesh(texture_path));
     auto &position = m_registry.emplace<Position>(entity);
     position.position = pos;
     position.angle = 0.f;
     position.scale = size;
-    m_registry.emplace<ScreenComponent>(entity);
+    auto &scrcomp = m_registry.emplace<ScreenComponent>(entity);
+    scrcomp.depth = depth;
     if(texture_path == "buttons/PlayButton.jpg"){
         m_registry.emplace<ButtonComponent>(entity);
     }
 }
 
+void screenUpdate(float frame){
+    int bg_num = ((int) floor(frame)) % 32;
+    ui_factory("BgScreens/frame_" + std::to_string(bg_num) + "_delay-0.11s.png", {window_size_in_game_units.x/2, window_size_in_game_units.y/2},
+               {window_size_in_game_units.x, window_size_in_game_units.y}, frame*0.1);
+}
+
 void loading_screen_factory(){
-    ui_factory( "gameTitle.png", {map_x_max/2, map_y_max/2- 160}, {360, 200});
-    ui_factory("buttons/PlayButton.jpg", {map_x_max/2, map_y_max/2 + 70}, {150, 70});
-    ui_factory("buttons/HelpButton.jpg", {map_x_max/2, map_y_max/2 + 160},  {150, 70});
-    ui_factory("buttons/QuitButton.jpg", {map_x_max/2, map_y_max/2+ 250},  {150, 70});
-    ui_factory( "BgScreens/frame_0_delay-0.11s.png", {map_x_max/2, map_y_max/2}, {map_x_max, map_y_max});
+    ui_factory( "gameTitle.png", {window_size_in_game_units.x/2, window_size_in_game_units.y/2- 160}, {360, 200}, INT_MAX);
+//    ui_factory("buttons/PlayButton.jpg", {map_x_max/2, map_y_max/2 + 70}, {150, 70});
+//    ui_factory("buttons/HelpButton.jpg", {map_x_max/2, map_y_max/2 + 160},  {150, 70});
+//    ui_factory("buttons/QuitButton.jpg", {map_x_max/2, map_y_max/2+ 250},  {150, 70});
+    ui_factory( "BgScreens/frame_0_delay-0.11s.png", {window_size_in_game_units.x/2, window_size_in_game_units.y/2},
+               {window_size_in_game_units.x, window_size_in_game_units.y}, 0.f);
 }
 
 void swap_tile_texture(entt::entity entity, TileType tileType) {

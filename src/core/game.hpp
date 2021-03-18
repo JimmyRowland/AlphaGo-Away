@@ -97,6 +97,8 @@ private:
 	Mix_Music* background_music;
 
     bool has_battle_started;
+    
+    float frame = 1.f;
 
 	// C++ random number generator
 	std::default_random_engine rng;

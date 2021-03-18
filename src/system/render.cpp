@@ -190,7 +190,10 @@ void RenderSystem::draw(vec2 window_size_in_game_units)
 		gl_has_errors();
 	}
 
-	for(entt::entity entity: m_registry.view<ShadedMeshRef, ScreenComponent>()){
+    m_registry.sort<ScreenComponent>([](const auto &lhs, const auto &rhs) {
+        return lhs.depth < rhs.depth;
+    });
+	for(entt::entity entity: m_registry.view<ScreenComponent>()){
         drawTexturedMesh(entity, projection_2D);
         gl_has_errors();
 	}

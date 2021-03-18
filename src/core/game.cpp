@@ -89,6 +89,10 @@ void Game::init_audio()
 // Update our game world
 void Game::update(float elapsed_ms, vec2 window_size_in_game_units)
 {
+    if (this->level == Level::start_screen) {
+        frame += 0.3;
+        screenUpdate(frame);
+    }
     if(has_battle_started){
         aiUpdate(elapsed_ms, window_size_in_game_units);
         physicsUpdate(elapsed_ms, window_size_in_game_units);
@@ -109,7 +113,9 @@ void Game::restart(Level level)
     has_battle_started = false;
 
     if(level == Level::start_screen){
+        frame = 1.f;
         loading_screen_factory();
+        this->level = level;
     }else{
         init_level();
         init_map_grid();
