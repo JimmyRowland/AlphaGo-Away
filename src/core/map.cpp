@@ -46,8 +46,8 @@ MapState makeMapStatePathFinding() {
             "##          #  "
             "            #  "
             "            #  "
-            "               "
             "            #  "
+            "               "
     };
     stateStr_to_tileType(state, str);
     return state;

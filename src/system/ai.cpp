@@ -6,7 +6,7 @@ void ai_update(float elapsed_ms)
     if (((int) (floor(elapsed_ms))) % 5 != 0) {
         return;
     }
-    A_Star a = A_Star(std::make_pair(tile_size.x, tile_size.y));
+    A_Star a = A_Star(std::make_pair(tile_matrix_dimension.x, tile_matrix_dimension.y));
     for (auto &&[entity, property, position]: m_registry.view<UnitProperty, Position>().each())
     {
         if (!m_registry.valid(property.actualTarget) || property.actualTarget == entity) {
