@@ -4,8 +4,10 @@
 
 #ifndef ALPHAGO_AWAY_UI_HPP
 #define ALPHAGO_AWAY_UI_HPP
-struct ScreenComponent{};
+struct ScreenComponent{
+};
 struct ButtonComponent
 {
 };
+struct LoadingScreen{};
 #endif //ALPHAGO_AWAY_UI_HPP

@@ -1,6 +1,7 @@
 #include "factories.hpp"
 
 namespace {
+    float init_loading_screen_location_x = window_size_in_game_units.x/2 - 7 * window_size_in_game_units.x;
     nlohmann::json unit_meshes;
     std::string get_tile_path(TileType tileType) {
         switch (tileType) {
@@ -118,7 +119,7 @@ namespace {
         }
     }
 
-    ShadedMesh& create_ui_mesh(std::string screen_texture_path){
+    ShadedMesh& create_ui_mesh(std::string screen_texture_path, std::string shader = "textured"){
         std::string key = screen_texture_path;
         ShadedMesh &resource = cache_resource(key);
         if (resource.effect.program.resource == 0)
@@ -171,9 +172,9 @@ entt::entity explosion_factory(vec2 pos) {
     return entity;
 };
 
-void ui_factory(std::string texture_path, vec2 pos, vec2 size){
+entt::entity ui_factory(std::string texture_path, vec2 pos, vec2 size, std::string shader = "textured"){
     auto entity = m_registry.create();
-    m_registry.emplace<ShadedMeshRef>(entity, create_ui_mesh(texture_path));
+    m_registry.emplace<ShadedMeshRef>(entity, create_ui_mesh(texture_path, shader));
     auto &position = m_registry.emplace<Position>(entity);
     position.position = pos;
     position.angle = 0.f;
@@ -182,14 +183,26 @@ void ui_factory(std::string texture_path, vec2 pos, vec2 size){
     if(texture_path == "buttons/PlayButton.jpg"){
         m_registry.emplace<ButtonComponent>(entity);
     }
+    return entity;
+}
+
+void screenUpdate(float frame){
+    int bg_num = ((int) floor(frame)) % 15;
+    for(auto&& [entity, position]: m_registry.view<Position,LoadingScreen>().each()){
+        position.position.x = init_loading_screen_location_x + window_size_in_game_units.x * bg_num;
+    }
+
 }
 
 void loading_screen_factory(){
-    ui_factory( "gameTitle.png", {map_x_max/2, map_y_max/2- 160}, {360, 200});
-    ui_factory("buttons/PlayButton.jpg", {map_x_max/2, map_y_max/2 + 70}, {150, 70});
-    ui_factory("buttons/HelpButton.jpg", {map_x_max/2, map_y_max/2 + 160},  {150, 70});
-    ui_factory("buttons/QuitButton.jpg", {map_x_max/2, map_y_max/2+ 250},  {150, 70});
-    ui_factory( "BgScreens/frame_0_delay-0.11s.png", {map_x_max/2, map_y_max/2}, {map_x_max, map_y_max});
+
+//    ui_factory("buttons/PlayButton.jpg", {map_x_max/2, map_y_max/2 + 70}, {150, 70});
+//    ui_factory("buttons/HelpButton.jpg", {map_x_max/2, map_y_max/2 + 160},  {150, 70});
+//    ui_factory("buttons/QuitButton.jpg", {map_x_max/2, map_y_max/2+ 250},  {150, 70});
+    ui_factory( "gameTitle.png", {window_size_in_game_units.x/2, window_size_in_game_units.y/2- 160}, {360, 200});
+    auto loading_entity = ui_factory( "BgScreens/long-loading-screen.png", {init_loading_screen_location_x, window_size_in_game_units.y/2},
+                {window_size_in_game_units.x*15, window_size_in_game_units.y});
+    m_registry.emplace<LoadingScreen>(loading_entity);
 }
 
 void background_factory(){

@@ -3,6 +3,7 @@
 //
 
 #include "unit.hpp"
+#include <iostream>
 namespace {
     nlohmann::json unit_meshes;
 }

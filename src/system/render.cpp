@@ -71,7 +71,12 @@ void RenderSystem::drawTexturedMesh(entt::entity entity, const mat3 &projection)
 
 	// Getting uniform locations for glUniform* calls
 	GLint color_uloc = glGetUniformLocation(texmesh.effect.program, "fcolor");
+    GLint particleColor_uloc = glGetUniformLocation(texmesh.effect.program, "particleColor");
 	glUniform3fv(color_uloc, 1, (float*)&texmesh.texture.color);
+    if (m_registry.has<Particle>(entity)) {
+        auto &p = m_registry.get<Particle>(entity);
+        glUniform4fv(particleColor_uloc, 1, (float*)&p.color);
+    }
 	gl_has_errors();
 
 	// Get number of indices from index buffer, which has elements uint16_t
@@ -84,17 +89,13 @@ void RenderSystem::drawTexturedMesh(entt::entity entity, const mat3 &projection)
 	// Setting uniform values to the currently bound program
 	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform.mat);
 	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
-    glUniform1i(frame_uloc, ((int) (floor(frame_num)) % 6));
+    glUniform1i(frame_uloc, ((int) (floor(frame_num)) % 15));
     glUniform1f(one_over_number_of_frame, 1.f / number_of_frames);
 	gl_has_errors();
 
 	// Drawing of num_indices/3 triangles specified in the index buffer
 	glDrawElements(GL_TRIANGLES, num_indices, GL_UNSIGNED_SHORT, nullptr);
 	glBindVertexArray(0);
-
-	if(m_registry.has<Explosion>(entity) && ((int) (floor(frame_num)) % 6) > 4){
-	    m_registry.destroy(entity);
-	}
 }
 
 // Draw the intermediate texture to the screen, with some distortion to simulate water
@@ -189,7 +190,7 @@ void RenderSystem::draw(vec2 window_size_in_game_units)
 
 	// Draw all textured meshes that have a position and size component
 
-	for(entt::entity entity: m_registry.view<ShadedMeshRef, ScreenComponent>()){
+	for(entt::entity entity: m_registry.view<ScreenComponent>()){
         drawTexturedMesh(entity, projection_2D);
         gl_has_errors();
 	}
@@ -207,6 +208,12 @@ void RenderSystem::draw(vec2 window_size_in_game_units)
     }
 
     for (entt::entity entity : m_registry.view<ShadedMeshRef, UnitProperty>())
+    {
+        drawTexturedMesh(entity, projection_2D);
+        gl_has_errors();
+    }
+    
+    for (entt::entity entity : m_registry.view<ShadedMeshRef, Particle>())
     {
         drawTexturedMesh(entity, projection_2D);
         gl_has_errors();
@@ -234,6 +241,7 @@ void gl_has_errors()
 	if (error == GL_NO_ERROR)
 		return;
 	
+    std::cout << "error is:    " << error << std::endl;
 	const char* error_str = "";
 	while (error != GL_NO_ERROR)
 	{
