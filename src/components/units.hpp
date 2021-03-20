@@ -38,6 +38,5 @@ struct UnitProperty{
     entt::entity desiredTarget;
     entt::entity actualTarget;
     std::vector<std::pair<int, int>> path = {};
-    float max_velocity = 40.f;
 };
 #endif //ALPHAGO_AWAY_UNITS_HPP
