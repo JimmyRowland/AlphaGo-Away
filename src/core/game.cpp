@@ -112,6 +112,7 @@ void Game::restart(Level level)
     if(level == Level::start_screen){
         loading_screen_factory();
     }else{
+        background_factory();
         init_level();
         init_map_grid();
         init_unit_grid();

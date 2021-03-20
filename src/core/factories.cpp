@@ -175,6 +175,10 @@ void loading_screen_factory(){
     ui_factory( "BgScreens/frame_0_delay-0.11s.png", {map_x_max/2, map_y_max/2}, {map_x_max, map_y_max});
 }
 
+void background_factory(){
+    ui_factory( "bg.png", {window_size_in_game_units.x/2, window_size_in_game_units.y/2}, {window_size_in_game_units.y/405*540*12, window_size_in_game_units.y});
+}
+
 void swap_tile_texture(entt::entity entity, TileType tileType) {
     auto &tile_comp = m_registry.get<Tile>(entity);
     if (tile_comp.type != tileType) {
