@@ -96,26 +96,6 @@ namespace {
         }
     }
 
-    void on_collision_resolve_damage(entt::entity entity_i, entt::entity entity_j) {
-        UnitProperty &property_i = m_registry.get<UnitProperty>(entity_i);
-        UnitProperty &property_j = m_registry.get<UnitProperty>(entity_j);
-        bool is_entity_i_enemy = m_registry.has<Enemy>(entity_i);
-        bool is_entity_j_enemy = m_registry.has<Enemy>(entity_j);
-        if (is_entity_j_enemy != is_entity_i_enemy) {
-            unit_attack(entity_i, UnitType::ai_terminator);
-            unit_attack(entity_j, UnitType::ai_terminator);
-            property_i.hp -= property_j.damage;
-            property_j.hp -= property_i.damage;
-            if (property_i.hp <= 0) {
-                m_registry.destroy(entity_i);
-//                unit_stand(entity_j, UnitType::ai_terminator);
-            }
-            if (property_j.hp <= 0) {
-                m_registry.destroy(entity_j);
-//                unit_stand(entity_i, UnitType::ai_terminator);
-            }
-        }
-    }
 
     void boundry_checking(entt::entity entity) {
         auto &&[position, motion] = m_registry.get<Position, Motion>(entity);
@@ -168,46 +148,5 @@ void physics_update(float elapsed_ms) {
         }
         set_transformed_bounding_box(entity);
         boundry_checking(entity);
-    }
-
-
-//        TODO move to ai
-    auto entities = m_registry.view<UnitProperty>();
-    for (int i = 0; i < entities.size(); i++) {
-        auto entity_i = entities[i];
-        if (m_registry.valid(entity_i)) {
-            if (m_registry.has<UnitProperty, Motion, Position, BoundingBox>(entity_i)) {
-                auto &&[motion_i, position_i, unit_property_i] = m_registry.get<Motion, Position, UnitProperty>(
-                        entity_i);
-                bool isEnemy = m_registry.has<Enemy>(entity_i);
-                KD_Tree kdtree = KD_Tree(!isEnemy);
-                kdtree.nearest(kdtree.root, entity_i, unit_property_i.actualTarget);
-                if (m_registry.valid(unit_property_i.actualTarget)) {
-//                    If target is not in attack range
-                    auto targetProperty = m_registry.get<UnitProperty>(unit_property_i.actualTarget);
-                    if (targetProperty.hp == targetProperty.maxhp) {
-                        unit_walk(entity_i, UnitType::ai_terminator);
-                    }
-                    for (unsigned int j = i + 1; j < entities.size(); j++) {
-                        auto entity_j = entities[j];
-                        if (m_registry.valid(entity_j) && m_registry.valid(entity_i)) {
-                            if (m_registry.has<UnitProperty, Motion, Position, BoundingBox>(entity_j)) {
-                                auto &&[motion_j, position_j, unit_property_j] = m_registry.get<Motion, Position, UnitProperty>(
-                                        entity_j);
-//                   TODO iterate over m_register.view<Enemy/Ally> instead
-                                if (collides(entity_i, entity_j)) {
-                                    vec2 direction = normalize(position_j.position - position_i.position);
-                                    if (direction.x == 0) direction.x = 0.1;
-                                    if (direction.y == 0) direction.y = 0.1;
-                                    position_i.position += direction * step_seconds * -10.f;
-                                    position_j.position += direction * step_seconds * 10.f;
-                                    on_collision_resolve_damage(entity_i, entity_j);
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
     }
 }

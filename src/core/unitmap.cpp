@@ -33,11 +33,11 @@ UnitType char_to_unitType(const char c) {
 UnitMapState makeUnitState() {
     UnitMapState state{tile_matrix_dimension};
     const char str[] = {
-            "1              "
+            "               "
             "2              "
             "3              "
             "4              "
-            "              5"
+            "1             5"
             "              6"
             "              7"
             "              8"

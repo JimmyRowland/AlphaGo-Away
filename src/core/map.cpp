@@ -38,16 +38,16 @@ MapState makeMapStatePathFinding() {
 //  };
 
     const char str[] = {
+            "###############"
+            "               "
             " #             "
-            "               "
-            " ##########    "
-            " #          ###"
-            " # ##########  "
-            "##          #  "
-            "########### #  "
+            "########### ###"
             "            #  "
-            " ############  "
-            "               "
+            "# ###########  "
+            "            #  "
+            "######## ####  "
+            "#              "
+            "###############"
     };
     stateStr_to_tileType(state, str);
     return state;
@@ -70,16 +70,16 @@ MapState makeMapState(Level level) {
 //  };
 
     const char str[] = {
-           "               "
-           "               "
-           "               "
-           "               "
-           "               "
-           "               "
-           "               "
-           "               "
-           "               "
-           "               "
+            "###############"
+            "#             #"
+            "#             #"
+            "#             #"
+            "#             #"
+            "#             #"
+            "#             #"
+            "#             #"
+            "#             #"
+            "###############"
     };
     stateStr_to_tileType(state, str);
   return state;

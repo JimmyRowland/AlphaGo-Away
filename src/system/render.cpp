@@ -91,6 +91,10 @@ void RenderSystem::drawTexturedMesh(entt::entity entity, const mat3 &projection)
 	// Drawing of num_indices/3 triangles specified in the index buffer
 	glDrawElements(GL_TRIANGLES, num_indices, GL_UNSIGNED_SHORT, nullptr);
 	glBindVertexArray(0);
+
+	if(m_registry.has<Explosion>(entity) && ((int) (floor(frame_num)) % 6) > 4){
+	    m_registry.destroy(entity);
+	}
 }
 
 // Draw the intermediate texture to the screen, with some distortion to simulate water
@@ -191,6 +195,12 @@ void RenderSystem::draw(vec2 window_size_in_game_units)
 	}
 
     for (entt::entity entity : m_registry.view<ShadedMeshRef, Tile>())
+    {
+        drawTexturedMesh(entity, projection_2D);
+        gl_has_errors();
+    }
+
+    for (entt::entity entity : m_registry.view<ShadedMeshRef, Explosion>())
     {
         drawTexturedMesh(entity, projection_2D);
         gl_has_errors();
