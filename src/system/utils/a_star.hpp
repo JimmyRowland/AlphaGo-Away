@@ -1,6 +1,7 @@
 #include "core/common.hpp"
 #include "core/registry.hpp"
 #include "components/motion.hpp"
+#include "components/units.hpp"
 #include <iostream>
 #include <utility>
 #include <vector>
@@ -13,13 +14,14 @@
 
 class A_Star {
 public:
+    std::vector<std::vector<int >> unit_grid = {};
     std::vector<std::vector<int >> grid = {};
     // update the map as needed this is just filler
     // TODO: update this to use a centralized enum along with battle_screen_world.cpp
     std::map<TileType, int> costs = {
             {TileType::basic,  1},
-            {TileType::forest, 999},
-            {TileType::water,  999}
+            {TileType::forest, 99999},
+            {TileType::water,  99999}
     };
 
     // comparator class for priority queue
@@ -37,18 +39,22 @@ public:
 
     // initialize a 2D vector to represent the grid, where grid[i][j] is the cost of moving to grid[i][j] from an adjacent square
     A_Star(std::pair<int, int> grid_size) {
-        for (auto tile : m_registry.view<Tile>()) {
-            this->grid.resize(grid_size.first);
-            for (unsigned int i = 0; i < grid.size(); i++) {
-                this->grid[i].resize(grid_size.second);
-            }
 
+        this->grid.resize(grid_size.first);
+        this->unit_grid.resize(grid_size.first);
+        for (unsigned int i = 0; i < grid.size(); i++) {
+            this->grid[i].resize(grid_size.second);
+            this->unit_grid[i].resize(grid_size.second);
         }
+//        TODO pass in grid state from game instead. Not important
         for (auto&&[entity, tile_comp, tile_pos] : m_registry.view<Tile, Position>().each()) {
             ivec2 tile_index = get_tile_index(tile_pos.position);
             this->grid[tile_index.x][tile_index.y] = costs[tile_comp.type];
         }
-
+        for (auto&&[entity, unit_prop, unit_pos] : m_registry.view<UnitProperty, Position>().each()) {
+            ivec2 tile_index = get_tile_index(unit_pos.position);
+            this->unit_grid[tile_index.x][tile_index.y] = 100;
+        }
     }
 
     // a* search algorithm, start is a the starting grid position, end is the target grid position
@@ -56,7 +62,7 @@ public:
         std::priority_queue<std::pair<int, std::pair<int, int>>, std::vector<std::pair<int, std::pair<int, int>>>, compare> fronteir = {};
         std::map<std::pair<int, int>, int> costSoFar = {};
         std::map<std::pair<int, int>, std::pair<int, int>> cameFrom = {};
-        std::vector<std::pair<int, int>> res = {};
+        std::vector<std::pair<int, int>> complete_path = {};
 
         fronteir.push(std::make_pair(0, start));
         costSoFar[start] = 0;
@@ -76,7 +82,7 @@ public:
             for (auto &neighbour : neighbours) {
                 if (neighbour.first >= 0 && neighbour.first < grid.size() && neighbour.second >= 0 &&
                     neighbour.second < grid[0].size()) {
-                    int updatedCost = costSoFar[current] + this->grid[neighbour.first][neighbour.second];
+                    int updatedCost = costSoFar[current] + this->grid[neighbour.first][neighbour.second] + this->unit_grid[neighbour.first][neighbour.second];
                     if (!costSoFar.count(neighbour) || updatedCost < costSoFar[neighbour]) {
                         costSoFar[neighbour] = updatedCost;
                         int prioirity = updatedCost + heuristic(neighbour, end);
@@ -84,18 +90,29 @@ public:
                         cameFrom[neighbour] = current;
                     }
                 }
-
             }
         }
 
         std::pair<int, int> current = end;
         while (current != start) {
-            res.insert(res.begin(), current);
+            complete_path.insert(complete_path.begin(), current);
             current = cameFrom[current];
         }
+        std::vector<std::pair<int, int>> res_path = {};
+        for(auto tile_index: complete_path){
+            if(costSoFar[tile_index]>99){
+                break;
+            }
+            res_path.push_back(tile_index);
+        }
 
-        return res;
-
+        if(!res_path.empty()){
+//            unit_grid[res_path[0].first][res_path[0].second] = 100;
+            unit_grid[start.first][start.second] = 0;
+        }else{
+//            unit_grid[start.first][start.second] = 100;
+        }
+        return res_path;
     }
 
 

@@ -61,12 +61,14 @@ namespace {
         auto &&[position_j, motion_j] = m_registry.get<Position, Motion>(entity_j);
         if (!property_i.path.empty()) {
             std::pair<int, int> nextStep = property_i.path[0];
-            auto tile_index = get_tile_index(position_i.position);
-            if (tile_index.x == nextStep.first && tile_index.y == nextStep.second) {
+            auto next_tile_center = get_tile_center_from_index(ivec2(nextStep.first, nextStep.second));
+            if (glm::distance(next_tile_center, position_i.position)<1) {
                 property_i.path.erase(property_i.path.begin());
             }
             vec2 next_position = get_tile_center_from_index(ivec2(nextStep.first, nextStep.second));
             motion_i.velocity = glm::normalize(next_position - position_i.position) * property_i.max_velocity;
+        }else{
+            motion_i.velocity *= 0.f;
         }
 
         if (motion_i.velocity.x != 0) {
@@ -194,12 +196,11 @@ void physics_update(float elapsed_ms) {
                                         entity_j);
 //                   TODO iterate over m_register.view<Enemy/Ally> instead
                                 if (collides(entity_i, entity_j)) {
-//                                    vec2 direction = position_j.position - position_i.position;
-//                                    if (direction.x == 0 && direction.y == 0) {
-//                                        direction.x = 20;
-//                                    }
-//                                    motion_i.velocity = direction * step_seconds * -10.f;
-//                                    motion_j.velocity = direction * step_seconds * 10.f;
+//                                    vec2 direction = normalize(position_j.position - position_i.position);
+//                                    if (direction.x == 0) direction.x = 0.1;
+//                                    if (direction.y == 0) direction.y = 0.1;
+//                                    position_i.position += direction * step_seconds * -10.f;
+//                                    position_j.position += direction * step_seconds * 10.f;
                                     on_collision_resolve_damage(entity_i, entity_j);
                                 }
                             }
