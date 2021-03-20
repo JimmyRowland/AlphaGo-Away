@@ -155,7 +155,7 @@ entt::entity unit_factory(vec2 pos, UnitType unitType) {
     return entity;
 };
 
-void ui_factory(std::string texture_path, vec2 pos, vec2 size, float depth){
+void ui_factory(std::string texture_path, vec2 pos, vec2 size, float depth = 0){
     auto entity = m_registry.create();
     m_registry.emplace<ShadedMeshRef>(entity, create_ui_mesh(texture_path));
     auto &position = m_registry.emplace<Position>(entity);
@@ -176,7 +176,7 @@ void screenUpdate(float frame){
 }
 
 void loading_screen_factory(){
-    ui_factory( "gameTitle.png", {window_size_in_game_units.x/2, window_size_in_game_units.y/2- 160}, {360, 200}, INT_MAX);
+    ui_factory( "gameTitle.png", {window_size_in_game_units.x/2, window_size_in_game_units.y/2- 160}, {360, 200}, 999);
 //    ui_factory("buttons/PlayButton.jpg", {map_x_max/2, map_y_max/2 + 70}, {150, 70});
 //    ui_factory("buttons/HelpButton.jpg", {map_x_max/2, map_y_max/2 + 160},  {150, 70});
 //    ui_factory("buttons/QuitButton.jpg", {map_x_max/2, map_y_max/2+ 250},  {150, 70});
