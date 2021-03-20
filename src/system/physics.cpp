@@ -59,7 +59,7 @@ namespace {
     void update_velocity_and_facing_dir(entt::entity entity_i, entt::entity entity_j) {
         auto &&[position_i, motion_i, property_i] = m_registry.get<Position, Motion, UnitProperty>(entity_i);
         auto &&[position_j, motion_j] = m_registry.get<Position, Motion>(entity_j);
-        if (!property_i.path.empty()) {
+        if (property_i.path.size()>1) {
             std::pair<int, int> nextStep = property_i.path[0];
             auto next_tile_center = get_tile_center_from_index(ivec2(nextStep.first, nextStep.second));
             if (glm::distance(next_tile_center, position_i.position)<1) {

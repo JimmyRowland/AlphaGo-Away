@@ -107,7 +107,7 @@ public:
         }
 
         if(!res_path.empty()){
-//            unit_grid[res_path[0].first][res_path[0].second] = 100;
+//            unit_grid[res_path[0].first][res_path[0].second] = 5;
             unit_grid[start.first][start.second] = 0;
         }else{
 //            unit_grid[start.first][start.second] = 100;
