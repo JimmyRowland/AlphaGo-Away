@@ -1,30 +1,70 @@
 Group 09
 Game title: AIphaGo Away
 
-*****Milstone2 Insturction*****
+TODO: set_up script:
+under project dir run
+
+windows with vs:
+
+git clone https://github.com/microsoft/vcpkg
+
+.\vcpkg\bootstrap-vcpkg.bat
+
+.\vcpkg\vcpkg install entt
+.\vcpkg\vcpkg install gl3w
+.\vcpkg\vcpkg install imgui
+.\vcpkg\vcpkg install nlohmann-json
 
 
-1.From the start screen, press the start to entre the battle scene.
+.\vcpkg\vcpkg integrate install
 
-2.On the left and right side, we list 8 types unit, 4 types for human side (Left), 4 types for AI side (right).
-Press on each unit will showcase the introduction of the unit.
+Open the CMake Settings Editor, and under CMake toolchain file, add the path to the vcpkg toolchain file:
 
-3. Two Player, one player represent human side, while the other one player represent the AI side. Each player use mouse left click to place the unit on the grids.
+-DCMAKE_TOOLCHAIN_FILE=./vcpkg/scripts/buildsystems/vcpkg.cmake
 
-***For human side***: 
-Press W to place short-distance terminator,
-A:Tank
-S:Long-distance archer
-D:Healer
-***For AI side***:
-Press UP to place short-distance terminator,
-DOWN:Tank
-LEFT:Long-distance archer
-RIGHT:Healer
+mac/linux with clion:
 
-Each player place one unit at each time and then take turns.
-Press U can drag the unit to adjust the unit's position.
-When each player place at least 5 units, they can press P to trigger the auto-battle start
-During the auto-battle, player cannot add unit and adjust their locations
+git clone https://github.com/microsoft/vcpkg
+
+./vcpkg/bootstrap-vcpkg.sh
+
+./vcpkg/vcpkg install entt
+./vcpkg/vcpkg install gl3w
+./vcpkg/vcpkg install imgui
+./vcpkg/vcpkg install nlohmann-json
+
+Open the Toolchains settings (File > Settings on Windows and Linux, CLion > Preferences on macOS), and go to the CMake settings (Build, Execution, Deployment > CMake). Finally, in CMake options, add the following line:
+
+-DCMAKE_TOOLCHAIN_FILE=./vcpkg/scripts/buildsystems/vcpkg.cmake
+
+jetbrains educational license
+
+https://www.jetbrains.com/community/education/#students
+
+Credit:
+
+- package manager
+
+https://github.com/microsoft/vcpkg
+
+- ECS:
+
+https://github.com/skypjack/entt/wiki/Crash-Course:-entity-component-system
+
+- GUI:
+
+https://github.com/ocornut/imgui
+
+- Utils:
+
+https://github.com/nlohmann/json
+
+- Games:
+
+https://github.com/guillaume-haerinck/imac-tower-defense
+
+https://github.com/Kerndog73/EnTT-Pacman
+
+
 
 
