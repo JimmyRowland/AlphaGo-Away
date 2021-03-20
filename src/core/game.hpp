@@ -62,6 +62,9 @@ public:
 	// Should the game be over ?
 	bool is_over() const;
 
+	// parallax offset
+	float parallax_offset;
+
 	// OpenGL window handle
 	GLFWwindow* window;
 
@@ -135,6 +138,8 @@ private:
     void place_an_enemy(ivec2 tile_index);
 
     void level_on_click(int button, int action, int mods);
+
+	void update_camera_pos();
 };
 
 #endif //ALPHAGO_AWAY_GAME_HPP

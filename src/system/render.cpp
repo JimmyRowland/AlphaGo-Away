@@ -189,11 +189,6 @@ void RenderSystem::draw(vec2 window_size_in_game_units)
 	mat3 projection_2D{ { sx, 0.f, 0.f },{ 0.f, sy, 0.f },{ tx, ty, 1.f } };
 
 	// Draw all textured meshes that have a position and size component
-	for (entt::entity entity : m_registry.view<ShadedMeshRef, Tile>())
-	{
-        drawTexturedMesh(entity, projection_2D);
-		gl_has_errors();
-	}
 
     m_registry.sort<ScreenComponent>([](const auto &lhs, const auto &rhs) {
         return lhs.depth < rhs.depth;
@@ -202,6 +197,12 @@ void RenderSystem::draw(vec2 window_size_in_game_units)
         drawTexturedMesh(entity, projection_2D);
         gl_has_errors();
 	}
+
+    for (entt::entity entity : m_registry.view<ShadedMeshRef, Tile>())
+    {
+        drawTexturedMesh(entity, projection_2D);
+        gl_has_errors();
+    }
 
     for (entt::entity entity : m_registry.view<ShadedMeshRef, UnitProperty>())
     {

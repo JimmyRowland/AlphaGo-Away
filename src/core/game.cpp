@@ -97,6 +97,7 @@ void Game::update(float elapsed_ms, vec2 window_size_in_game_units)
         ai_update(elapsed_ms);
         physics_update(elapsed_ms);
     }
+    update_camera_pos();
     imgui();
 
 }
@@ -118,6 +119,7 @@ void Game::restart(Level level)
         loading_screen_factory();
         this->level = level;
     }else{
+        background_factory(parallax_offset);
         init_level();
         init_map_grid();
         init_unit_grid();
@@ -135,6 +137,19 @@ void Game::handle_collisions()
 bool Game::is_over() const
 {
 	return glfwWindowShouldClose(window)>0;
+}
+
+void Game::update_camera_pos() {
+    ivec2 window_size = get_window_size();
+    double xpos, ypos;
+    glfwGetCursorPos(window, &xpos, &ypos);
+    if (abs(xpos - window_size.x) <= 20 || xpos <=20) {
+        parallax_offset += 1 * xpos <= 20? 1 : -1;
+        parallax_offset = ((int)parallax_offset % (int)(window_size.x));
+        if (current_speed == 1) {
+            background_factory(parallax_offset);
+        }
+    }
 }
 
 

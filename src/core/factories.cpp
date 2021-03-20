@@ -184,6 +184,16 @@ void loading_screen_factory(){
                {window_size_in_game_units.x, window_size_in_game_units.y}, 0.f);
 }
 
+void background_factory(float parallax_offset){
+    for (const auto entity : m_registry.view<ScreenComponent>()) {
+        m_registry.destroy(entity);
+    }
+    float xpos = parallax_offset + window_size_in_game_units.x / 2;
+    ui_factory( "bg.png", {xpos, window_size_in_game_units.y/2}, {window_size_in_game_units.y/405*540*12, window_size_in_game_units.y});
+    ui_factory("bg.png", { xpos + window_size_in_game_units.x, window_size_in_game_units.y / 2 }, { window_size_in_game_units.y / 405 * 540 * 12, window_size_in_game_units.y });
+    ui_factory("bg.png", { xpos - window_size_in_game_units.x, window_size_in_game_units.y / 2 }, { window_size_in_game_units.y / 405 * 540 * 12, window_size_in_game_units.y });
+}
+
 void swap_tile_texture(entt::entity entity, TileType tileType) {
     auto &tile_comp = m_registry.get<Tile>(entity);
     if (tile_comp.type != tileType) {
