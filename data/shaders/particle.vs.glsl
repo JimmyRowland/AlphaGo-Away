@@ -6,9 +6,10 @@ in vec2 in_texcoord;
 
 // Passed to fragment shader
 out vec2 texcoord;
-out vec4 ParticleColor;
+//out vec4 ParticleColor;
 
 // Application data
+uniform mat3 transform;
 uniform mat3 projection;
 
 void main()

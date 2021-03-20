@@ -302,6 +302,7 @@ void Game::sandbox_on_click(int button, int action, int mods){
                 }else if(imgui_entity_selection < 12 && imgui_entity_selection>3 && mapState[tile_index]==TileType::basic && unitMapState[tile_index]==UnitType::empty){
                     unitMapState[tile_index]=imgui_entity_selection_to_unitType();
                     unit_factory(get_tile_center_from_index(tile_index), imgui_entity_selection_to_unitType());
+                    particles->emitParticle(get_tile_center_from_index(tile_index), 20);
                 }
             }
         }
@@ -335,6 +336,7 @@ void Game::init_unit_grid() {
             float ypos = tile_size.y/2 + tile_size.y * j;
             if(unitMapState[ivec2(i,j)]!=UnitType::empty){
                 unit_factory(vec2(xpos,ypos), unitMapState[ivec2(i,j)]);
+                particles->emitParticle(vec2(xpos,ypos), 20);
             }
         }
     }

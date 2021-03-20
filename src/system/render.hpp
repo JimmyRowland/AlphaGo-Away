@@ -9,6 +9,7 @@
 #include "components/tile.hpp"
 #include "components/units.hpp"
 #include "components/ui.hpp"
+#include "particleSystem.hpp"
 struct InstancedMesh;
 struct ShadedMesh;
 

@@ -9,6 +9,7 @@
 #include "gui/gui.hpp"
 #include "system/physics.hpp"
 #include "logger/debug.hpp"
+#include "system/particleSystem.hpp"
 #include "system/render_components.hpp"
 #include "system/ai.hpp"
 #include "entities/unit.hpp"
@@ -74,6 +75,8 @@ public:
 	GLFWwindow* window;
 
 	void init_level();
+    
+    ParticleSystem *particles;
 private:
 	// Input callback functions
     vec2 get_cursor_position();
@@ -99,6 +102,7 @@ private:
     bool has_battle_started;
     
     float frame = 1.f;
+
 
 	// C++ random number generator
 	std::default_random_engine rng;

@@ -71,7 +71,12 @@ void RenderSystem::drawTexturedMesh(entt::entity entity, const mat3 &projection)
 
 	// Getting uniform locations for glUniform* calls
 	GLint color_uloc = glGetUniformLocation(texmesh.effect.program, "fcolor");
+    GLint particleColor_uloc = glGetUniformLocation(texmesh.effect.program, "particleColor");
 	glUniform3fv(color_uloc, 1, (float*)&texmesh.texture.color);
+    if (m_registry.has<Particle>(entity)) {
+        auto &p = m_registry.get<Particle>(entity);
+        glUniform4fv(particleColor_uloc, 1, (float*)&p.color);
+    }
 	gl_has_errors();
 
 	// Get number of indices from index buffer, which has elements uint16_t
@@ -203,6 +208,12 @@ void RenderSystem::draw(vec2 window_size_in_game_units)
         drawTexturedMesh(entity, projection_2D);
         gl_has_errors();
     }
+    
+    for (entt::entity entity : m_registry.view<ShadedMeshRef, Particle>())
+    {
+        drawTexturedMesh(entity, projection_2D);
+        gl_has_errors();
+    }
 
     for (entt::entity entity : m_registry.view<ShadedMeshRef, DebugComponent>())
     {
@@ -226,6 +237,7 @@ void gl_has_errors()
 	if (error == GL_NO_ERROR)
 		return;
 	
+    std::cout << "error is:    " << error << std::endl;
 	const char* error_str = "";
 	while (error != GL_NO_ERROR)
 	{
