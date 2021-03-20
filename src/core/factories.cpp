@@ -74,6 +74,7 @@ namespace {
         position.angle = 0.f;
         position.scale = get_unit_scale(resource);
         UnitProperty &property = m_registry.emplace<UnitProperty>(entity);
+        property.unit_type = unitType;
         m_registry.emplace<Stand>(entity);
     }
 
@@ -151,6 +152,22 @@ entt::entity unit_factory(vec2 pos, UnitType unitType) {
     init_unit_flag_components(entity, unitType);
     init_unit_bounding_box(entity, unitType);
     init_unit(entity, resource, pos, unitType);
+    return entity;
+};
+
+entt::entity explosion_factory(vec2 pos) {
+    auto entity = m_registry.create();
+    std::string key = "explosion";
+    ShadedMesh &resource = cache_resource(key);
+    if (resource.effect.program.resource == 0)
+        RenderSystem::createSprite(resource, textures_path("unit/explosion.png"), "animation_textured");
+    resource.number_of_frames = 12;
+    m_registry.emplace<ShadedMeshRef>(entity, resource);
+    auto& position = m_registry.emplace<Position>(entity);
+    position.position = pos;
+    position.angle = 0.f;
+    position.scale = tile_size;
+    m_registry.emplace<Explosion>(entity);
     return entity;
 };
 
