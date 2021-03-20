@@ -105,7 +105,7 @@ private:
 	UnitMapState unitMapState;
     Level level = Level::sandbox;
     bool is_paused = true;
-    bool show_imgui = false;
+    bool show_imgui = true;
 
     void imgui();
     void imgui_level_selection_menu();
