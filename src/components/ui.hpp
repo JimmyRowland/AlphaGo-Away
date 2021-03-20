@@ -4,7 +4,9 @@
 
 #ifndef ALPHAGO_AWAY_UI_HPP
 #define ALPHAGO_AWAY_UI_HPP
-struct ScreenComponent{};
+struct ScreenComponent{
+    float depth = -1.f;
+};
 struct ButtonComponent
 {
 };

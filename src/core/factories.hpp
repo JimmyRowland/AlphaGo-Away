@@ -16,5 +16,6 @@ entt::entity unit_factory(vec2 pos, UnitType unitType = UnitType::human_terminat
 entt::entity tile_factory(vec2 pos, TileType tileType);
 void swap_tile_texture(entt::entity tile, TileType tileType);
 GLuint get_tile_texture_id(TileType tileType);
+void screenUpdate(float frame);
 void loading_screen_factory();
 #endif //ALPHAGO_AWAY_FACTORIES_HPP

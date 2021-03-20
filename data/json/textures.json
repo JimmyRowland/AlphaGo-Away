@@ -1,19 +1,19 @@
 {
     "human_terminator": {
         "attack": {
-            "texture": "close-001.png",
-            "number_of_frame": 1,
-            "shader": "textured"
+            "texture": "unit/human_terminator_attack.png",
+            "number_of_frame": 12,
+            "shader": "walking_robot_textured"
         },
         "stand": {
-            "texture": "close-001.png",
-            "number_of_frame": 1,
-            "shader": "textured"
+            "texture": "unit/human_terminator_stand.png",
+            "number_of_frame": 12,
+            "shader": "walking_robot_textured"
         },
         "walk": {
-            "texture": "close-001.png",
-            "number_of_frame": 1,
-            "shader": "textured"
+            "texture": "unit/human_terminator_walk.png",
+            "number_of_frame": 15,
+            "shader": "walking_robot_textured"
         },
         "die": {
             "texture": "unit/explosion.png",
@@ -23,19 +23,19 @@
     },
     "human_monitor": {
         "attack": {
-            "texture": "close-001.png",
-            "number_of_frame": 1,
-            "shader": "textured"
+            "texture": "unit/human_monitor_attack.png",
+            "number_of_frame": 24,
+            "shader": "walking_robot_textured"
         },
         "stand": {
-            "texture": "close-001.png",
-            "number_of_frame": 1,
-            "shader": "textured"
+            "texture": "unit/human_monitor_stand.png",
+            "number_of_frame": 12,
+            "shader": "walking_robot_textured"
         },
         "walk": {
-            "texture": "close-001.png",
-            "number_of_frame": 1,
-            "shader": "textured"
+            "texture": "unit/human_monitor_walk.png",
+            "number_of_frame": 12,
+            "shader": "walking_robot_textured"
         },
         "die": {
             "texture": "unit/explosion.png",
@@ -45,19 +45,19 @@
     },
     "human_archer":{
         "attack": {
-            "texture": "close-001.png",
-            "number_of_frame": 1,
-            "shader": "textured"
+            "texture": "unit/human_archer_attack.png",
+            "number_of_frame": 10,
+            "shader": "walking_robot_textured"
         },
         "stand": {
-            "texture": "close-001.png",
-            "number_of_frame": 1,
-            "shader": "textured"
+            "texture": "unit/human_archer_stand.png",
+            "number_of_frame": 12,
+            "shader": "walking_robot_textured"
         },
         "walk": {
-            "texture": "close-001.png",
-            "number_of_frame": 1,
-            "shader": "textured"
+            "texture": "unit/human_archer_walk.png",
+            "number_of_frame": 15,
+            "shader": "walking_robot_textured"
         },
         "die": {
             "texture": "unit/explosion.png",
@@ -67,19 +67,19 @@
     },
     "human_healer":{
         "attack": {
-            "texture": "close-001.png",
-            "number_of_frame": 1,
-            "shader": "textured"
+            "texture": "unit/human_healer_attack.png",
+            "number_of_frame": 12,
+            "shader": "walking_robot_textured"
         },
         "stand": {
-            "texture": "close-001.png",
-            "number_of_frame": 1,
-            "shader": "textured"
+            "texture": "unit/human_healer_stand.png",
+            "number_of_frame": 12,
+            "shader": "walking_robot_textured"
         },
         "walk": {
-            "texture": "close-001.png",
-            "number_of_frame": 1,
-            "shader": "textured"
+            "texture": "unit/human_healer_walk.png",
+            "number_of_frame": 15,
+            "shader": "walking_robot_textured"
         },
         "die": {
             "texture": "unit/explosion.png",

@@ -89,6 +89,10 @@ void Game::init_audio()
 // Update our game world
 void Game::update(float elapsed_ms, vec2 window_size_in_game_units)
 {
+    if (this->level == Level::start_screen) {
+        frame += 0.3;
+        screenUpdate(frame);
+    }
     if(has_battle_started){
         ai_update(elapsed_ms);
         physics_update(elapsed_ms);
@@ -110,7 +114,9 @@ void Game::restart(Level level)
     has_battle_started = false;
 
     if(level == Level::start_screen){
+        frame = 1.f;
         loading_screen_factory();
+        this->level = level;
     }else{
         init_level();
         init_map_grid();
@@ -314,7 +320,9 @@ void Game::sandbox_on_click(int button, int action, int mods){
                         //                TODO refactor  sandbox_add_unit
                     }else{
                         place_an_ally(tile_index);
+                        particles->emitParticle(get_tile_center_from_index(tile_index), 20);
                         place_an_enemy(tile_index);
+                        particles->emitParticle(get_tile_center_from_index(tile_index), 20);
                     }
                 }
             }
@@ -332,6 +340,7 @@ void Game::level_on_click(int button, int action, int mods){
                 std::cout << "tile_index" << tile_index.x << tile_index.y << !is_tile_out_of_index(tile_index) << '\n';
                 if(!is_tile_out_of_index(tile_index)){
                     place_an_ally(tile_index);
+                    particles->emitParticle(get_tile_center_from_index(tile_index), 20);
                 }
             }
         }
@@ -365,6 +374,7 @@ void Game::init_unit_grid() {
             float ypos = tile_size.y/2 + tile_size.y * j;
             if(unitMapState[ivec2(i,j)]!=UnitType::empty){
                 unit_factory(vec2(xpos,ypos), unitMapState[ivec2(i,j)]);
+                particles->emitParticle(vec2(xpos,ypos), 20);
             }
         }
     }

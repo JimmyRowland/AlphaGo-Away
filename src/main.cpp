@@ -39,8 +39,7 @@ int main()
     init_factories();
 	Game game(window_size_in_px);
 	RenderSystem renderer(*game.window);
-
-
+    game.particles = new ParticleSystem(0.0005f);
 
 	// Set all states to default
 	auto t = Clock::now();
@@ -76,7 +75,7 @@ int main()
         DebugSystem::clearDebugComponents();
 
         game.update(elapsed_ms, window_size_in_game_units);
-
+        game.particles->update();
         renderer.draw(window_size_in_game_units);
 	}
     ImGui_ImplGlfw_Shutdown();
