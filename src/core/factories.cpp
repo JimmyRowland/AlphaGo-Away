@@ -1,5 +1,4 @@
 #include "factories.hpp"
-#include <iostream>
 
 namespace {
     nlohmann::json unit_meshes;
@@ -75,6 +74,7 @@ namespace {
         position.angle = 0.f;
         position.scale = get_unit_scale(resource);
         UnitProperty &property = m_registry.emplace<UnitProperty>(entity);
+        property.unit_type = unitType;
         m_registry.emplace<Stand>(entity);
     }
 
@@ -155,6 +155,22 @@ entt::entity unit_factory(vec2 pos, UnitType unitType) {
     return entity;
 };
 
+entt::entity explosion_factory(vec2 pos) {
+    auto entity = m_registry.create();
+    std::string key = "explosion";
+    ShadedMesh &resource = cache_resource(key);
+    if (resource.effect.program.resource == 0)
+        RenderSystem::createSprite(resource, textures_path("unit/explosion.png"), "animation_textured");
+    resource.number_of_frames = 12;
+    m_registry.emplace<ShadedMeshRef>(entity, resource);
+    auto& position = m_registry.emplace<Position>(entity);
+    position.position = pos;
+    position.angle = 0.f;
+    position.scale = tile_size;
+    m_registry.emplace<Explosion>(entity);
+    return entity;
+};
+
 void ui_factory(std::string texture_path, vec2 pos, vec2 size, float depth = 0){
     auto entity = m_registry.create();
     m_registry.emplace<ShadedMeshRef>(entity, create_ui_mesh(texture_path));
@@ -184,14 +200,8 @@ void loading_screen_factory(){
                {window_size_in_game_units.x, window_size_in_game_units.y}, 0.f);
 }
 
-void background_factory(float parallax_offset){
-    for (const auto entity : m_registry.view<ScreenComponent>()) {
-        m_registry.destroy(entity);
-    }
-    float xpos = parallax_offset + window_size_in_game_units.x / 2;
-    ui_factory( "bg.png", {xpos, window_size_in_game_units.y/2}, {window_size_in_game_units.y/405*540*12, window_size_in_game_units.y});
-    ui_factory("bg.png", { xpos + window_size_in_game_units.x, window_size_in_game_units.y / 2 }, { window_size_in_game_units.y / 405 * 540 * 12, window_size_in_game_units.y });
-    ui_factory("bg.png", { xpos - window_size_in_game_units.x, window_size_in_game_units.y / 2 }, { window_size_in_game_units.y / 405 * 540 * 12, window_size_in_game_units.y });
+void background_factory(){
+    ui_factory( "bg.png", {window_size_in_game_units.x / 2, window_size_in_game_units.y/2}, {window_size_in_game_units.y/405*540*12, window_size_in_game_units.y});
 }
 
 void swap_tile_texture(entt::entity entity, TileType tileType) {

@@ -18,5 +18,6 @@ void swap_tile_texture(entt::entity tile, TileType tileType);
 GLuint get_tile_texture_id(TileType tileType);
 void screenUpdate(float frame);
 void loading_screen_factory();
-void background_factory(float parallax_offset);
+void background_factory();
+entt::entity explosion_factory(vec2 pos);
 #endif //ALPHAGO_AWAY_FACTORIES_HPP

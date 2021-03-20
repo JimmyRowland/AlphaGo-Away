@@ -111,19 +111,19 @@
     },
     "ai_monitor":{
         "attack": {
-            "texture": "close-001.png",
-            "number_of_frame": 1,
-            "shader": "textured"
+            "texture": "unit/ai_monitor_attack.png",
+            "number_of_frame": 5,
+            "shader": "animation_textured"
         },
         "stand": {
-            "texture": "close-001.png",
+            "texture": "unit/ai_monitor_stand.png",
             "number_of_frame": 1,
             "shader": "textured"
         },
         "walk": {
-            "texture": "close-001.png",
-            "number_of_frame": 1,
-            "shader": "textured"
+            "texture": "unit/ai_monitor_walk.png",
+            "number_of_frame": 8,
+            "shader": "animation_textured"
         },
         "die": {
             "texture": "unit/explosion.png",

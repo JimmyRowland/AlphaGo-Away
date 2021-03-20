@@ -6,21 +6,18 @@
 #define ALPHAGO_AWAY_UNITS_HPP
 #include "core/unitmap.hpp"
 struct Terminator{
-    UnitType unit_type = UnitType::human_terminator;
 };
 struct Archer{
-    UnitType unit_type = UnitType::human_archer;
 };
 struct Monitor{
-    UnitType unit_type = UnitType::human_monitor;
 };
 struct Healer{
-    UnitType unit_type = UnitType::human_healer;
 };
 struct Attack{};
 struct Walk{};
 struct Stand{};
 struct Die{};
+struct Explosion{};
 struct Projectile{
 };
 struct Enemy{
@@ -35,9 +32,9 @@ struct UnitProperty{
     int attackRange = 5;
     int moveRange = 5;
     int damage = 5;
-    entt::entity desiredTarget;
-    entt::entity actualTarget;
+    UnitType unit_type = UnitType::human_terminator;
+//    entt::entity desiredTarget;
+    entt::entity actualTarget = entt::null;
     std::vector<std::pair<int, int>> path = {};
-    float max_velocity = 40.f;
 };
 #endif //ALPHAGO_AWAY_UNITS_HPP
