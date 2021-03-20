@@ -8,7 +8,7 @@ namespace {
 void ai_update(float elapsed_ms) {
     cooldown -= elapsed_ms;
     if (cooldown < 0) {
-        cooldown = 4000;
+        cooldown = tile_size.x /unit_speed * 1000;
         A_Star a = A_Star(std::make_pair(tile_matrix_dimension.x, tile_matrix_dimension.y));
         for (auto &&[entity, property, position]: m_registry.view<UnitProperty, Position>().each()) {
             if (!m_registry.valid(property.actualTarget) || property.actualTarget == entity) {

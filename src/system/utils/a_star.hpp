@@ -51,10 +51,10 @@ public:
             ivec2 tile_index = get_tile_index(tile_pos.position);
             this->grid[tile_index.x][tile_index.y] = costs[tile_comp.type];
         }
-//        for (auto&&[entity, unit_prop, unit_pos] : m_registry.view<UnitProperty, Position>().each()) {
-//            ivec2 tile_index = get_tile_index(unit_pos.position);
-//            this->unit_grid[tile_index.x][tile_index.y] = 100;
-//        }
+        for (auto&&[entity, unit_prop, unit_pos] : m_registry.view<UnitProperty, Position>().each()) {
+            ivec2 tile_index = get_tile_index(unit_pos.position);
+            this->unit_grid[tile_index.x][tile_index.y] = 100;
+        }
     }
 
     // a* search algorithm, start is a the starting grid position, end is the target grid position
@@ -82,7 +82,8 @@ public:
             for (auto &neighbour : neighbours) {
                 if (neighbour.first >= 0 && neighbour.first < grid.size() && neighbour.second >= 0 &&
                     neighbour.second < grid[0].size()) {
-                    int updatedCost = costSoFar[current] + this->grid[neighbour.first][neighbour.second] + this->unit_grid[neighbour.first][neighbour.second];
+                    int updatedCost = costSoFar[current] + this->grid[neighbour.first][neighbour.second];
+                    if(current==start){updatedCost+=this->unit_grid[neighbour.first][neighbour.second];}
                     if (!costSoFar.count(neighbour) || updatedCost < costSoFar[neighbour]) {
                         costSoFar[neighbour] = updatedCost;
                         int prioirity = updatedCost + heuristic(neighbour, end);
@@ -104,14 +105,15 @@ public:
                 break;
             }
             res_path.push_back(tile_index);
+            break;
         }
 
-//        if(!res_path.empty()){
-////            unit_grid[res_path[0].first][res_path[0].second] = 5;
-//            unit_grid[start.first][start.second] = 0;
-//        }else{
-////            unit_grid[start.first][start.second] = 100;
-//        }
+        if(!res_path.empty()){
+            unit_grid[res_path[0].first][res_path[0].second] = 100;
+            unit_grid[start.first][start.second] = 0;
+        }else{
+            unit_grid[start.first][start.second] = 100;
+        }
         return res_path;
     }
 
