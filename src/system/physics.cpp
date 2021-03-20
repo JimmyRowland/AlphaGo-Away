@@ -196,11 +196,11 @@ void physics_update(float elapsed_ms) {
                                         entity_j);
 //                   TODO iterate over m_register.view<Enemy/Ally> instead
                                 if (collides(entity_i, entity_j)) {
-//                                    vec2 direction = normalize(position_j.position - position_i.position);
-//                                    if (direction.x == 0) direction.x = 0.1;
-//                                    if (direction.y == 0) direction.y = 0.1;
-//                                    position_i.position += direction * step_seconds * -10.f;
-//                                    position_j.position += direction * step_seconds * 10.f;
+                                    vec2 direction = normalize(position_j.position - position_i.position);
+                                    if (direction.x == 0) direction.x = 0.1;
+                                    if (direction.y == 0) direction.y = 0.1;
+                                    position_i.position += direction * step_seconds * -10.f;
+                                    position_j.position += direction * step_seconds * 10.f;
                                     on_collision_resolve_damage(entity_i, entity_j);
                                 }
                             }
