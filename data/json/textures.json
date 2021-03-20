@@ -155,19 +155,19 @@
     },
     "ai_healer":{
         "attack": {
-            "texture": "close-001.png",
-            "number_of_frame": 1,
-            "shader": "textured"
+            "texture": "unit/ai_healer_attack.png",
+            "number_of_frame": 5,
+            "shader": "animation_textured"
         },
         "stand": {
-            "texture": "close-001.png",
-            "number_of_frame": 1,
-            "shader": "textured"
+            "texture": "unit/ai_healer_stand.png",
+            "number_of_frame": 5,
+            "shader": "animation_textured"
         },
         "walk": {
-            "texture": "close-001.png",
-            "number_of_frame": 1,
-            "shader": "textured"
+            "texture": "unit/ai_healer_walk.png",
+            "number_of_frame": 5,
+            "shader": "animation_textured"
         },
         "die": {
             "texture": "unit/explosion.png",

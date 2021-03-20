@@ -90,7 +90,7 @@ void Game::init_audio()
 void Game::update(float elapsed_ms, vec2 window_size_in_game_units)
 {
     if (this->level == Level::start_screen) {
-        frame += 0.3;
+        frame += 0.1;
         screenUpdate(frame);
     }
     if(has_battle_started){

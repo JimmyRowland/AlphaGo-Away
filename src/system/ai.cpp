@@ -2,7 +2,7 @@
 #include "ai.hpp"
 
 namespace {
-    float cooldown = 100;
+    float cooldown = 1000;
 
     float get_entity_distance(entt::entity entity, entt::entity target_entity) {
         auto &position_i = m_registry.get<Position>(entity);
@@ -95,19 +95,21 @@ namespace {
             }
         }
     }
+    void clear_explosions(){
+        for(auto& entity: m_registry.view<Explosion>()){
+            m_registry.destroy(entity);
+        }
+    }
 }
 
 void ai_update(float elapsed_ms) {
     cooldown -= elapsed_ms;
     if (cooldown < 0) {
         cooldown = tile_size.x / unit_speed * 1000;
-
+        clear_explosions();
         set_targets();
-
         set_path();
-
         update_state();
-
     }
 
 }
