@@ -95,7 +95,11 @@ void Game::update(float elapsed_ms, vec2 window_size_in_game_units)
     }
     if(has_battle_started){
         ai_update(elapsed_ms);
-        physics_update(elapsed_ms);
+        if(battle_start_in > 0){
+            battle_start_in -= elapsed_ms;
+        }else{
+            physics_update(elapsed_ms);
+        }
     }
     update_camera_pos();
     imgui();
@@ -432,7 +436,10 @@ void Game::imgui_level_selection_menu(){
 void Game::imgui_battle_control_menu(){
     if (ImGui::CollapsingHeader("Battle"))
     {
-        if (ImGui::Button("Start battle")) has_battle_started = true;
+        if (ImGui::Button("Start battle")) {
+            has_battle_started = true;
+            battle_start_in = cool_down_unit * 2;
+        };
         if (ImGui::Button("Restart level")) restart(level);
     }
 };

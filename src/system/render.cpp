@@ -89,7 +89,7 @@ void RenderSystem::drawTexturedMesh(entt::entity entity, const mat3 &projection)
 	// Setting uniform values to the currently bound program
 	glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform.mat);
 	glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
-    glUniform1i(frame_uloc, ((int) (floor(frame_num)) % 15));
+    glUniform1i(frame_uloc, ((int) (floor(frame_num)) % number_of_frames));
     glUniform1f(one_over_number_of_frame, 1.f / number_of_frames);
 	gl_has_errors();
 

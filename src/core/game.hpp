@@ -94,6 +94,7 @@ private:
 	Mix_Music* background_music;
 
     bool has_battle_started;
+    float battle_start_in;
     
     float frame = 1.f;
 
