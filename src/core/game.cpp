@@ -113,7 +113,7 @@ void Game::restart(Level level)
     if(level == Level::start_screen){
         loading_screen_factory();
     }else{
-        background_factory(parallax_offset);
+        background_factory();
         init_level();
         init_map_grid();
         init_unit_grid();
@@ -134,14 +134,18 @@ bool Game::is_over() const
 }
 
 void Game::update_camera_pos() {
-    ivec2 window_size = get_window_size();
-    double xpos, ypos;
-    glfwGetCursorPos(window, &xpos, &ypos);
-    if (abs(xpos - window_size.x) <= 20 || xpos <=20) {
-        parallax_offset += 1 * xpos <= 20? 1 : -1;
-        parallax_offset = ((int)parallax_offset % (int)(window_size.x));
-        if (current_speed == 1) {
-            background_factory(parallax_offset);
+    if(level!=Level::start_screen){
+        ivec2 window_size = get_window_size();
+        double xpos, ypos;
+        glfwGetCursorPos(window, &xpos, &ypos);
+        if (abs(xpos - window_size.x) <= 20 || xpos <=20) {
+            parallax_offset += 1 * xpos <= 20? 1 : -1;
+            parallax_offset = ((int)parallax_offset % (int)(window_size.x));
+            if (current_speed == 1) {
+                for (auto&&[entity, position]: m_registry.view<Position,ScreenComponent>().each()){
+                    position.position.x = window_size_in_game_units.x / 2 + parallax_offset;
+                }
+            }
         }
     }
 }
