@@ -67,7 +67,12 @@ namespace {
                 if (m_registry.valid(property.actualTarget)) {
                     auto&&[target_position, target_property] = m_registry.get<Position, UnitProperty>(
                             property.actualTarget);
-                    auto target_tile_index = target_property.path.empty() ? get_tile_index(target_position.position): rand() % 10 > 5 ? ivec2(target_property.path[0].first, target_property.path[0].second): get_tile_index(target_position.position);                    auto entity_tile_index = get_tile_index(position.position);
+                    auto target_tile_index = target_property.path.empty() ? get_tile_index(target_position.position) :
+                                             rand() % 10 > 5 ? ivec2(target_property.path[0].first,
+                                                                     target_property.path[0].second) : get_tile_index(
+                                                     target_position.position);
+//                    auto target_tile_index = get_tile_index(target_position.position);
+                    auto entity_tile_index = get_tile_index(position.position);
                     property.path = a.getPath(std::make_pair(entity_tile_index.x, entity_tile_index.y),
                                               std::make_pair(target_tile_index.x, target_tile_index.y));
                 }
@@ -79,6 +84,7 @@ namespace {
         for (auto &&[entity, property]: m_registry.view<UnitProperty>().each()) {
             if (m_registry.valid(entity)) {
                 if (within_attack_range(entity, property.actualTarget)) {
+                    property.path = {};
                     unit_attack(entity, property.unit_type);
                     resolve_damage(entity, property.actualTarget);
                 } else if (!property.path.empty()) {
