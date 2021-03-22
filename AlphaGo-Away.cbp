@@ -1,0 +1,292 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="AlphaGo-Away"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;CMake Files\vcpkg\;CMake Files\vcpkg\scripts\;CMake Files\vcpkg\scripts\buildsystems\;CMake Files\vcpkg\installed\;CMake Files\vcpkg\installed\x64-osx\;CMake Files\vcpkg\installed\x64-osx\share\;CMake Files\vcpkg\installed\x64-osx\share\entt\;CMake Files\vcpkg\installed\x64-osx\share\gl3w\;CMake Files\vcpkg\installed\x64-osx\share\imgui\;CMake Files\vcpkg\installed\x64-osx\share\nlohmann_json\;CMake Files\ext\;CMake Files\ext\glm\;CMake Files\ext\glm\cmake\;CMake Files\ext\glm\cmake\glm\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/Users/liwenxi/AIphaGo-Away"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/liwenxi/AIphaGo-Away/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/liwenxi/AIphaGo-Away/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/liwenxi/AIphaGo-Away/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/liwenxi/AIphaGo-Away/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="/Users/liwenxi/AIphaGo-Away"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/liwenxi/AIphaGo-Away/Makefile&quot;  VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/liwenxi/AIphaGo-Away/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/liwenxi/AIphaGo-Away/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/liwenxi/AIphaGo-Away/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="/Users/liwenxi/AIphaGo-Away"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/liwenxi/AIphaGo-Away/Makefile&quot;  VERBOSE=1 edit_cache"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/liwenxi/AIphaGo-Away/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/liwenxi/AIphaGo-Away/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/liwenxi/AIphaGo-Away/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="AlphaGo-Away">
+				<Option output="/Users/liwenxi/AIphaGo-Away/AlphaGo-Away" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/liwenxi/AIphaGo-Away"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DJSON_USE_IMPLICIT_CONVERSIONS=1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Users/liwenxi/AIphaGo-Away/src"/>
+					<Add directory="/Users/liwenxi/AIphaGo-Away/ext/stb_image"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk/System/Library/Frameworks/OpenGL.framework"/>
+					<Add directory="/usr/local/Cellar/glfw/3.3.2/include"/>
+					<Add directory="/usr/local/include/SDL2"/>
+					<Add directory="/Users/liwenxi/AIphaGo-Away/vcpkg/installed/x64-osx/include"/>
+					<Add directory="/Users/liwenxi/AIphaGo-Away/ext/glm"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/12.0.0/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/liwenxi/AIphaGo-Away/Makefile&quot;  VERBOSE=1 AlphaGo-Away"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/liwenxi/AIphaGo-Away/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/liwenxi/AIphaGo-Away/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/liwenxi/AIphaGo-Away/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="AlphaGo-Away/fast">
+				<Option output="/Users/liwenxi/AIphaGo-Away/AlphaGo-Away" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/Users/liwenxi/AIphaGo-Away"/>
+				<Option object_output="./"/>
+				<Option type="1"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add option="-DJSON_USE_IMPLICIT_CONVERSIONS=1"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/Users/liwenxi/AIphaGo-Away/src"/>
+					<Add directory="/Users/liwenxi/AIphaGo-Away/ext/stb_image"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX11.1.sdk/System/Library/Frameworks/OpenGL.framework"/>
+					<Add directory="/usr/local/Cellar/glfw/3.3.2/include"/>
+					<Add directory="/usr/local/include/SDL2"/>
+					<Add directory="/Users/liwenxi/AIphaGo-Away/vcpkg/installed/x64-osx/include"/>
+					<Add directory="/Users/liwenxi/AIphaGo-Away/ext/glm"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/../include/c++/v1"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/lib/clang/12.0.0/include"/>
+					<Add directory="/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include"/>
+					<Add directory="/System/Library/Frameworks"/>
+					<Add directory="/Library/Frameworks"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j4 -f &quot;/Users/liwenxi/AIphaGo-Away/Makefile&quot;  VERBOSE=1 AlphaGo-Away/fast"/>
+					<CompileFile command="/usr/bin/make -j4 -f &quot;/Users/liwenxi/AIphaGo-Away/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j4 -f &quot;/Users/liwenxi/AIphaGo-Away/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j4 -f &quot;/Users/liwenxi/AIphaGo-Away/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/src/components/motion.cpp">
+			<Option target="AlphaGo-Away"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/src/components/motion.hpp">
+			<Option target="AlphaGo-Away"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/src/components/tile.hpp">
+			<Option target="AlphaGo-Away"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/src/components/ui.hpp">
+			<Option target="AlphaGo-Away"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/src/components/units.hpp">
+			<Option target="AlphaGo-Away"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/src/core/common.cpp">
+			<Option target="AlphaGo-Away"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/src/core/common.hpp">
+			<Option target="AlphaGo-Away"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/src/core/constants.hpp">
+			<Option target="AlphaGo-Away"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/src/core/enum.hpp">
+			<Option target="AlphaGo-Away"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/src/core/factories.cpp">
+			<Option target="AlphaGo-Away"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/src/core/factories.hpp">
+			<Option target="AlphaGo-Away"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/src/core/game.cpp">
+			<Option target="AlphaGo-Away"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/src/core/game.hpp">
+			<Option target="AlphaGo-Away"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/src/core/map.cpp">
+			<Option target="AlphaGo-Away"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/src/core/map.hpp">
+			<Option target="AlphaGo-Away"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/src/core/registry.cpp">
+			<Option target="AlphaGo-Away"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/src/core/registry.hpp">
+			<Option target="AlphaGo-Away"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/src/core/unitmap.cpp">
+			<Option target="AlphaGo-Away"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/src/core/unitmap.hpp">
+			<Option target="AlphaGo-Away"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/src/entities/human_terminator.cpp">
+			<Option target="AlphaGo-Away"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/src/entities/human_terminator.hpp">
+			<Option target="AlphaGo-Away"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/src/entities/unit.cpp">
+			<Option target="AlphaGo-Away"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/src/entities/unit.hpp">
+			<Option target="AlphaGo-Away"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/src/gui/gui.cpp">
+			<Option target="AlphaGo-Away"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/src/gui/gui.hpp">
+			<Option target="AlphaGo-Away"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/src/gui/imgui_impl_glfw.cpp">
+			<Option target="AlphaGo-Away"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/src/gui/imgui_impl_glfw.h">
+			<Option target="AlphaGo-Away"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/src/gui/imgui_impl_opengl3.cpp">
+			<Option target="AlphaGo-Away"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/src/gui/imgui_impl_opengl3.h">
+			<Option target="AlphaGo-Away"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/src/logger/debug.cpp">
+			<Option target="AlphaGo-Away"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/src/logger/debug.hpp">
+			<Option target="AlphaGo-Away"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/src/main.cpp">
+			<Option target="AlphaGo-Away"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/src/system/ai.cpp">
+			<Option target="AlphaGo-Away"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/src/system/ai.hpp">
+			<Option target="AlphaGo-Away"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/src/system/particleSystem.cpp">
+			<Option target="AlphaGo-Away"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/src/system/particleSystem.hpp">
+			<Option target="AlphaGo-Away"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/src/system/physics.cpp">
+			<Option target="AlphaGo-Away"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/src/system/physics.hpp">
+			<Option target="AlphaGo-Away"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/src/system/render.cpp">
+			<Option target="AlphaGo-Away"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/src/system/render.hpp">
+			<Option target="AlphaGo-Away"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/src/system/render_components.cpp">
+			<Option target="AlphaGo-Away"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/src/system/render_components.hpp">
+			<Option target="AlphaGo-Away"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/src/system/render_init.cpp">
+			<Option target="AlphaGo-Away"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/src/system/utils/a_star.hpp">
+			<Option target="AlphaGo-Away"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/src/system/utils/kd-tree.cpp">
+			<Option target="AlphaGo-Away"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/src/system/utils/kd-tree.hpp">
+			<Option target="AlphaGo-Away"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/src/utils/grid.hpp">
+			<Option target="AlphaGo-Away"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/vcpkg/scripts/buildsystems/vcpkg.cmake">
+			<Option virtualFolder="CMake Files\vcpkg\scripts\buildsystems\"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/vcpkg/installed/x64-osx/share/entt/EnTTConfig.cmake">
+			<Option virtualFolder="CMake Files\vcpkg\installed\x64-osx\share\entt\"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/vcpkg/installed/x64-osx/share/entt/EnTTConfigVersion.cmake">
+			<Option virtualFolder="CMake Files\vcpkg\installed\x64-osx\share\entt\"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/vcpkg/installed/x64-osx/share/entt/EnTTTargets.cmake">
+			<Option virtualFolder="CMake Files\vcpkg\installed\x64-osx\share\entt\"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/vcpkg/installed/x64-osx/share/gl3w/gl3wConfig-debug.cmake">
+			<Option virtualFolder="CMake Files\vcpkg\installed\x64-osx\share\gl3w\"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/vcpkg/installed/x64-osx/share/gl3w/gl3wConfig-release.cmake">
+			<Option virtualFolder="CMake Files\vcpkg\installed\x64-osx\share\gl3w\"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/vcpkg/installed/x64-osx/share/gl3w/gl3wConfig.cmake">
+			<Option virtualFolder="CMake Files\vcpkg\installed\x64-osx\share\gl3w\"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/vcpkg/installed/x64-osx/share/imgui/imgui-config.cmake">
+			<Option virtualFolder="CMake Files\vcpkg\installed\x64-osx\share\imgui\"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/vcpkg/installed/x64-osx/share/imgui/imgui-targets-debug.cmake">
+			<Option virtualFolder="CMake Files\vcpkg\installed\x64-osx\share\imgui\"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/vcpkg/installed/x64-osx/share/imgui/imgui-targets-release.cmake">
+			<Option virtualFolder="CMake Files\vcpkg\installed\x64-osx\share\imgui\"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/vcpkg/installed/x64-osx/share/imgui/imgui-targets.cmake">
+			<Option virtualFolder="CMake Files\vcpkg\installed\x64-osx\share\imgui\"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/vcpkg/installed/x64-osx/share/nlohmann_json/nlohmann_jsonConfig.cmake">
+			<Option virtualFolder="CMake Files\vcpkg\installed\x64-osx\share\nlohmann_json\"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/vcpkg/installed/x64-osx/share/nlohmann_json/nlohmann_jsonConfigVersion.cmake">
+			<Option virtualFolder="CMake Files\vcpkg\installed\x64-osx\share\nlohmann_json\"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/vcpkg/installed/x64-osx/share/nlohmann_json/nlohmann_jsonTargets.cmake">
+			<Option virtualFolder="CMake Files\vcpkg\installed\x64-osx\share\nlohmann_json\"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/ext/glm/cmake/glm/glmConfig-version.cmake">
+			<Option virtualFolder="CMake Files\ext\glm\cmake\glm\"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/ext/glm/cmake/glm/glmConfig.cmake">
+			<Option virtualFolder="CMake Files\ext\glm\cmake\glm\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

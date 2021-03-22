@@ -22,4 +22,8 @@ struct BoundingBox {
     void rotate(float radians);
     void translate(vec2 offset);
 };
+
+struct Projectiles {
+    entt::entity pro = entt::null;
+};
 #endif //ALPHAGO_AWAY_MOTION_HPP
