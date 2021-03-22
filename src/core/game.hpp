@@ -71,6 +71,7 @@ public:
 	void init_level();
     
     ParticleSystem *particles;
+    bool should_place = false;
 private:
 	// Input callback functions
     vec2 get_cursor_position();

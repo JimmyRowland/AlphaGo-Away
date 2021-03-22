@@ -41,6 +41,9 @@ struct UnitProperty{
 //    entt::entity desiredTarget;
     entt::entity actualTarget = entt::null;
     std::vector<std::pair<int, int>> path = {};
+    bool selected = false;
+    bool selected_release = false;
+    vec2 init_pos = {0,0};
 };
 
 struct ProjectileProperty{
