@@ -36,6 +36,8 @@ namespace {
         if (property.hp <= 0) {
             explosion_factory(position.position);
             m_registry.destroy(entity);
+            if(projectile.pro != entt::null && m_registry.valid(projectile.pro)){
+                m_registry.destroy(projectile.pro);}
         }
     }
 
@@ -133,42 +135,67 @@ namespace {
         return scale;
     }
 
+    ShadedMesh& create_projectile_mesh(std::string screen_texture_path, std::string shader = "textured"){
+        float random1 = ((rand() % 100) - 50) / 10.0f;
+        std::string rand = std::to_string(random1);
+        std::string key = screen_texture_path ;
+        key.append(rand);
+        ShadedMesh &resource = cache_resource(key);
+        RenderSystem::createSprite(resource, textures_path(screen_texture_path), "textured");
+        return resource;
+    }
+
     void create_projectile(entt::entity unit, UnitType unitType){
         auto entity = m_registry.create();
-        ShadedMesh &resource = cache_resource("projectile");
 
-        //if (resource.effect.program.resource == 0){
+        //auto &position = m_registry.emplace<Position>(entity);
+        //ShadedMesh &resource = cache_resource("projectile");
+        //std::string key = "human_monitor";
+
+//        if (resource.effect.program.resource == 0){
             switch (unitType) {
-
                 case UnitType::human_monitor:
-                    RenderSystem::createSprite(resource, textures_path("human_tank_pro.png"), "textured");
+
+                    m_registry.emplace<ShadedMeshRef>(entity, create_projectile_mesh("human_tank_pro.png", "textured"));
+
+                    //RenderSystem::createSprite(resource, textures_path("human_tank_pro.png"), "textured");
                     m_registry.emplace<AllyProjectile>(entity);
-                    std::cout << "draw" << std::endl;
+
                     break;
                 case UnitType::human_archer:
-                    RenderSystem::createSprite(resource, textures_path("human_archer_pro.png"), "textured");
+                    m_registry.emplace<ShadedMeshRef>(entity, create_projectile_mesh("human_archer_pro.png", "textured"));
+
+                    //RenderSystem::createSprite(resource, textures_path("human_archer_pro.png"), "textured");
                     m_registry.emplace<AllyProjectile>(entity);
-                    std::cout << "draw" << std::endl;
+
 
                     break;
                 case UnitType::human_healer:
-                    RenderSystem::createSprite(resource, textures_path("human-healer_pro.png"), "textured");
+                    m_registry.emplace<ShadedMeshRef>(entity, create_projectile_mesh("human-healer_pro.png", "textured"));
+
+                    //RenderSystem::createSprite(resource, textures_path("human-healer_pro.png"), "textured");
                     m_registry.emplace<AllyProjectile>(entity);
-                    std::cout << "draw" << std::endl;
+
                     break;
 
                 case UnitType::ai_monitor:
-                    RenderSystem::createSprite(resource, textures_path("ai_tank_pro.png"), "textured");
+                    m_registry.emplace<ShadedMeshRef>(entity, create_projectile_mesh("ai_tank_pro.png", "textured"));
+
+                    // RenderSystem::createSprite(resource, textures_path("ai_tank_pro.png"), "textured");
                     m_registry.emplace<EnemyProjectile>(entity);
-                    std::cout << "draw" << std::endl;
+
                     break;
                 case UnitType::ai_archer:
-                    RenderSystem::createSprite(resource, textures_path("ai_archer_pro.png"), "textured");
+                    m_registry.emplace<ShadedMeshRef>(entity, create_projectile_mesh("ai_archer_pro.png", "textured"));
+
+                    //RenderSystem::createSprite(resource, textures_path("ai_archer_pro.png"), "textured");
                     m_registry.emplace<EnemyProjectile>(entity);
-                    std::cout << "draw" << std::endl;
+
                     break;
                 case UnitType::ai_healer:
-                    RenderSystem::createSprite(resource, textures_path("ai_healer_pro.png"), "textured");
+                    m_registry.emplace<ShadedMeshRef>(entity, create_projectile_mesh("ai_healer_pro.png", "textured"));
+
+                    //RenderSystem::createSprite(resource, textures_path("ai_healer_pro.png"), "textured");
                     m_registry.emplace<EnemyProjectile>(entity);
                     std::cout << "draw" << std::endl;
                     break;
@@ -181,19 +208,19 @@ namespace {
                     break;
             }
 
-       // }
+//        }
 
-        float random1 = ((rand() % 100) - 50) / 10.0f;
-        float random2 = ((rand() % 100) - 50) / 10.0f;
+        //;
+        //float random2 = ((rand() % 100) - 50) / 10.0f;
        if(m_registry.has<Projectiles>(unit)){
            return;
        }else{
            auto &projectile = m_registry.emplace<Projectiles>(unit);
            projectile.pro = entity;
 
-           m_registry.emplace<ShadedMeshRef>(entity, resource);
+           //m_registry.emplace<ShadedMeshRef>(entity, resource);
            auto &motion = m_registry.emplace<Motion>(entity);
-           motion.velocity = {random1,random2} ;
+           motion.velocity = {0,0} ;
            ProjectileProperty &property = m_registry.emplace<ProjectileProperty>(entity);
            property.unit_type = unitType;
 
@@ -203,8 +230,8 @@ namespace {
            auto &unit_position = m_registry.get<Position>(unit);
            position.position = unit_position.position;
            position.angle = 0.f;
-           position.scale = get_unit_scale(resource);
-           //position.scale = {35.f, 35.f};
+           //position.scale = {get_unit_scale(resource).x/3, get_unit_scale(resource).y/3};
+           position.scale = {40.f, 40.f};
        }
 
 
@@ -225,6 +252,12 @@ namespace {
                     resolve_damage(entity, property.actualTarget);
                 } else if (!property.path.empty()) {
                     unit_walk(entity, property.unit_type);
+                    if(m_registry.has<Projectiles>(entity)) {
+                        auto &projectile = m_registry.get<Projectiles>(entity);
+                        if (projectile.pro != entt::null && m_registry.valid(projectile.pro)) {
+                            m_registry.destroy(projectile.pro);
+                        }
+                    }
                 } else {
                     unit_stand(entity, property.unit_type);
                 }
