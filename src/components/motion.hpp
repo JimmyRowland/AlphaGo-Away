@@ -23,7 +23,7 @@ struct BoundingBox {
     void translate(vec2 offset);
 };
 
-struct Projectiles {
-    std::vector<entt::entity> pro = {} ;
-};
+//struct Projectiles {
+//    std::vector<entt::entity> pro = {} ;
+//};
 #endif //ALPHAGO_AWAY_MOTION_HPP

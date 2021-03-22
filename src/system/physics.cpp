@@ -80,30 +80,6 @@ namespace {
         }
     }
 
-    void update_projectile_velocity_and_facing_dir(entt::entity projectile, entt::entity target) {
-        auto &&[position_i, motion_i, property_i] = m_registry.get<Position, Motion, ProjectileProperty>(projectile);
-        auto &&[position_j, motion_j] = m_registry.get<Position, Motion>(target);
-        if (property_i.path.size()>0) {
-            std::pair<int, int> nextStep = property_i.path[0];
-            auto next_tile_center = get_tile_center_from_index(ivec2(nextStep.first, nextStep.second));
-            if (glm::distance(next_tile_center, position_i.position)<1) {
-                property_i.path.erase(property_i.path.begin());
-            }
-            vec2 next_position = get_tile_center_from_index(ivec2(nextStep.first, nextStep.second));
-            motion_i.velocity = glm::normalize(next_position - position_i.position) * unit_speed;
-        }else{
-            motion_i.velocity *= 0.f;
-        }
-
-        if (motion_i.velocity.x != 0) {
-            position_i.scale.x = -1 * sign(motion_i.velocity.x) * abs(position_i.scale.x);
-        } else if ((position_j.position - position_i.position).x > 0) {
-            position_i.scale.x = -abs(position_i.scale.x);
-        } else {
-            position_i.scale.x = abs(position_i.scale.x);
-        }
-    }
-
     void set_transformed_bounding_box(entt::entity entity) {
         if (m_registry.has<BoundingBox, Position>(entity)) {
             auto&&[bb, position] = m_registry.get<BoundingBox, Position>(entity);
@@ -121,30 +97,35 @@ namespace {
     }
 
 
-    void boundry_checking(entt::entity entity) {
+    bool is_out_of_boundary(entt::entity entity) {
         auto &&[position, motion] = m_registry.get<Position, Motion>(entity);
         if (position.position.y < map_y_min) {
             position.position.y = map_y_min;
             if (motion.velocity.y < 0) {
                 motion.velocity.y = 0;
             }
+            return true;
         } else if (position.position.y > map_y_max) {
             position.position.y = map_y_max;
             if (motion.velocity.y > 0) {
                 motion.velocity.y = 0;
             }
+            return true;
         }
         if (position.position.x < map_x_min) {
             position.position.x = map_x_min;
             if (motion.velocity.x < 0) {
                 motion.velocity.x = 0;
             }
+            return true;
         } else if (position.position.x > map_x_max) {
             position.position.x = map_x_max;
             if (motion.velocity.x > 0) {
                 motion.velocity.x = 0;
             }
+            return true;
         }
+        return false;
     }
 
 
@@ -171,15 +152,31 @@ void physics_update(float elapsed_ms) {
             position.position += motion.velocity * step_seconds;
         }
         set_transformed_bounding_box(entity);
-        boundry_checking(entity);
+        is_out_of_boundary(entity);
     }
 
     for (auto&&[entity, motion, position, projectile_property]: m_registry.view<Motion, Position, ProjectileProperty>().each()) {
         if (m_registry.valid(projectile_property.actualTarget)) {
-           // update_projectile_velocity_and_facing_dir(entity, projectile_property.actualTarget);
+           auto& target_position = m_registry.get<Position>(projectile_property.actualTarget);
+            vec2 dir = glm::normalize( target_position.position-position.position);
+            position.angle = atan2(dir.y,dir.x);
+            motion.velocity = glm::normalize(dir) * projectile_speed;
             position.position += motion.velocity * step_seconds;
+            set_transformed_bounding_box(entity);
+            if(is_out_of_boundary(entity)){
+                m_registry.destroy(entity);
+            }
+
+            if(m_registry.valid(projectile_property.actualTarget) && m_registry.valid(entity) && collides(entity, projectile_property.actualTarget)){
+                auto& target_prop = m_registry.get<UnitProperty>(projectile_property.actualTarget);
+                target_prop.hp -= projectile_property.damage;
+                if(target_prop.hp<=0){m_registry.destroy(projectile_property.actualTarget);}
+                m_registry.destroy(entity);
+            }
+        }else{
+            m_registry.destroy(entity);
         }
 
-        boundry_checking(entity);
     }
+
 }

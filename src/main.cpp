@@ -39,7 +39,8 @@ int main()
     init_factories();
 	Game game(window_size_in_px);
 	RenderSystem renderer(*game.window);
-    game.particles = new ParticleSystem(0.0005f);
+    ParticleSystem particleSystem(0.0005f);
+    game.particles = &particleSystem;
 
 	// Set all states to default
 	auto t = Clock::now();

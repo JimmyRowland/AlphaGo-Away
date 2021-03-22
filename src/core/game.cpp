@@ -66,6 +66,7 @@ Game::~Game(){
 	// Close the window
 	glfwDestroyWindow(window);
     glfwTerminate();
+    SDL_Quit();
 }
 
 void Game::init_audio()
