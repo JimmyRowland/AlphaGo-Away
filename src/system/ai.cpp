@@ -136,39 +136,41 @@ namespace {
     void create_projectile(entt::entity unit, UnitType unitType){
         auto entity = m_registry.create();
         ShadedMesh &resource = cache_resource("projectile");
-        if (resource.effect.program.resource == 0){
+
+        //if (resource.effect.program.resource == 0){
             switch (unitType) {
 
                 case UnitType::human_monitor:
                     RenderSystem::createSprite(resource, textures_path("human_tank_pro.png"), "textured");
                     m_registry.emplace<AllyProjectile>(entity);
-
+                    std::cout << "draw" << std::endl;
                     break;
                 case UnitType::human_archer:
                     RenderSystem::createSprite(resource, textures_path("human_archer_pro.png"), "textured");
                     m_registry.emplace<AllyProjectile>(entity);
+                    std::cout << "draw" << std::endl;
 
                     break;
                 case UnitType::human_healer:
                     RenderSystem::createSprite(resource, textures_path("human-healer_pro.png"), "textured");
                     m_registry.emplace<AllyProjectile>(entity);
-
+                    std::cout << "draw" << std::endl;
                     break;
 
                 case UnitType::ai_monitor:
                     RenderSystem::createSprite(resource, textures_path("ai_tank_pro.png"), "textured");
                     m_registry.emplace<EnemyProjectile>(entity);
-
+                    std::cout << "draw" << std::endl;
                     break;
                 case UnitType::ai_archer:
                     RenderSystem::createSprite(resource, textures_path("ai_archer_pro.png"), "textured");
                     m_registry.emplace<EnemyProjectile>(entity);
-
+                    std::cout << "draw" << std::endl;
                     break;
                 case UnitType::ai_healer:
                     RenderSystem::createSprite(resource, textures_path("ai_healer_pro.png"), "textured");
                     m_registry.emplace<EnemyProjectile>(entity);
-
+                    std::cout << "draw" << std::endl;
                     break;
                 case UnitType::human_terminator:
                     return;
@@ -179,11 +181,10 @@ namespace {
                     break;
             }
 
-        }
+       // }
 
-//        float random1 = ((rand() % 100) - 50) / 10.0f;
-//        float random2 = ((rand() % 100) - 50) / 10.0f;
-//        float rColor = 0.5f + ((rand() % 100) / 100.0f);
+        float random1 = ((rand() % 100) - 50) / 10.0f;
+        float random2 = ((rand() % 100) - 50) / 10.0f;
        if(m_registry.has<Projectiles>(unit)){
            return;
        }else{
@@ -192,7 +193,7 @@ namespace {
 
            m_registry.emplace<ShadedMeshRef>(entity, resource);
            auto &motion = m_registry.emplace<Motion>(entity);
-           motion.velocity = {0.f, 0.f} ;
+           motion.velocity = {random1,random2} ;
            ProjectileProperty &property = m_registry.emplace<ProjectileProperty>(entity);
            property.unit_type = unitType;
 
@@ -207,75 +208,7 @@ namespace {
        }
 
 
-
-//        switch (unitType) {
-//
-//            case UnitType::human_monitor:
-//
-//                  property.damage = 5;
-//
-//                break;
-//            case UnitType::human_archer:
-//                RenderSystem::createSprite(resource, textures_path("human_archer_pro.png"), "textured");
-//
-//                break;
-//            case UnitType::human_healer:
-//                RenderSystem::createSprite(resource, textures_path("human-healer_pro.png"), "textured");
-//
-//                break;
-//
-//            case UnitType::ai_monitor:
-//                RenderSystem::createSprite(resource, textures_path("ai_tank_pro.png"), "textured");
-//
-//                break;
-//            case UnitType::ai_archer:
-//                RenderSystem::createSprite(resource, textures_path("ai_archer_pro.png"), "textured");
-//
-//                break;
-//            case UnitType::ai_healer:
-//                RenderSystem::createSprite(resource, textures_path("ai_healer_pro.png"), "textured");
-//
-//                break;
-//            default:
-//                assert(false);
-//                break;
-//        }
-
-
-
     }
-
-//    void init_projectile_bounding_box(entt::entity entity, UnitType unitType){
-//        BoundingBox& boundingBox =m_registry.emplace<BoundingBox>(entity);
-//        boundingBox.vertices = { vec2(-0.5, -0.5), vec2(0.5, -0.5), vec2(0.5, 0.5), vec2(-0.5, 0.5) };
-//        switch (unitType) {
-//            case UnitType::human_terminator:
-//                boundingBox.vertices = { vec2(-0.1, -0.2), vec2(0.1, -0.2), vec2(0.2, 0.f), vec2(0.15, 0.3), vec2(-0.2, 0.3)};
-//                return;
-//            case UnitType::human_monitor:
-//                return;
-//            case UnitType::human_archer:
-//                return ;
-//            case UnitType::human_healer:
-//                boundingBox.vertices = { vec2(-0.15, -0.25), vec2(0.1, -0.25), vec2(0.25, 0.1), vec2(0.25, 0.25), vec2(-0.15, 0.25) };
-//                return ;
-//            case UnitType::ai_terminator:
-//                boundingBox.vertices = { vec2(-0.5, -0.1), vec2(-0.25, -0.5), vec2(0.3, -0.5), vec2(0.3, 0.5),
-//                                         vec2(-0.25, 0.5), vec2(-0.5, 0.15) };
-//                return ;
-//            case UnitType::ai_monitor:
-//                return ;
-//            case UnitType::ai_archer:
-//                boundingBox.vertices = { vec2(-0.5, -0.25), vec2(0.f, -0.5), vec2(0.5, -0.25),
-//                                         vec2(0.5, 0.25), vec2(0.f, 0.5), vec2(-0.5, 0.25) };
-//                return ;
-//            case UnitType::ai_healer:
-//                return;
-//            default:
-//                assert(false);
-//                return;
-//        }
-//    }
 
 
     void update_state() {
@@ -284,6 +217,7 @@ namespace {
                 if (within_attack_range(entity, property.actualTarget)) {
                     //stop at the proper attack range and then attack
                     property.path={};
+
                     create_projectile(entity,property.unit_type);
 
                     // eject projectiles
