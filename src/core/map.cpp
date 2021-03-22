@@ -3,11 +3,12 @@
 
 namespace {
 template <std::size_t Size>
-void stateStr_to_tileType(MapState &state, const char (&str)[Size]) {
+MapState stateStr_to_tileType(MapState &state, const char (&str)[Size]) {
   assert(state.area() + 1 == Size);
   for (std::size_t i = 0; i != Size - 1; ++i) {
     state[i] = char_to_tileType(str[i]);
   }
+  return state;
 }
 }
 
@@ -22,22 +23,96 @@ TileType char_to_tileType(const char c) {
     }
 }
 
-MapState makeMapStatePathFinding() {
-    MapState state{tile_matrix_dimension};
-//  const char str[] = {
-//    "###############"
-//    "#        #     "
-//    "# ## ### # ### "
-//    "# ## ### # ### "
-//    "#              "
-//    "# ## # ##### # "
-//    "#    #   #   # "
-//    "#### ### # ### "
-//    "   # #       # "
-//    "#### # ----- # "
-//  };
 
+MapState makeMapState(Level level) {
+  MapState state{tile_matrix_dimension};
     const char str[] = {
+            "###############"
+            "#             #"
+            "#             #"
+            "#             #"
+            "#             #"
+            "#             #"
+            "#             #"
+            "#             #"
+            "#             #"
+            "###############"
+    };
+    const char level1[] = {
+            "###############"
+            "#             #"
+            "#             #"
+            "#             #"
+            "#             #"
+            "#             #"
+            "#         ----#"
+            "#             #"
+            "#         -   #"
+            "###############"
+    };
+    const char level2[] = {
+            "###############"
+            "#             #"
+            "#########     #"
+            "#             #"
+            "#     ####### #"
+            "#             #"
+            "#             #"
+            "#  ######     #"
+            "#             #"
+            "###############"
+    };
+
+    const char level3[] = {
+            "###############"
+            "#             #"
+            "###         ###"
+            "#             #"
+            "#             #"
+            "#             #"
+            "#             #"
+            "#  #       #  #"
+            "#  #       #  #"
+            "###############"
+    };
+
+    const char level4[] = {
+            "###############"
+            "#             #"
+            "#             #"
+            "#             #"
+            "#             #"
+            "#             #"
+            "#             #"
+            "#             #"
+            "#             #"
+            "###############"
+    };
+    const char level5[] = {
+            "###############"
+            "#             #"
+            "#             #"
+            "#    ######## #"
+            "#             #"
+            "#--------     #"
+            "#             #"
+            "#             #"
+            "#             #"
+            "###############"
+    };
+    const char sandbox[] = {
+            "###############"
+            "#             #"
+            "#             #"
+            "#             #"
+            "#             #"
+            "#             #"
+            "#             #"
+            "#             #"
+            "#             #"
+            "###############"
+    };
+    const char path_finding[] = {
             "###############"
             "               "
             " #             "
@@ -49,40 +124,19 @@ MapState makeMapStatePathFinding() {
             "#              "
             "###############"
     };
-    stateStr_to_tileType(state, str);
-    return state;
-}
+    switch (level) {
+        case Level::level1: return stateStr_to_tileType(state, level1);
+        case Level::level2: return stateStr_to_tileType(state, level2);
+        case Level::level3: return stateStr_to_tileType(state, level3);
+        case Level::level4: return stateStr_to_tileType(state, level4);
+        case Level::level5: return stateStr_to_tileType(state, level5);
+        case Level::sandbox: return stateStr_to_tileType(state, sandbox);
+        case Level::path_finding_debug: return stateStr_to_tileType(state, path_finding);
+        default:
+            assert(false);
+            return {};
+    }
 
-MapState makeMapState(Level level) {
-    if(level == Level::path_finding_debug) return makeMapStatePathFinding();
-  MapState state{tile_matrix_dimension};
-//  const char str[] = {
-//    "###############"
-//    "#        #     "
-//    "# ## ### # ### "
-//    "# ## ### # ### "
-//    "#              "
-//    "# ## # ##### # "
-//    "#    #   #   # "
-//    "#### ### # ### "
-//    "   # #       # "
-//    "#### # ----- # "
-//  };
-
-    const char str[] = {
-            "###############"
-            "#             #"
-            "#             #"
-            "#             #"
-            "#             #"
-            "#             #"
-            "#             #"
-            "#             #"
-            "#             #"
-            "###############"
-    };
-    stateStr_to_tileType(state, str);
-  return state;
 }
 
 
