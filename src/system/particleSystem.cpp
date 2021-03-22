@@ -73,8 +73,10 @@ void ParticleSystem::update()
 			curmot.velocity = Clamp(curmot.velocity, 5);
 
 			curpos.position += curmot.velocity;
-
-            //p.color.a -= killSpeed * 30.f;
+            if(is_out_of_boundary(cur)){
+                m_registry.destroy(cur);
+            }
+            p.color.a -= killSpeed * 10.f;
         } else {
             m_registry.destroy(cur);
         }

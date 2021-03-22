@@ -9,6 +9,7 @@
 #include "components/motion.hpp"
 #include "core/registry.hpp"
 #include "system/render.hpp"
+#include "system/physics.hpp"
 
 
 // Represents a single particle and its state
