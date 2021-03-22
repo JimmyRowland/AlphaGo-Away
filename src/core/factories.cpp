@@ -197,6 +197,7 @@ entt::entity tile_factory(vec2 pos, TileType tileType) {
     position.scale = tile_size;
     auto &tile_comp = m_registry.emplace<Tile>(entity);
     tile_comp.type = tileType;
+
     return entity;
 };
 
@@ -302,6 +303,7 @@ entt::entity projectile_factory(entt::entity unit, UnitType unitType, entt::enti
     auto& motion = m_registry.emplace<Motion>(entity);
     motion.velocity = glm::normalize(dir) * 200.f;
     projectile_prop.actualTarget = target;
+    m_registry.emplace<ProjectileTimer>(entity);
 
     //projectile_prop.damage= damage;
     return entity;

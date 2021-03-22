@@ -51,4 +51,9 @@ struct ProjectileProperty{
     entt::entity actualTarget = entt::null;
     std::vector<std::pair<int, int>> path = {};
 };
+
+struct ProjectileTimer{
+
+    float timer = 30;
+};
 #endif //ALPHAGO_AWAY_UNITS_HPP

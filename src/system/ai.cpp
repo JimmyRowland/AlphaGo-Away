@@ -3,6 +3,7 @@
 
 namespace {
     float cooldown = 0.f;
+    float disapper = 1000.f;
 
     float get_entity_distance(entt::entity entity, entt::entity target_entity) {
         auto &position_i = m_registry.get<Position>(entity);
@@ -26,22 +27,29 @@ namespace {
         target_property.hp -= property.damage;
         property.hp -= target_property.damage;
         //Once the enemy be eliminated, the projectiles also gone
-        auto &projectile = m_registry.get<Projectiles>(entity);
+
         if (target_property.hp <= 0) {
             explosion_factory(target_position.position);
             m_registry.destroy(target_entity);
-            if(projectile.pro.size()!=0 && m_registry.valid(projectile.pro[0])){
-                for(int i=0; i<projectile.pro.size(); i++ ){
-                    m_registry.destroy(projectile.pro[i]);
+            if( m_registry.valid(entity) && m_registry.has<Projectiles>(entity)){
+                auto &projectile = m_registry.get<Projectiles>(entity);
+                if(projectile.pro.size()!=0 && m_registry.valid(projectile.pro[0])){
+                    for(int i=0; i<projectile.pro.size(); i++ ){
+                        m_registry.destroy(projectile.pro[i]);
+                    }
                 }
             }
+
         }
         if (property.hp <= 0) {
             explosion_factory(position.position);
             m_registry.destroy(entity);
-            if(projectile.pro.size()!=0 && m_registry.valid(projectile.pro[0])){
-                for(int i=0; i<projectile.pro.size(); i++ ){
-                    m_registry.destroy(projectile.pro[i]);
+            if(m_registry.valid(entity) && m_registry.has<Projectiles>(entity)){
+                auto &projectile = m_registry.get<Projectiles>(entity);
+                if(projectile.pro.size()!=0 && m_registry.valid(projectile.pro[0])){
+                    for(int i=0; i<projectile.pro.size(); i++ ){
+                        m_registry.destroy(projectile.pro[i]);
+                    }
                 }
             }
         }
@@ -277,15 +285,50 @@ namespace {
 
 
     void clear_explosions() {
+
         for (auto &entity: m_registry.view<Explosion>()) {
             m_registry.destroy(entity);
         }
+
     }
 
-    void clear_projectile() {
+    void clear_projectile(float elapsed_ms) {
+
+
+//            for (auto &entity: m_registry.view<ProjectileProperty>()) {
+//                auto& property = m_registry.get<ProjectileProperty>(entity);
+//
+//                auto &position = m_registry.get<Position>(entity);
+//                if(property.actualTarget != entt::null && m_registry.valid(property.actualTarget)){
+//                    auto &target_position = m_registry.get<Position>(property.actualTarget);
+//                    if(position.position == target_position.position) {
+//                        m_registry.destroy(entity);
+//                    }
+//                }
+//
+//            }
+//
+            if(m_registry.view<UnitProperty>().size() <=1){
+                for (auto &entity: m_registry.view<ProjectileProperty>()) {
+                    m_registry.destroy(entity);
+                }
+            }
+
         for (auto &entity: m_registry.view<ProjectileProperty>()) {
-            m_registry.destroy(entity);
+            auto& time = m_registry.get<ProjectileTimer>(entity);
+            auto& motion = m_registry.get<Motion>(entity);
+            auto& position = m_registry.get<Position>(entity);
+            time.timer -= elapsed_ms;
+            if(time.timer <=0.f){
+                m_registry.destroy(entity);
+            } else if(position.position.y>800-80 || position.position.y<80 || position.position.x>1200-80 || position.position.x<80){
+                m_registry.destroy(entity);
+            }else if(motion.velocity == vec2{0,0}){
+                m_registry.destroy(entity);
+            }
+
         }
+
     }
 }
 
@@ -297,8 +340,9 @@ void ai_update(float elapsed_ms) {
         set_targets();
         set_path();
         set_projectile_targets();
-        set_projectile_path();
+       // set_projectile_path();
         update_state();
+        clear_projectile(elapsed_ms);
 
     }
 
