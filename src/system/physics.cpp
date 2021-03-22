@@ -175,9 +175,8 @@ void physics_update(float elapsed_ms) {
     }
 
     for (auto&&[entity, motion, position, projectile_property]: m_registry.view<Motion, Position, ProjectileProperty>().each()) {
-        if (m_registry.valid(projectile_property.actualTarget) &&
-            m_registry.has<UnitProperty, Motion, Position, BoundingBox>(projectile_property.actualTarget) ) {
-            update_projectile_velocity_and_facing_dir(entity, projectile_property.actualTarget);
+        if (m_registry.valid(projectile_property.actualTarget)) {
+           // update_projectile_velocity_and_facing_dir(entity, projectile_property.actualTarget);
             position.position += motion.velocity * step_seconds;
         }
 

@@ -30,14 +30,20 @@ namespace {
         if (target_property.hp <= 0) {
             explosion_factory(target_position.position);
             m_registry.destroy(target_entity);
-            if(projectile.pro != entt::null && m_registry.valid(projectile.pro)){
-            m_registry.destroy(projectile.pro);}
+            if(projectile.pro.size()!=0 && m_registry.valid(projectile.pro[0])){
+                for(int i=0; i<projectile.pro.size(); i++ ){
+                    m_registry.destroy(projectile.pro[i]);
+                }
+            }
         }
         if (property.hp <= 0) {
             explosion_factory(position.position);
             m_registry.destroy(entity);
-            if(projectile.pro != entt::null && m_registry.valid(projectile.pro)){
-                m_registry.destroy(projectile.pro);}
+            if(projectile.pro.size()!=0 && m_registry.valid(projectile.pro[0])){
+                for(int i=0; i<projectile.pro.size(); i++ ){
+                    m_registry.destroy(projectile.pro[i]);
+                }
+            }
         }
     }
 
@@ -127,13 +133,6 @@ namespace {
         }
     }
 
-    vec2 get_unit_scale(ShadedMesh &resource){
-        vec2 scale = tile_size;
-        float aspect_ratio = resource.mesh.original_size.x / resource.mesh.original_size.y;
-        if(aspect_ratio>0) scale.y = tile_size.x/aspect_ratio;
-        else scale.x = tile_size.y*aspect_ratio;
-        return scale;
-    }
 
     ShadedMesh& create_projectile_mesh(std::string screen_texture_path, std::string shader = "textured"){
         float random1 = ((rand() % 100) - 50) / 10.0f;
@@ -216,7 +215,7 @@ namespace {
            return;
        }else{
            auto &projectile = m_registry.emplace<Projectiles>(unit);
-           projectile.pro = entity;
+           //projectile.pro = entity;
 
            //m_registry.emplace<ShadedMeshRef>(entity, resource);
            auto &motion = m_registry.emplace<Motion>(entity);
@@ -244,22 +243,32 @@ namespace {
                 if (within_attack_range(entity, property.actualTarget)) {
                     //stop at the proper attack range and then attack
                     property.path={};
-
-                    create_projectile(entity,property.unit_type);
-
                     // eject projectiles
+                    projectile_factory(entity, property.unit_type, property.actualTarget);
+
+
                     unit_attack(entity, property.unit_type);
                     resolve_damage(entity, property.actualTarget);
                 } else if (!property.path.empty()) {
                     unit_walk(entity, property.unit_type);
                     if(m_registry.has<Projectiles>(entity)) {
                         auto &projectile = m_registry.get<Projectiles>(entity);
-                        if (projectile.pro != entt::null && m_registry.valid(projectile.pro)) {
-                            m_registry.destroy(projectile.pro);
+                        if(projectile.pro.size()!=0 && m_registry.valid(projectile.pro[0])){
+                            for(int i=0; i<projectile.pro.size(); i++ ){
+                                m_registry.destroy(projectile.pro[i]);
+                            }
                         }
                     }
                 } else {
                     unit_stand(entity, property.unit_type);
+                    if(m_registry.has<Projectiles>(entity)) {
+                        auto &projectile = m_registry.get<Projectiles>(entity);
+                        if(projectile.pro.size()!=0 && m_registry.valid(projectile.pro[0])){
+                            for(int i=0; i<projectile.pro.size(); i++ ){
+                                m_registry.destroy(projectile.pro[i]);
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -269,6 +278,12 @@ namespace {
 
     void clear_explosions() {
         for (auto &entity: m_registry.view<Explosion>()) {
+            m_registry.destroy(entity);
+        }
+    }
+
+    void clear_projectile() {
+        for (auto &entity: m_registry.view<ProjectileProperty>()) {
             m_registry.destroy(entity);
         }
     }
@@ -284,6 +299,7 @@ void ai_update(float elapsed_ms) {
         set_projectile_targets();
         set_projectile_path();
         update_state();
+
     }
 
 }

@@ -210,6 +210,102 @@ entt::entity unit_factory(vec2 pos, UnitType unitType) {
     return entity;
 };
 
+ShadedMesh& create_projectile_mesh(std::string screen_texture_path, std::string shader = "textured"){
+    float random1 = ((rand() % 100) - 50) / 10.0f;
+    std::string rand = std::to_string(random1);
+    std::string key = screen_texture_path ;
+    key.append(rand);
+    ShadedMesh &resource = cache_resource(key);
+    RenderSystem::createSprite(resource, textures_path(screen_texture_path), "textured");
+    return resource;
+}
+
+entt::entity projectile_factory(entt::entity unit, UnitType unitType, entt::entity target){
+    auto entity = m_registry.create();
+    //std::string key = "projectile";
+    //ShadedMesh &resource = cache_resource(key);
+    //if (resource.effect.program.resource == 0){
+        switch (unitType) {
+            case UnitType::human_monitor:
+
+                m_registry.emplace<ShadedMeshRef>(entity, create_projectile_mesh("human_tank_pro.png", "textured"));
+
+                //RenderSystem::createSprite(resource, textures_path("human_tank_pro.png"), "textured");
+                m_registry.emplace<AllyProjectile>(entity);
+
+                break;
+            case UnitType::human_archer:
+                m_registry.emplace<ShadedMeshRef>(entity, create_projectile_mesh("human_archer_pro.png", "textured"));
+
+                //RenderSystem::createSprite(resource, textures_path("human_archer_pro.png"), "textured");
+                m_registry.emplace<AllyProjectile>(entity);
+
+
+                break;
+            case UnitType::human_healer:
+                m_registry.emplace<ShadedMeshRef>(entity, create_projectile_mesh("human-healer_pro.png", "textured"));
+
+                //RenderSystem::createSprite(resource, textures_path("human-healer_pro.png"), "textured");
+                m_registry.emplace<AllyProjectile>(entity);
+
+                break;
+
+            case UnitType::ai_monitor:
+                m_registry.emplace<ShadedMeshRef>(entity, create_projectile_mesh("ai_tank_pro.png", "textured"));
+
+                //RenderSystem::createSprite(resource, textures_path("ai_tank_pro.png"), "textured");
+                m_registry.emplace<EnemyProjectile>(entity);
+
+                break;
+            case UnitType::ai_archer:
+                m_registry.emplace<ShadedMeshRef>(entity, create_projectile_mesh("ai_archer_pro.png", "textured"));
+
+                //RenderSystem::createSprite(resource, textures_path("ai_archer_pro.png"), "textured");
+                m_registry.emplace<EnemyProjectile>(entity);
+
+                break;
+            case UnitType::ai_healer:
+                m_registry.emplace<ShadedMeshRef>(entity, create_projectile_mesh("ai_healer_pro.png", "textured"));
+
+                //RenderSystem::createSprite(resource, textures_path("ai_healer_pro.png"), "textured");
+                m_registry.emplace<EnemyProjectile>(entity);
+                std::cout << "draw" << std::endl;
+                break;
+            case UnitType::human_terminator:
+                return entt::null;
+            case UnitType::ai_terminator:
+                return entt::null;
+            default:
+                assert(false);
+                break;
+        }
+   // }
+
+    //m_registry.emplace<ShadedMeshRef>(entity, resource);
+    auto&&[target_position, target_motion] = m_registry.get<Position,Motion>(target);
+    auto& position = m_registry.emplace<Position>(entity);
+    auto& unit_pos = m_registry.get<Position>(unit);
+    position.position = unit_pos.position;
+    vec2 dir = glm::normalize( target_position.position-unit_pos.position);
+    position.angle = asin(dir.y);
+    position.scale = tile_size/2.f;
+    auto& projectile_prop = m_registry.emplace<ProjectileProperty>(entity);
+    if(m_registry.has<Projectiles>(unit)){
+        auto &projectile = m_registry.get<Projectiles>(unit);
+
+        projectile.pro.push_back(entity);
+    } else {
+        auto &projectile = m_registry.emplace<Projectiles>(unit);
+        projectile.pro.push_back(entity);
+    }
+
+    auto& motion = m_registry.emplace<Motion>(entity);
+    motion.velocity = glm::normalize(dir) * 200.f;
+    projectile_prop.actualTarget = target;
+
+    //projectile_prop.damage= damage;
+    return entity;
+}
 entt::entity explosion_factory(vec2 pos) {
     auto entity = m_registry.create();
     std::string key = "explosion";
