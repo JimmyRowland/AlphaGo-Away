@@ -4,7 +4,7 @@
 #include <cstdint>
 #include "utils/grid.hpp"
 #include "constants.hpp"
-
+#include "core/enum.hpp"
 enum UnitType {
     human_terminator,
     human_monitor,
@@ -30,6 +30,6 @@ static const std::string get_unit_mesh_key[] =
         };
 
 using UnitMapState = Grid<UnitType>;
-UnitMapState makeUnitState();
+UnitMapState makeUnitState(Level level);
 UnitType char_to_unitType(const char c);
 #endif
