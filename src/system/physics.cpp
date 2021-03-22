@@ -97,40 +97,41 @@ namespace {
     }
 
 
-    bool is_out_of_boundary(entt::entity entity) {
-        auto &&[position, motion] = m_registry.get<Position, Motion>(entity);
-        if (position.position.y < map_y_min) {
-            position.position.y = map_y_min;
-            if (motion.velocity.y < 0) {
-                motion.velocity.y = 0;
-            }
-            return true;
-        } else if (position.position.y > map_y_max) {
-            position.position.y = map_y_max;
-            if (motion.velocity.y > 0) {
-                motion.velocity.y = 0;
-            }
-            return true;
-        }
-        if (position.position.x < map_x_min) {
-            position.position.x = map_x_min;
-            if (motion.velocity.x < 0) {
-                motion.velocity.x = 0;
-            }
-            return true;
-        } else if (position.position.x > map_x_max) {
-            position.position.x = map_x_max;
-            if (motion.velocity.x > 0) {
-                motion.velocity.x = 0;
-            }
-            return true;
-        }
-        return false;
-    }
+
 
 
 }
 
+bool is_out_of_boundary(entt::entity entity) {
+    auto &&[position, motion] = m_registry.get<Position, Motion>(entity);
+    if (position.position.y < map_y_min) {
+        position.position.y = map_y_min;
+        if (motion.velocity.y < 0) {
+            motion.velocity.y = 0;
+        }
+        return true;
+    } else if (position.position.y > map_y_max) {
+        position.position.y = map_y_max;
+        if (motion.velocity.y > 0) {
+            motion.velocity.y = 0;
+        }
+        return true;
+    }
+    if (position.position.x < map_x_min) {
+        position.position.x = map_x_min;
+        if (motion.velocity.x < 0) {
+            motion.velocity.x = 0;
+        }
+        return true;
+    } else if (position.position.x > map_x_max) {
+        position.position.x = map_x_max;
+        if (motion.velocity.x > 0) {
+            motion.velocity.x = 0;
+        }
+        return true;
+    }
+    return false;
+}
 
 void physics_update(float elapsed_ms) {
 

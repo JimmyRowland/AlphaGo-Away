@@ -10,5 +10,5 @@
 // A simple physics system that moves rigid bodies and checks for collision
 
 void physics_update(float elapsed_ms);
-
+bool is_out_of_boundary(entt::entity entity);
 #endif //ALPHAGO_AWAY_PHYSICS_HPP
