@@ -10,6 +10,8 @@
 #include "components/tile.hpp"
 #include "components/motion.hpp"
 #include "entities/unit.hpp"
+#include "core/factories.hpp"
 #include <random>
 void ai_update(float elapsed_ms);
+
 #endif //ALPHAGO_AWAY_AI_HPP

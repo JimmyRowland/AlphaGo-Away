@@ -97,30 +97,35 @@ namespace {
     }
 
 
-    void boundry_checking(entt::entity entity) {
+    bool is_out_of_boundary(entt::entity entity) {
         auto &&[position, motion] = m_registry.get<Position, Motion>(entity);
         if (position.position.y < map_y_min) {
             position.position.y = map_y_min;
             if (motion.velocity.y < 0) {
                 motion.velocity.y = 0;
             }
+            return true;
         } else if (position.position.y > map_y_max) {
             position.position.y = map_y_max;
             if (motion.velocity.y > 0) {
                 motion.velocity.y = 0;
             }
+            return true;
         }
         if (position.position.x < map_x_min) {
             position.position.x = map_x_min;
             if (motion.velocity.x < 0) {
                 motion.velocity.x = 0;
             }
+            return true;
         } else if (position.position.x > map_x_max) {
             position.position.x = map_x_max;
             if (motion.velocity.x > 0) {
                 motion.velocity.x = 0;
             }
+            return true;
         }
+        return false;
     }
 
 
@@ -142,11 +147,36 @@ void physics_update(float elapsed_ms) {
     float step_seconds = 1.0f * (elapsed_ms / 1000.f);
     for (auto&&[entity, motion, position, unit_property, bounding_box]: m_registry.view<Motion, Position, UnitProperty, BoundingBox>().each()) {
         if (m_registry.valid(unit_property.actualTarget) &&
-            m_registry.has<UnitProperty, Motion, Position, BoundingBox>(unit_property.actualTarget)) {
+            m_registry.has<UnitProperty, Motion, Position, BoundingBox>(unit_property.actualTarget) ) {
             update_velocity_and_facing_dir(entity, unit_property.actualTarget);
             position.position += motion.velocity * step_seconds;
         }
         set_transformed_bounding_box(entity);
-        boundry_checking(entity);
+        is_out_of_boundary(entity);
     }
+
+    for (auto&&[entity, motion, position, projectile_property]: m_registry.view<Motion, Position, ProjectileProperty>().each()) {
+        if (m_registry.valid(projectile_property.actualTarget)) {
+           auto& target_position = m_registry.get<Position>(projectile_property.actualTarget);
+            vec2 dir = glm::normalize( target_position.position-position.position);
+            position.angle = atan2(dir.y,dir.x);
+            motion.velocity = glm::normalize(dir) * projectile_speed;
+            position.position += motion.velocity * step_seconds;
+            set_transformed_bounding_box(entity);
+            if(is_out_of_boundary(entity)){
+                m_registry.destroy(entity);
+            }
+
+            if(m_registry.valid(projectile_property.actualTarget) && m_registry.valid(entity) && collides(entity, projectile_property.actualTarget)){
+                auto& target_prop = m_registry.get<UnitProperty>(projectile_property.actualTarget);
+                target_prop.hp -= projectile_property.damage;
+                if(target_prop.hp<=0){m_registry.destroy(projectile_property.actualTarget);}
+                m_registry.destroy(entity);
+            }
+        }else{
+            m_registry.destroy(entity);
+        }
+
+    }
+
 }

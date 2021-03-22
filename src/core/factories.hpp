@@ -12,6 +12,7 @@
 
 
 void init_factories();
+entt::entity projectile_factory(entt::entity unit, UnitType unitType, entt::entity target);
 entt::entity unit_factory(vec2 pos, UnitType unitType = UnitType::human_terminator);
 entt::entity tile_factory(vec2 pos, TileType tileType);
 void swap_tile_texture(entt::entity tile, TileType tileType);

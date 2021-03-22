@@ -81,7 +81,10 @@ private:
     void on_mouse_click(int button, int action, int mods);
     void sandbox_on_click(int button, int action, int mods);
     void init_map_grid();
-
+    GameMode game_mode = GameMode::free_mode;
+    int gold[2] = {0, 0};
+    bool show_not_enough_gold_message;
+    int player_index = 0;
     // Loads the audio
     void init_audio();
 
@@ -143,6 +146,19 @@ private:
     void level_on_click(int button, int action, int mods);
 
 	void update_camera_pos();
+
+    void imgui_game_mode();
+
+    void init_gold();
+
+    std::map<UnitType, int> unit_cost = {
+            {UnitType::human_terminator,  100},
+            {UnitType::human_archer, 150},
+            {UnitType::human_monitor,  120},
+            {UnitType::human_healer,  200},
+    };
+
+    void imgui_story();
 };
 
 #endif //ALPHAGO_AWAY_GAME_HPP
