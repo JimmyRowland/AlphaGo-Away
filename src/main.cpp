@@ -36,9 +36,9 @@ int main()
 #endif
 
     // Initialize the main systems
-    init_factories();
 	Game game(window_size_in_px);
 	RenderSystem renderer(*game.window);
+    init_factories();
     game.particles = new ParticleSystem(0.0005f);
 
 	// Set all states to default
