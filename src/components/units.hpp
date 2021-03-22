@@ -18,8 +18,7 @@ struct Walk{};
 struct Stand{};
 struct Die{};
 struct Explosion{};
-struct Projectile{
-};
+
 struct Enemy{
 
 };

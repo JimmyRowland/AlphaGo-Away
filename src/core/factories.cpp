@@ -87,14 +87,14 @@ namespace {
             case UnitType::human_monitor:
                 property.attackRange = 2;
                 property.damage = 15;
-                property.hp = 200;
-                property.maxhp = 200;
+                property.hp = 180;
+                property.maxhp = 180;
                 return;
             case UnitType::human_archer:
                 property.attackRange = 5;
                 property.damage = 25;
-                property.hp = 45;
-                property.maxhp = 45;
+                property.hp = 75;
+                property.maxhp = 75;
                 return ;
             case UnitType::human_healer:
                 property.attackRange = 3;
@@ -111,14 +111,14 @@ namespace {
             case UnitType::ai_monitor:
                 property.attackRange = 2;
                 property.damage = 12;
-                property.hp = 220;
-                property.maxhp = 220;
+                property.hp = 190;
+                property.maxhp = 190;
                 return ;
             case UnitType::ai_archer:
                 property.attackRange = 5;
                 property.damage = 30;
-                property.hp = 40;
-                property.maxhp = 40;
+                property.hp = 70;
+                property.maxhp = 70;
                 return ;
             case UnitType::ai_healer:
                 property.attackRange = 3;
@@ -223,45 +223,33 @@ ShadedMesh& create_projectile_mesh(std::string screen_texture_path, std::string 
 
 entt::entity projectile_factory(entt::entity unit, UnitType unitType, entt::entity target){
     auto entity = m_registry.create();
-    //std::string key = "projectile";
-    //ShadedMesh &resource = cache_resource(key);
-    //if (resource.effect.program.resource == 0){
+
         switch (unitType) {
             case UnitType::human_monitor:
 
                 m_registry.emplace<ShadedMeshRef>(entity, create_projectile_mesh("human_tank_pro.png", "textured"));
-
-                //RenderSystem::createSprite(resource, textures_path("human_tank_pro.png"), "textured");
                 m_registry.emplace<AllyProjectile>(entity);
 
                 break;
             case UnitType::human_archer:
                 m_registry.emplace<ShadedMeshRef>(entity, create_projectile_mesh("human_archer_pro.png", "textured"));
-
-                //RenderSystem::createSprite(resource, textures_path("human_archer_pro.png"), "textured");
                 m_registry.emplace<AllyProjectile>(entity);
 
 
                 break;
             case UnitType::human_healer:
                 m_registry.emplace<ShadedMeshRef>(entity, create_projectile_mesh("human-healer_pro.png", "textured"));
-
-                //RenderSystem::createSprite(resource, textures_path("human-healer_pro.png"), "textured");
                 m_registry.emplace<AllyProjectile>(entity);
 
                 break;
 
             case UnitType::ai_monitor:
                 m_registry.emplace<ShadedMeshRef>(entity, create_projectile_mesh("ai_tank_pro.png", "textured"));
-
-                //RenderSystem::createSprite(resource, textures_path("ai_tank_pro.png"), "textured");
                 m_registry.emplace<EnemyProjectile>(entity);
 
                 break;
             case UnitType::ai_archer:
                 m_registry.emplace<ShadedMeshRef>(entity, create_projectile_mesh("ai_archer_pro.png", "textured"));
-
-                //RenderSystem::createSprite(resource, textures_path("ai_archer_pro.png"), "textured");
                 m_registry.emplace<EnemyProjectile>(entity);
 
                 break;
@@ -270,7 +258,6 @@ entt::entity projectile_factory(entt::entity unit, UnitType unitType, entt::enti
 
                 //RenderSystem::createSprite(resource, textures_path("ai_healer_pro.png"), "textured");
                 m_registry.emplace<EnemyProjectile>(entity);
-                std::cout << "draw" << std::endl;
                 break;
             case UnitType::human_terminator:
                 return entt::null;
@@ -280,9 +267,7 @@ entt::entity projectile_factory(entt::entity unit, UnitType unitType, entt::enti
                 assert(false);
                 break;
         }
-   // }
 
-    //m_registry.emplace<ShadedMeshRef>(entity, resource);
     auto&&[target_position, target_motion] = m_registry.get<Position,Motion>(target);
     auto& position = m_registry.emplace<Position>(entity);
     auto& unit_pos = m_registry.get<Position>(unit);
@@ -304,8 +289,6 @@ entt::entity projectile_factory(entt::entity unit, UnitType unitType, entt::enti
     motion.velocity = glm::normalize(dir) * 200.f;
     projectile_prop.actualTarget = target;
     m_registry.emplace<ProjectileTimer>(entity);
-
-    //projectile_prop.damage= damage;
     return entity;
 }
 entt::entity explosion_factory(vec2 pos) {

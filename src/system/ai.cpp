@@ -3,7 +3,6 @@
 
 namespace {
     float cooldown = 0.f;
-    float disapper = 1000.f;
 
     float get_entity_distance(entt::entity entity, entt::entity target_entity) {
         auto &position_i = m_registry.get<Position>(entity);
@@ -140,110 +139,6 @@ namespace {
             }
         }
     }
-
-
-    ShadedMesh& create_projectile_mesh(std::string screen_texture_path, std::string shader = "textured"){
-        float random1 = ((rand() % 100) - 50) / 10.0f;
-        std::string rand = std::to_string(random1);
-        std::string key = screen_texture_path ;
-        key.append(rand);
-        ShadedMesh &resource = cache_resource(key);
-        RenderSystem::createSprite(resource, textures_path(screen_texture_path), "textured");
-        return resource;
-    }
-
-    void create_projectile(entt::entity unit, UnitType unitType){
-        auto entity = m_registry.create();
-
-        //auto &position = m_registry.emplace<Position>(entity);
-        //ShadedMesh &resource = cache_resource("projectile");
-        //std::string key = "human_monitor";
-
-//        if (resource.effect.program.resource == 0){
-            switch (unitType) {
-                case UnitType::human_monitor:
-
-                    m_registry.emplace<ShadedMeshRef>(entity, create_projectile_mesh("human_tank_pro.png", "textured"));
-
-                    //RenderSystem::createSprite(resource, textures_path("human_tank_pro.png"), "textured");
-                    m_registry.emplace<AllyProjectile>(entity);
-
-                    break;
-                case UnitType::human_archer:
-                    m_registry.emplace<ShadedMeshRef>(entity, create_projectile_mesh("human_archer_pro.png", "textured"));
-
-                    //RenderSystem::createSprite(resource, textures_path("human_archer_pro.png"), "textured");
-                    m_registry.emplace<AllyProjectile>(entity);
-
-
-                    break;
-                case UnitType::human_healer:
-                    m_registry.emplace<ShadedMeshRef>(entity, create_projectile_mesh("human-healer_pro.png", "textured"));
-
-                    //RenderSystem::createSprite(resource, textures_path("human-healer_pro.png"), "textured");
-                    m_registry.emplace<AllyProjectile>(entity);
-
-                    break;
-
-                case UnitType::ai_monitor:
-                    m_registry.emplace<ShadedMeshRef>(entity, create_projectile_mesh("ai_tank_pro.png", "textured"));
-
-                    // RenderSystem::createSprite(resource, textures_path("ai_tank_pro.png"), "textured");
-                    m_registry.emplace<EnemyProjectile>(entity);
-
-                    break;
-                case UnitType::ai_archer:
-                    m_registry.emplace<ShadedMeshRef>(entity, create_projectile_mesh("ai_archer_pro.png", "textured"));
-
-                    //RenderSystem::createSprite(resource, textures_path("ai_archer_pro.png"), "textured");
-                    m_registry.emplace<EnemyProjectile>(entity);
-
-                    break;
-                case UnitType::ai_healer:
-                    m_registry.emplace<ShadedMeshRef>(entity, create_projectile_mesh("ai_healer_pro.png", "textured"));
-
-                    //RenderSystem::createSprite(resource, textures_path("ai_healer_pro.png"), "textured");
-                    m_registry.emplace<EnemyProjectile>(entity);
-                    std::cout << "draw" << std::endl;
-                    break;
-                case UnitType::human_terminator:
-                    return;
-                case UnitType::ai_terminator:
-                    return;
-                default:
-                    assert(false);
-                    break;
-            }
-
-//        }
-
-        //;
-        //float random2 = ((rand() % 100) - 50) / 10.0f;
-       if(m_registry.has<Projectiles>(unit)){
-           return;
-       }else{
-           auto &projectile = m_registry.emplace<Projectiles>(unit);
-           //projectile.pro = entity;
-
-           //m_registry.emplace<ShadedMeshRef>(entity, resource);
-           auto &motion = m_registry.emplace<Motion>(entity);
-           motion.velocity = {0,0} ;
-           ProjectileProperty &property = m_registry.emplace<ProjectileProperty>(entity);
-           property.unit_type = unitType;
-
-
-
-           auto &position = m_registry.emplace<Position>(entity);
-           auto &unit_position = m_registry.get<Position>(unit);
-           position.position = unit_position.position;
-           position.angle = 0.f;
-           //position.scale = {get_unit_scale(resource).x/3, get_unit_scale(resource).y/3};
-           position.scale = {40.f, 40.f};
-       }
-
-
-    }
-
 
     void update_state() {
         for (auto &&[entity, property]: m_registry.view<UnitProperty>().each()) {
