@@ -30,7 +30,10 @@ public:
     void update();
     // render all particles
 //    void Draw();
-    
+	const float MAX_DISTANCE = 30.f;
+
+	const float FIXED_SPEED = 2;
+
     void emitParticle(vec2 pos, int amount);
 private:
     // state
@@ -45,7 +48,8 @@ private:
     // returns the first Particle index that's currently unused e.g. Life <= 0.0f or 0 if no particle is currently inactive
 //    unsigned int firstUnusedParticle();
     // respawns particle
-    float killSpeed = 0.005f;
+    float killSpeed = 0.08f;
+	//float killSpeed = 0.00005f;
 };
 
 #endif

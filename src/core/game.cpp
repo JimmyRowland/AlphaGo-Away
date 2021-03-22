@@ -298,6 +298,7 @@ TileType Game::imgui_entity_selection_to_tileType(){
         case 3: return TileType::forest;
         default: assert(false);
     }
+	return TileType::forest;
 }
 
 UnitType Game::imgui_entity_selection_to_unitType(){
@@ -312,6 +313,7 @@ UnitType Game::imgui_entity_selection_to_unitType(){
         case 11: return UnitType::ai_healer;
         default: assert(false);
     }
+	return UnitType::ai_healer;
 }
 
 void Game::place_an_ally(ivec2 tile_index){
