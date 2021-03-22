@@ -1,0 +1,32 @@
+{
+  "unit_arr": [
+    {
+      "position": {
+        "x": 0,
+        "y": 2
+      },
+      "unit_type": 2
+    },
+    {
+      "position": {
+        "x": 0,
+        "y": 6
+      },
+      "unit_type": 3
+    },
+    {
+      "position": {
+        "x": 14,
+        "y": 6
+      },
+      "unit_type": 5
+    },
+    {
+      "position": {
+        "x": 14,
+        "y": 1
+      },
+      "unit_type": 6
+    }
+  ]
+}

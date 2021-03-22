@@ -10,7 +10,22 @@ void stateStr_to_unitType(UnitMapState &state, const char (&str)[Size]) {
     }
 }
 }
-
+UnitType int_to_unitType(int i) {
+    switch (i) {
+    case 0: return UnitType::empty;
+    case 1: return UnitType::human_terminator;
+    case 2: return UnitType::human_monitor;
+    case 3: return UnitType::human_archer;
+    case 4: return UnitType::human_healer;
+    case 5: return UnitType::ai_terminator;
+    case 6: return UnitType::ai_monitor;
+    case 7: return UnitType::ai_archer;
+    case 8: return UnitType::ai_healer;
+    default:
+        assert(false);
+        return {};
+    }
+}
 
 UnitType char_to_unitType(const char c) {
     switch (c) {
