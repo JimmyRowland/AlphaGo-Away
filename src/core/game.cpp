@@ -297,7 +297,7 @@ TileType Game::imgui_entity_selection_to_tileType(){
         case 1: return TileType::basic;
         case 2: return TileType::water;
         case 3: return TileType::forest;
-        default: assert(false);
+        default: return TileType::basic;
     }
 }
 
@@ -311,7 +311,7 @@ UnitType Game::imgui_entity_selection_to_unitType(){
         case 9: return UnitType::ai_monitor;
         case 10: return UnitType::ai_archer;
         case 11: return UnitType::ai_healer;
-        default: assert(false);
+        default: return UnitType::human_terminator;
     }
 }
 
@@ -395,6 +395,8 @@ void Game::init_gold(){
 void Game::init_level() {
     mapState = makeMapState(level);
     unitMapState = makeUnitState(level);
+//    mapState = loader.load_map(level);
+//    unitMapState = loader.load_units(level);
     init_gold();
 
 }
@@ -497,7 +499,7 @@ void Game::imgui_battle_control_menu(){
         if(has_battle_started== false){
             if (ImGui::Button("Start battle")) {
                 has_battle_started = true;
-                battle_start_in = cool_down_unit * 2;
+                battle_start_in = cool_down_unit;
             };
         }
         if (ImGui::Button("Restart level")) restart(level);

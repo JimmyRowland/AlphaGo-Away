@@ -14,6 +14,7 @@
 #include "system/ai.hpp"
 #include "entities/unit.hpp"
 #include "enum.hpp"
+#include "loader.hpp"
 
 // stlib
 #include <vector>
@@ -108,6 +109,7 @@ private:
 	MapState mapState;
 	UnitMapState unitMapState;
     Level level = Level::sandbox;
+    Loader loader = Loader();
     bool is_paused = true;
     bool show_imgui = true;
 
