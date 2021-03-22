@@ -36,10 +36,11 @@ int main()
 #endif
 
     // Initialize the main systems
-    init_factories();
 	Game game(window_size_in_px);
 	RenderSystem renderer(*game.window);
-    game.particles = new ParticleSystem(0.0005f);
+    init_factories();
+    ParticleSystem particleSystem(0.0005f);
+    game.particles = &particleSystem;
 
 	// Set all states to default
 	auto t = Clock::now();

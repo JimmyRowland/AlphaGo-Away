@@ -16,5 +16,4 @@ void unit_stand(entt::entity entity, UnitType unitType);
 void unit_walk(entt::entity entity, UnitType unitType);
 void unit_die(entt::entity entity, UnitType unitType);
 
-
 #endif //ALPHAGO_AWAY_UNIT_HPP
