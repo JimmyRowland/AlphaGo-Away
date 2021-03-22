@@ -24,6 +24,6 @@ struct BoundingBox {
 };
 
 struct Projectiles {
-    entt::entity pro;
+    entt::entity pro = entt::null;
 };
 #endif //ALPHAGO_AWAY_MOTION_HPP

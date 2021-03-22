@@ -30,7 +30,8 @@ namespace {
         if (target_property.hp <= 0) {
             explosion_factory(target_position.position);
             m_registry.destroy(target_entity);
-            m_registry.destroy(projectile.pro);
+            if(projectile.pro != entt::null && m_registry.valid(projectile.pro)){
+            m_registry.destroy(projectile.pro);}
         }
         if (property.hp <= 0) {
             explosion_factory(position.position);
@@ -112,7 +113,7 @@ namespace {
                 property.path = {};
             } else {
                 if (m_registry.valid(property.actualTarget)) {
-                    auto&&[target_position, target_property] = m_registry.get<Position, ProjectileProperty>(
+                    auto&&[target_position, target_property] = m_registry.get<Position, UnitProperty>(
                             property.actualTarget);
                     auto target_tile_index = target_property.path.empty() ? get_tile_index(target_position.position): rand() % 10 > 5 ? ivec2(target_property.path[0].first, target_property.path[0].second): get_tile_index(target_position.position);                    auto entity_tile_index = get_tile_index(position.position);
                     property.path = a.getPath(std::make_pair(entity_tile_index.x, entity_tile_index.y),
@@ -122,6 +123,14 @@ namespace {
                 }
             }
         }
+    }
+
+    vec2 get_unit_scale(ShadedMesh &resource){
+        vec2 scale = tile_size;
+        float aspect_ratio = resource.mesh.original_size.x / resource.mesh.original_size.y;
+        if(aspect_ratio>0) scale.y = tile_size.x/aspect_ratio;
+        else scale.x = tile_size.y*aspect_ratio;
+        return scale;
     }
 
     void create_projectile(entt::entity unit, UnitType unitType){
@@ -175,20 +184,28 @@ namespace {
 //        float random1 = ((rand() % 100) - 50) / 10.0f;
 //        float random2 = ((rand() % 100) - 50) / 10.0f;
 //        float rColor = 0.5f + ((rand() % 100) / 100.0f);
+       if(m_registry.has<Projectiles>(unit)){
+           return;
+       }else{
+           auto &projectile = m_registry.emplace<Projectiles>(unit);
+           projectile.pro = entity;
 
-        m_registry.emplace<ShadedMeshRef>(entity, resource);
-        auto &motion = m_registry.emplace<Motion>(entity);
-        motion.velocity = {0.f, 0.f} ;
-        ProjectileProperty &property = m_registry.emplace<ProjectileProperty>(entity);
-        property.unit_type = unitType;
-        auto &projectile = m_registry.emplace<Projectiles>(unit);
-        projectile.pro = entity;
+           m_registry.emplace<ShadedMeshRef>(entity, resource);
+           auto &motion = m_registry.emplace<Motion>(entity);
+           motion.velocity = {0.f, 0.f} ;
+           ProjectileProperty &property = m_registry.emplace<ProjectileProperty>(entity);
+           property.unit_type = unitType;
 
-        auto &position = m_registry.emplace<Position>(entity);
-        auto &unit_position = m_registry.get<Position>(unit);
-        position.position = unit_position.position;
-        position.angle = 0.f;
-//        position.scale = {35.f, 35.f};
+
+
+           auto &position = m_registry.emplace<Position>(entity);
+           auto &unit_position = m_registry.get<Position>(unit);
+           position.position = unit_position.position;
+           position.angle = 0.f;
+           position.scale = get_unit_scale(resource);
+           //position.scale = {35.f, 35.f};
+       }
+
 
 
 //        switch (unitType) {
@@ -227,6 +244,39 @@ namespace {
 
 
     }
+
+//    void init_projectile_bounding_box(entt::entity entity, UnitType unitType){
+//        BoundingBox& boundingBox =m_registry.emplace<BoundingBox>(entity);
+//        boundingBox.vertices = { vec2(-0.5, -0.5), vec2(0.5, -0.5), vec2(0.5, 0.5), vec2(-0.5, 0.5) };
+//        switch (unitType) {
+//            case UnitType::human_terminator:
+//                boundingBox.vertices = { vec2(-0.1, -0.2), vec2(0.1, -0.2), vec2(0.2, 0.f), vec2(0.15, 0.3), vec2(-0.2, 0.3)};
+//                return;
+//            case UnitType::human_monitor:
+//                return;
+//            case UnitType::human_archer:
+//                return ;
+//            case UnitType::human_healer:
+//                boundingBox.vertices = { vec2(-0.15, -0.25), vec2(0.1, -0.25), vec2(0.25, 0.1), vec2(0.25, 0.25), vec2(-0.15, 0.25) };
+//                return ;
+//            case UnitType::ai_terminator:
+//                boundingBox.vertices = { vec2(-0.5, -0.1), vec2(-0.25, -0.5), vec2(0.3, -0.5), vec2(0.3, 0.5),
+//                                         vec2(-0.25, 0.5), vec2(-0.5, 0.15) };
+//                return ;
+//            case UnitType::ai_monitor:
+//                return ;
+//            case UnitType::ai_archer:
+//                boundingBox.vertices = { vec2(-0.5, -0.25), vec2(0.f, -0.5), vec2(0.5, -0.25),
+//                                         vec2(0.5, 0.25), vec2(0.f, 0.5), vec2(-0.5, 0.25) };
+//                return ;
+//            case UnitType::ai_healer:
+//                return;
+//            default:
+//                assert(false);
+//                return;
+//        }
+//    }
+
 
     void update_state() {
         for (auto &&[entity, property]: m_registry.view<UnitProperty>().each()) {
