@@ -13,6 +13,7 @@ constexpr float map_x_min = tile_size.x/2;
 constexpr float map_x_max = tile_matrix_dimension.x*tile_size.x - tile_size.x/2;
 constexpr float map_y_min = tile_size.y/2;
 constexpr float map_y_max = tile_matrix_dimension.y*tile_size.y- tile_size.y/2;
-constexpr float unit_speed = 400;
+constexpr float unit_speed = 100;
 constexpr float cool_down_unit = tile_size.x / unit_speed * 1000;
+constexpr float projectile_speed = 500;
 #endif //ALPHAGO_AWAY_CONSTANTS_HPP
