@@ -9,6 +9,15 @@ namespace {
 }
 void init_unit_resources(){
     load_json("textures.json", unit_meshes);
+    for(nlohmann::json unit_type_json: unit_meshes){
+        for(nlohmann::json unit_state_json: unit_type_json){
+            std::string key = unit_state_json["texture"];
+            ShadedMesh &resource = cache_resource(key);
+            if (resource.effect.program.resource == 0)
+                RenderSystem::createSprite(resource, textures_path(key), unit_state_json["shader"]);
+        }
+    }
+
 }
 
 ShadedMesh &create_unit_mesh_resource(UnitType unitType, std::string unit_state) {
