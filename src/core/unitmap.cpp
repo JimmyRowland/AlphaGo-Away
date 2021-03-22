@@ -1,14 +1,17 @@
 
 #include "unitmap.hpp"
 
+
 namespace {
 template <std::size_t Size>
-void stateStr_to_unitType(UnitMapState &state, const char (&str)[Size]) {
+UnitMapState stateStr_to_unitType(UnitMapState &state, const char (&str)[Size]) {
     assert(state.area() + 1 == Size);
     for (std::size_t i = 0; i != Size - 1; ++i) {
         state[i] = char_to_unitType(str[i]);
     }
+    return state;
 }
+
 }
 
 
@@ -30,20 +33,115 @@ UnitType char_to_unitType(const char c) {
 }
 
 
-UnitMapState makeUnitState() {
+UnitMapState makeUnitState(Level level) {
     UnitMapState state{tile_matrix_dimension};
     const char str[] = {
             "               "
-            "2              "
-            "3              "
-            "4              "
-            "1             5"
-            "              6"
-            "              7"
-            "              8"
             "               "
+            "               "
+            "               "
+            "               "
+            "             5 "
+            "             6 "
+            "             7 "
+            "             8 "
             "               "
     };
-    stateStr_to_unitType(state, str);
-    return state;
+    const char level1[] = {
+            "               "
+            "               "
+            "               "
+            "               "
+            "               "
+            "               "
+            "               "
+            "            88 "
+            "            88 "
+            "               "
+    };
+    const char level2[] = {
+            "               "
+            "               "
+            "               "
+            "               "
+            "               "
+            "             5 "
+            "             5 "
+            "             5 "
+            "             5 "
+            "               "
+    };
+    const char level3[] = {
+            "               "
+            " 7           7 "
+            "               "
+            "               "
+            "               "
+            "               "
+            "               "
+            "               "
+            " 7           7 "
+            "               "
+    };
+    const char level4[] = {
+            "               "
+            " 5             "
+            " 5             "
+            " 5             "
+            " 5             "
+            "             5 "
+            "             6 "
+            "             7 "
+            "             8 "
+            "               "
+    };
+    const char level5[] = {
+            "               "
+            " 5             "
+            " 6             "
+            " 7             "
+            " 8             "
+            "             5 "
+            "             6 "
+            "             7 "
+            "             8 "
+            "               "
+    };
+    const char sandbox[] = {
+            "               "
+            " 1             "
+            " 2             "
+            " 3             "
+            " 4             "
+            "             5 "
+            "             6 "
+            "             7 "
+            "             8 "
+            "               "
+    };
+    const char path_finding[] = {
+            "               "
+            "234            "
+            "1              "
+            "               "
+            "               "
+            "             5 "
+            "             6 "
+            "             7 "
+            "             8 "
+            "               "
+    };
+    switch (level) {
+        case Level::level1: return stateStr_to_unitType(state, level1);
+        case Level::level2: return stateStr_to_unitType(state, level2);
+        case Level::level3: return stateStr_to_unitType(state, level3);
+        case Level::level4: return stateStr_to_unitType(state, level4);
+        case Level::level5: return stateStr_to_unitType(state, level5);
+        case Level::sandbox: return stateStr_to_unitType(state, sandbox);
+        case Level::path_finding_debug: return stateStr_to_unitType(state, path_finding);
+        default:
+            assert(false);
+            return {};
+    }
+    return stateStr_to_unitType(state, str);
 }
