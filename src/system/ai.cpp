@@ -12,7 +12,8 @@ namespace {
 
     bool within_attack_range(entt::entity entity, entt::entity target_entity) {
         if (m_registry.valid(entity) && m_registry.valid(target_entity)) {
-            if (get_entity_distance(entity, target_entity) < tile_size.x * 1.5) {
+            auto &property = m_registry.get<UnitProperty>(entity);
+            if (get_entity_distance(entity, target_entity) < tile_size.x * 1.5*property.attackRange/2) {
                 return true;
             }
         }
@@ -24,9 +25,12 @@ namespace {
         auto &&[target_property, target_position] = m_registry.get<UnitProperty, Position>(target_entity);
         target_property.hp -= property.damage;
         property.hp -= target_property.damage;
+        //Once the enemy be eliminated, the projectiles also gone
+        auto &projectile = m_registry.get<Projectiles>(entity);
         if (target_property.hp <= 0) {
             explosion_factory(target_position.position);
             m_registry.destroy(target_entity);
+            m_registry.destroy(projectile.pro);
         }
         if (property.hp <= 0) {
             explosion_factory(position.position);
@@ -70,15 +74,169 @@ namespace {
                     auto target_tile_index = target_property.path.empty() ? get_tile_index(target_position.position): rand() % 10 > 5 ? ivec2(target_property.path[0].first, target_property.path[0].second): get_tile_index(target_position.position);                    auto entity_tile_index = get_tile_index(position.position);
                     property.path = a.getPath(std::make_pair(entity_tile_index.x, entity_tile_index.y),
                                               std::make_pair(target_tile_index.x, target_tile_index.y));
+
+
                 }
             }
         }
+    }
+
+    void set_projectile_targets() {
+        for (auto &&[entity, property, position]: m_registry.view<ProjectileProperty, Position, EnemyProjectile>().each()) {
+            float min_dist = 99999999.f;
+            for (auto &&[target_entity, target_property, target_position]: m_registry.view<UnitProperty, Position, Ally>().each()) {
+                auto dist = glm::distance(position.position, target_position.position);
+                if (dist < min_dist) {
+                    min_dist = dist;
+                    property.actualTarget = target_entity;
+                }
+            }
+        }
+
+        for (auto &&[entity, property, position]: m_registry.view<ProjectileProperty, Position, AllyProjectile>().each()) {
+            float min_dist = 99999999.f;
+            for (auto &&[target_entity, target_property, target_position]: m_registry.view<UnitProperty, Position, Enemy>().each()) {
+                auto dist = glm::distance(position.position, target_position.position);
+                if (dist < min_dist) {
+                    min_dist = dist;
+                    property.actualTarget = target_entity;
+                }
+            }
+        }
+    }
+
+    void set_projectile_path() {
+        A_Star a = A_Star(std::make_pair(tile_matrix_dimension.x, tile_matrix_dimension.y));
+        for (auto &&[entity, property, position]: m_registry.view<ProjectileProperty, Position>().each()) {
+            if (!m_registry.valid(property.actualTarget) || property.actualTarget == entity) {
+                property.path = {};
+            } else {
+                if (m_registry.valid(property.actualTarget)) {
+                    auto&&[target_position, target_property] = m_registry.get<Position, ProjectileProperty>(
+                            property.actualTarget);
+                    auto target_tile_index = target_property.path.empty() ? get_tile_index(target_position.position): rand() % 10 > 5 ? ivec2(target_property.path[0].first, target_property.path[0].second): get_tile_index(target_position.position);                    auto entity_tile_index = get_tile_index(position.position);
+                    property.path = a.getPath(std::make_pair(entity_tile_index.x, entity_tile_index.y),
+                                              std::make_pair(target_tile_index.x, target_tile_index.y));
+
+
+                }
+            }
+        }
+    }
+
+    void create_projectile(entt::entity unit, UnitType unitType){
+        auto entity = m_registry.create();
+        ShadedMesh &resource = cache_resource("projectile");
+        if (resource.effect.program.resource == 0){
+            switch (unitType) {
+
+                case UnitType::human_monitor:
+                    RenderSystem::createSprite(resource, textures_path("human_tank_pro.png"), "textured");
+                    m_registry.emplace<AllyProjectile>(entity);
+
+                    break;
+                case UnitType::human_archer:
+                    RenderSystem::createSprite(resource, textures_path("human_archer_pro.png"), "textured");
+                    m_registry.emplace<AllyProjectile>(entity);
+
+                    break;
+                case UnitType::human_healer:
+                    RenderSystem::createSprite(resource, textures_path("human-healer_pro.png"), "textured");
+                    m_registry.emplace<AllyProjectile>(entity);
+
+                    break;
+
+                case UnitType::ai_monitor:
+                    RenderSystem::createSprite(resource, textures_path("ai_tank_pro.png"), "textured");
+                    m_registry.emplace<EnemyProjectile>(entity);
+
+                    break;
+                case UnitType::ai_archer:
+                    RenderSystem::createSprite(resource, textures_path("ai_archer_pro.png"), "textured");
+                    m_registry.emplace<EnemyProjectile>(entity);
+
+                    break;
+                case UnitType::ai_healer:
+                    RenderSystem::createSprite(resource, textures_path("ai_healer_pro.png"), "textured");
+                    m_registry.emplace<EnemyProjectile>(entity);
+
+                    break;
+                case UnitType::human_terminator:
+                    return;
+                case UnitType::ai_terminator:
+                    return;
+                default:
+                    assert(false);
+                    break;
+            }
+
+        }
+
+//        float random1 = ((rand() % 100) - 50) / 10.0f;
+//        float random2 = ((rand() % 100) - 50) / 10.0f;
+//        float rColor = 0.5f + ((rand() % 100) / 100.0f);
+
+        m_registry.emplace<ShadedMeshRef>(entity, resource);
+        auto &motion = m_registry.emplace<Motion>(entity);
+        motion.velocity = {0.f, 0.f} ;
+        ProjectileProperty &property = m_registry.emplace<ProjectileProperty>(entity);
+        property.unit_type = unitType;
+        auto &projectile = m_registry.emplace<Projectiles>(unit);
+        projectile.pro = entity;
+
+        auto &position = m_registry.emplace<Position>(entity);
+        auto &unit_position = m_registry.get<Position>(unit);
+        position.position = unit_position.position;
+        position.angle = 0.f;
+//        position.scale = {35.f, 35.f};
+
+
+//        switch (unitType) {
+//
+//            case UnitType::human_monitor:
+//
+//                  property.damage = 5;
+//
+//                break;
+//            case UnitType::human_archer:
+//                RenderSystem::createSprite(resource, textures_path("human_archer_pro.png"), "textured");
+//
+//                break;
+//            case UnitType::human_healer:
+//                RenderSystem::createSprite(resource, textures_path("human-healer_pro.png"), "textured");
+//
+//                break;
+//
+//            case UnitType::ai_monitor:
+//                RenderSystem::createSprite(resource, textures_path("ai_tank_pro.png"), "textured");
+//
+//                break;
+//            case UnitType::ai_archer:
+//                RenderSystem::createSprite(resource, textures_path("ai_archer_pro.png"), "textured");
+//
+//                break;
+//            case UnitType::ai_healer:
+//                RenderSystem::createSprite(resource, textures_path("ai_healer_pro.png"), "textured");
+//
+//                break;
+//            default:
+//                assert(false);
+//                break;
+//        }
+
+
+
     }
 
     void update_state() {
         for (auto &&[entity, property]: m_registry.view<UnitProperty>().each()) {
             if (m_registry.valid(entity)) {
                 if (within_attack_range(entity, property.actualTarget)) {
+                    //stop at the proper attack range and then attack
+                    property.path={};
+                    create_projectile(entity,property.unit_type);
+
+                    // eject projectiles
                     unit_attack(entity, property.unit_type);
                     resolve_damage(entity, property.actualTarget);
                 } else if (!property.path.empty()) {
@@ -89,6 +247,8 @@ namespace {
             }
         }
     }
+
+
 
     void clear_explosions() {
         for (auto &entity: m_registry.view<Explosion>()) {
@@ -104,6 +264,8 @@ void ai_update(float elapsed_ms) {
         clear_explosions();
         set_targets();
         set_path();
+        set_projectile_targets();
+        set_projectile_path();
         update_state();
     }
 

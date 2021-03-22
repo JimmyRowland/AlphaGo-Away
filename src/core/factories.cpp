@@ -76,6 +76,60 @@ namespace {
         position.scale = get_unit_scale(resource);
         UnitProperty &property = m_registry.emplace<UnitProperty>(entity);
         property.unit_type = unitType;
+        // different unit type will have difference properties
+        switch (unitType) {
+            case UnitType::human_terminator:
+                property.attackRange = 1;
+                property.damage = 10;
+                property.hp = 100;
+                property.maxhp = 100;
+                return;
+            case UnitType::human_monitor:
+                property.attackRange = 2;
+                property.damage = 15;
+                property.hp = 200;
+                property.maxhp = 200;
+                return;
+            case UnitType::human_archer:
+                property.attackRange = 5;
+                property.damage = 25;
+                property.hp = 45;
+                property.maxhp = 45;
+                return ;
+            case UnitType::human_healer:
+                property.attackRange = 3;
+                property.damage = 7;
+                property.hp = 95;
+                property.maxhp = 95;
+                return ;
+            case UnitType::ai_terminator:
+                property.attackRange = 1;
+                property.damage = 12;
+                property.hp = 95;
+                property.maxhp = 95;
+                return ;
+            case UnitType::ai_monitor:
+                property.attackRange = 2;
+                property.damage = 12;
+                property.hp = 220;
+                property.maxhp = 220;
+                return ;
+            case UnitType::ai_archer:
+                property.attackRange = 5;
+                property.damage = 30;
+                property.hp = 40;
+                property.maxhp = 40;
+                return ;
+            case UnitType::ai_healer:
+                property.attackRange = 3;
+                property.damage = 5;
+                property.hp = 100;
+                property.maxhp = 100;
+                return;
+            default:
+                assert(false);
+                return;
+        }
         m_registry.emplace<Stand>(entity);
     }
 

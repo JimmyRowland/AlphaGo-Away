@@ -26,12 +26,26 @@ struct Enemy{
 struct Ally{
 
 };
+struct EnemyProjectile{
+
+};
+struct AllyProjectile{
+
+};
 struct UnitProperty{
     int hp = 100;
     int maxhp = 100;
     int attackRange = 5;
     int moveRange = 5;
     int damage = 5;
+    UnitType unit_type = UnitType::human_terminator;
+//    entt::entity desiredTarget;
+    entt::entity actualTarget = entt::null;
+    std::vector<std::pair<int, int>> path = {};
+};
+
+struct ProjectileProperty{
+
     UnitType unit_type = UnitType::human_terminator;
 //    entt::entity desiredTarget;
     entt::entity actualTarget = entt::null;
