@@ -246,9 +246,10 @@ void Game::on_mouse_click(int button, int action, int mods) {
                     auto &position = m_registry.get<Position>(entity);
                     auto dis_x = abs(position.position.x - xpos);
                     auto dis_y = abs(position.position.y - ypos);
+                    auto &property = m_registry.get<UnitProperty>(entity);
                     if (dis_x < tile_size.x/2 && dis_y < tile_size.y/2) {
                         //Propertyed_unit = entity;
-                        auto &property = m_registry.get<UnitProperty>(entity);
+
                         DebugSystem::in_debug_mode = true;
                         property.selected = true;
                         property.init_pos = position.position;
@@ -256,8 +257,22 @@ void Game::on_mouse_click(int button, int action, int mods) {
                         position.position.x = xpos;
                         position.position.y = ypos;
 
-                        break;
+
                     }
+
+                    if (property.selected) {
+                            // Mark the selected unit
+
+                            auto& bb = m_registry.get<BoundingBox>(entity);
+                        std::cout << bb.vertices.size() << std::endl;
+                            for (auto& vertices : bb.vertices) {
+                                auto dotSize = vec2(5.f, 5.f);
+                                std::cout << "draw" << std::endl;
+                                DebugSystem::createLine(vertices, dotSize);
+                            }
+                            break;
+                    }
+
                 }
             } else if (action == GLFW_RELEASE) {
                 for (auto &entity: m_registry.view<UnitProperty>()) {
@@ -336,6 +351,49 @@ void Game::on_mouse_click(int button, int action, int mods) {
 
 
                     }
+                }
+            }
+           //draw moving trajetory
+            for (auto &entity: m_registry.view<UnitProperty>()) {
+                auto &property = m_registry.get<UnitProperty>(entity);
+               // std::cout << "test" << std::endl;
+//                if (property.selected) {
+//                    // Mark the selected unit
+//                    auto& bb = m_registry.get<BoundingBox>(entity);
+//                    for (auto& vertices : bb.transformed_vertices) {
+//                        auto dotSize = vec2(5.f, 5.f);
+//                        std::cout << "draw" << std::endl;
+//                        DebugSystem::createLine(vertices, dotSize);
+//                    }
+//                }else
+                 if(property.selected_release){
+                    //draw the moving  trajectory
+                    auto &motion= m_registry.get<Motion>(entity);
+                    auto &position = m_registry.get<Position>(entity);
+                    vec2 tri_pos = {(position.position.x-property.init_pos.x)/2+property.init_pos.x, (position.position.y-property.init_pos.y)/2+property.init_pos.y};
+                    float x1 = position.position.x-property.init_pos.x;
+                    float y1 = position.position.y-property.init_pos.y;
+                    // use dot product to calculate the angle
+
+                    vec2 v1 = normalize(vec2({x1, y1}));
+
+                    float angle = acos(dot(v1, {1.f, 0.f}));
+                    if (y1 < 0.f) {
+                        //clock wise
+                        angle *= -1.f;
+                    }
+                    if (y1==0){
+
+                        DebugSystem::createDirectTri(tri_pos,{x1/2,30},0.f);
+                        std::cout << "tri" << std::endl;
+                    } else if (x1==0){
+                        DebugSystem::createDirectTri(tri_pos,{30,y1/2},M_PI/2*y1/abs(y1));
+                        std::cout << "tri" << std::endl;
+                    }else {
+                        DebugSystem::createDirectTri(tri_pos, {abs((position.position.x-property.init_pos.x)/2),abs((position.position.y-property.init_pos.y)/2)},angle);
+                        std::cout << "tri" << std::endl;
+                    }
+                    property.selected_release = false;
                 }
             }
         }

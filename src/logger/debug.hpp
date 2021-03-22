@@ -11,8 +11,9 @@ namespace DebugSystem {
 
 	// draw a red line for debugging purposes
     void createLine(vec2 position, vec2 size);
+    void createDirectTri(vec2 position, vec2 scale,float angle);
 
-	// Removes all debugging graphics in ECS, called at every iteration of the game loop
+    // Removes all debugging graphics in ECS, called at every iteration of the game loop
     void clearDebugComponents();
 };
 #endif //ALPHAGO_AWAY_DEBUG_HPP
