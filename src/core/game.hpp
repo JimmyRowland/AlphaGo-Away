@@ -121,9 +121,9 @@ private:
 
     TileType imgui_entity_selection_to_tileType();
 
-    void imgui_save_level();
+    void imgui_save_sandbox_level();
 
-    void imgui_load_level();
+    void imgui_load_sandbox_level();
 
     void load_grid(std::string);
 

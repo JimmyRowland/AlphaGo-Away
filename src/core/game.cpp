@@ -395,11 +395,16 @@ void Game::init_gold(){
 }
 
 void Game::init_level() {
+    init_gold();
+    if(level == Level::sandbox){
+        mapState = loader.load_map(level);
+        unitMapState = loader.load_units(level);
+        return;
+    }
     mapState = makeMapState(level);
     unitMapState = makeUnitState(level);
-//    mapState = loader.load_map(level);
-//    unitMapState = loader.load_units(level);
-    init_gold();
+
+
 
 }
 
@@ -508,7 +513,7 @@ void Game::imgui_battle_control_menu(){
     }
 };
 
-void Game::imgui_save_level(){
+void Game::imgui_save_sandbox_level(){
     std::string map;
     for(int j = 0; j < tile_matrix_dimension.y; j++){
         for(int i = 0; i< tile_matrix_dimension.x; i++){
@@ -517,7 +522,7 @@ void Game::imgui_save_level(){
     }
     nlohmann::json json;
     json["map"] = map;
-    save_json("sandbox.json", json);
+    save_json("sandbox_map.json", json);
 }
 
 void Game::load_grid(std::string map_string) {
@@ -533,17 +538,15 @@ void Game::load_grid(std::string map_string) {
     }
 }
 
-void Game::imgui_load_level(){
-    nlohmann::json json;
-    load_json("sandbox.json", json);
-    load_grid(json["map"]);
+void Game::imgui_load_sandbox_level(){
+    restart(Level::sandbox);
 }
 
 void Game::imgui_sandbox_menu(){
     if (level == Level::sandbox && ImGui::CollapsingHeader("sandbox"))
     {
-        if (ImGui::Button("Save Level")) imgui_save_level();
-        if (ImGui::Button("Load Level")) imgui_load_level();
+        if (ImGui::Button("Save Level")) imgui_save_sandbox_level();
+        if (ImGui::Button("Load Level")) imgui_load_sandbox_level();
         imgui_tile_menu();
         imgui_enemy_menu();
     }
