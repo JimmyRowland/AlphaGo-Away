@@ -723,7 +723,9 @@ void Game::imgui_enemy_menu(){
 
 void Game::imgui(){
     if(show_imgui){
+        //ImGui::SetNextWindowContentSize(ImVec2(200,200));
         ImGui::Begin("Menu");
+       // ImGui::SetCursorScreenPos(ImVec2( 200,  200));
         imgui_battle_control_menu();
         imgui_game_mode();
         imgui_help_menu();
@@ -732,8 +734,8 @@ void Game::imgui(){
         imgui_ally_menu();
         imgui_sandbox_menu();
         ImGui::End();
-        ImGui::Begin("Menu2");
-        ImGui::End();
+//        ImGui::Begin("Menu2");
+//        ImGui::End();
 
     }
 }
