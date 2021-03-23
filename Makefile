@@ -251,6 +251,33 @@ src/core/game.cpp.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/AlphaGo-Away.dir/build.make CMakeFiles/AlphaGo-Away.dir/src/core/game.cpp.s
 .PHONY : src/core/game.cpp.s
 
+src/core/loader.o: src/core/loader.cpp.o
+
+.PHONY : src/core/loader.o
+
+# target to build an object file
+src/core/loader.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AlphaGo-Away.dir/build.make CMakeFiles/AlphaGo-Away.dir/src/core/loader.cpp.o
+.PHONY : src/core/loader.cpp.o
+
+src/core/loader.i: src/core/loader.cpp.i
+
+.PHONY : src/core/loader.i
+
+# target to preprocess a source file
+src/core/loader.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AlphaGo-Away.dir/build.make CMakeFiles/AlphaGo-Away.dir/src/core/loader.cpp.i
+.PHONY : src/core/loader.cpp.i
+
+src/core/loader.s: src/core/loader.cpp.s
+
+.PHONY : src/core/loader.s
+
+# target to generate assembly for a file
+src/core/loader.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/AlphaGo-Away.dir/build.make CMakeFiles/AlphaGo-Away.dir/src/core/loader.cpp.s
+.PHONY : src/core/loader.cpp.s
+
 src/core/map.o: src/core/map.cpp.o
 
 .PHONY : src/core/map.o
@@ -731,6 +758,9 @@ help:
 	@echo "... src/core/game.o"
 	@echo "... src/core/game.i"
 	@echo "... src/core/game.s"
+	@echo "... src/core/loader.o"
+	@echo "... src/core/loader.i"
+	@echo "... src/core/loader.s"
 	@echo "... src/core/map.o"
 	@echo "... src/core/map.i"
 	@echo "... src/core/map.s"

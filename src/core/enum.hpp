@@ -14,4 +14,9 @@ enum Level{
     start_screen,
     path_finding_debug
 };
+enum GameMode {
+    story_mode,
+    free_mode
+};
+
 #endif //ALPHAGO_AWAY_ENUM_HPP

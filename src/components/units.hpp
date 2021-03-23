@@ -44,6 +44,8 @@ struct UnitProperty{
     bool selected = false;
     bool selected_release = false;
     vec2 init_pos = {0,0};
+    float close_combat_damage_modifier = 1.f;
+
 };
 
 struct ProjectileProperty{
@@ -51,7 +53,7 @@ struct ProjectileProperty{
     UnitType unit_type = UnitType::human_terminator;
 //    entt::entity desiredTarget;
     entt::entity actualTarget = entt::null;
-    std::vector<std::pair<int, int>> path = {};
+    float damage;
 };
 
 struct ProjectileTimer{

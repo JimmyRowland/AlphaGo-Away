@@ -67,6 +67,70 @@ namespace {
         return scale;
     }
 
+    UnitProperty get_unit_property(UnitType unitType, UnitProperty& property){
+        switch (unitType) {
+            case UnitType::human_terminator:
+                property.attackRange = 1;
+                property.damage = 10;
+                property.hp = 1000;
+                property.maxhp = 1000;
+                property.close_combat_damage_modifier = 1.f;
+                return property;
+            case UnitType::human_monitor:
+                property.attackRange = 2;
+                property.damage = 15;
+                property.hp = 180;
+                property.maxhp = 180;
+                property.close_combat_damage_modifier = .5f;
+                return property;
+            case UnitType::human_archer:
+                property.attackRange = 5;
+                property.damage = 25;
+                property.hp = 75;
+                property.maxhp = 75;
+                property.close_combat_damage_modifier = .1f;
+                return property ;
+            case UnitType::human_healer:
+                property.attackRange = 3;
+                property.damage = 7;
+                property.hp = 95;
+                property.maxhp = 95;
+                property.close_combat_damage_modifier = .2f;
+                return property ;
+            case UnitType::ai_terminator:
+                property.attackRange = 1;
+                property.damage = 12;
+                property.hp = 1000;
+                property.maxhp = 1000;
+                property.close_combat_damage_modifier = 1.f;
+                return property ;
+            case UnitType::ai_monitor:
+                property.attackRange = 2;
+                property.damage = 12;
+                property.hp = 190;
+                property.maxhp = 190;
+                property.close_combat_damage_modifier = .5f;
+                return property ;
+            case UnitType::ai_archer:
+                property.attackRange = 5;
+                property.damage = 30;
+                property.hp = 70;
+                property.maxhp = 70;
+                property.close_combat_damage_modifier = .1f;
+                return property ;
+            case UnitType::ai_healer:
+                property.attackRange = 3;
+                property.damage = 5;
+                property.hp = 100;
+                property.maxhp = 100;
+                property.close_combat_damage_modifier = .2f;
+                return property;
+            default:
+                assert(false);
+                return property;
+        }
+    }
+
     void init_unit(entt::entity entity, ShadedMesh &resource, vec2 pos, UnitType unitType){
         auto &motion = m_registry.emplace<Motion>(entity);
         motion.velocity = {0.f, 0.f};
@@ -76,60 +140,8 @@ namespace {
         position.scale = get_unit_scale(resource);
         UnitProperty &property = m_registry.emplace<UnitProperty>(entity);
         property.unit_type = unitType;
+        get_unit_property(unitType, property);
         // different unit type will have difference properties
-        switch (unitType) {
-            case UnitType::human_terminator:
-                property.attackRange = 1;
-                property.damage = 10;
-                property.hp = 100;
-                property.maxhp = 100;
-                return;
-            case UnitType::human_monitor:
-                property.attackRange = 2;
-                property.damage = 15;
-                property.hp = 180;
-                property.maxhp = 180;
-                return;
-            case UnitType::human_archer:
-                property.attackRange = 5;
-                property.damage = 25;
-                property.hp = 75;
-                property.maxhp = 75;
-                return ;
-            case UnitType::human_healer:
-                property.attackRange = 3;
-                property.damage = 7;
-                property.hp = 95;
-                property.maxhp = 95;
-                return ;
-            case UnitType::ai_terminator:
-                property.attackRange = 1;
-                property.damage = 12;
-                property.hp = 95;
-                property.maxhp = 95;
-                return ;
-            case UnitType::ai_monitor:
-                property.attackRange = 2;
-                property.damage = 12;
-                property.hp = 190;
-                property.maxhp = 190;
-                return ;
-            case UnitType::ai_archer:
-                property.attackRange = 5;
-                property.damage = 30;
-                property.hp = 70;
-                property.maxhp = 70;
-                return ;
-            case UnitType::ai_healer:
-                property.attackRange = 3;
-                property.damage = 5;
-                property.hp = 100;
-                property.maxhp = 100;
-                return;
-            default:
-                assert(false);
-                return;
-        }
         m_registry.emplace<Stand>(entity);
     }
 
@@ -212,10 +224,7 @@ entt::entity unit_factory(vec2 pos, UnitType unitType) {
 };
 
 ShadedMesh& create_projectile_mesh(std::string screen_texture_path, std::string shader = "textured"){
-    float random1 = ((rand() % 100) - 50) / 10.0f;
-    std::string rand = std::to_string(random1);
     std::string key = screen_texture_path ;
-    key.append(rand);
     ShadedMesh &resource = cache_resource(key);
     RenderSystem::createSprite(resource, textures_path(screen_texture_path), "textured");
     return resource;
@@ -270,25 +279,30 @@ entt::entity projectile_factory(entt::entity unit, UnitType unitType, entt::enti
 
     auto&&[target_position, target_motion] = m_registry.get<Position,Motion>(target);
     auto& position = m_registry.emplace<Position>(entity);
-    auto& unit_pos = m_registry.get<Position>(unit);
+    auto&& [unit_pos, unit_prop] = m_registry.get<Position, UnitProperty>(unit);
     position.position = unit_pos.position;
     vec2 dir = glm::normalize( target_position.position-unit_pos.position);
-    position.angle = asin(dir.y);
+    position.angle = atan2(dir.y, dir.x);
     position.scale = tile_size/2.f;
     auto& projectile_prop = m_registry.emplace<ProjectileProperty>(entity);
-    if(m_registry.has<Projectiles>(unit)){
-        auto &projectile = m_registry.get<Projectiles>(unit);
-
-        projectile.pro.push_back(entity);
-    } else {
-        auto &projectile = m_registry.emplace<Projectiles>(unit);
-        projectile.pro.push_back(entity);
-    }
+    projectile_prop.damage = unit_prop.damage;
+//    if(m_registry.has<Projectiles>(unit)){
+//        auto &projectile = m_registry.get<Projectiles>(unit);
+//
+//        projectile.pro.push_back(entity);
+//    } else {
+//        auto &projectile = m_registry.emplace<Projectiles>(unit);
+//        projectile.pro.push_back(entity);
+//    }
 
     auto& motion = m_registry.emplace<Motion>(entity);
-    motion.velocity = glm::normalize(dir) * 200.f;
+    motion.velocity = glm::normalize(dir) * projectile_speed;
     projectile_prop.actualTarget = target;
     m_registry.emplace<ProjectileTimer>(entity);
+
+
+    BoundingBox& boundingBox =m_registry.emplace<BoundingBox>(entity);
+    boundingBox.vertices = { vec2(-0.5, -0.5), vec2(0.5, -0.5), vec2(0.5, 0.5), vec2(-0.5, 0.5) };
     return entity;
 }
 entt::entity explosion_factory(vec2 pos) {

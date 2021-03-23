@@ -66,6 +66,7 @@ Game::~Game(){
 	// Close the window
 	glfwDestroyWindow(window);
     glfwTerminate();
+    SDL_Quit();
 }
 
 void Game::init_audio()
@@ -407,8 +408,9 @@ TileType Game::imgui_entity_selection_to_tileType(){
         case 1: return TileType::basic;
         case 2: return TileType::water;
         case 3: return TileType::forest;
-        default: assert(false);
+        default: return TileType::basic;
     }
+	return TileType::forest;
 }
 
 UnitType Game::imgui_entity_selection_to_unitType(){
@@ -421,14 +423,22 @@ UnitType Game::imgui_entity_selection_to_unitType(){
         case 9: return UnitType::ai_monitor;
         case 10: return UnitType::ai_archer;
         case 11: return UnitType::ai_healer;
-        default: assert(false);
+        default: return UnitType::human_terminator;
     }
+	return UnitType::ai_healer;
 }
 
-void Game::place_an_ally(ivec2 tile_index){
-    if(imgui_entity_selection < 8 && imgui_entity_selection>3 && mapState[tile_index]==TileType::basic && unitMapState[tile_index]==UnitType::empty){
-        unitMapState[tile_index]=imgui_entity_selection_to_unitType();
+void Game::place_an_ally(ivec2 tile_index) {
+    int cost = unit_cost[imgui_entity_selection_to_unitType()];
+    if (imgui_entity_selection < 8 && imgui_entity_selection > 3 && mapState[tile_index] == TileType::basic &&
+        unitMapState[tile_index] == UnitType::empty && gold[player_index] >= cost) {
+        unitMapState[tile_index] = imgui_entity_selection_to_unitType();
         unit_factory(get_tile_center_from_index(tile_index), imgui_entity_selection_to_unitType());
+        gold[player_index] -= cost;
+        show_not_enough_gold_message = false;
+        particles->emitParticle(get_tile_center_from_index(tile_index), 20);
+    }else{
+        show_not_enough_gold_message = true;
     }
 }
 
@@ -474,7 +484,6 @@ void Game::level_on_click(int button, int action, int mods){
                 std::cout << "tile_index" << tile_index.x << tile_index.y << !is_tile_out_of_index(tile_index) << '\n';
                 if(!is_tile_out_of_index(tile_index)){
                     place_an_ally(tile_index);
-                    particles->emitParticle(get_tile_center_from_index(tile_index), 20);
                 }
             }
         }
@@ -486,9 +495,28 @@ void Game::on_mouse_move(vec2 mouse_pos)
 		(void)mouse_pos;
 }
 
+void Game::init_gold(){
+    if(game_mode == GameMode::free_mode){
+        gold[0] = 999999999;
+        gold[1] = 999999999;
+    }else{
+        gold[0] = 1000;
+        gold[1] = 1000;
+    }
+}
+
 void Game::init_level() {
+    init_gold();
+    if(level == Level::sandbox){
+        mapState = loader.load_map(level);
+        unitMapState = loader.load_units(level);
+        return;
+    }
     mapState = makeMapState(level);
-    unitMapState = makeUnitState();
+    unitMapState = makeUnitState(level);
+
+
+
 }
 
 
@@ -527,9 +555,48 @@ namespace {
     }
 }
 
-void Game::imgui_level_selection_menu(){
-    if (ImGui::CollapsingHeader("Select a level"))
-    {
+void Game::imgui_game_mode() {
+    if (ImGui::CollapsingHeader("Game Mode")) {
+        ImGui::Text("Choose a game mode");
+        if (ImGui::Button("story mode")) {
+            level = Level::start_screen;
+            restart(level);
+            game_mode = GameMode::story_mode;
+        }
+        if (ImGui::Button("free mode")) {
+            level = Level::sandbox;
+            restart(level);
+            game_mode = GameMode::free_mode;
+        }
+
+
+    }
+}
+
+void Game::imgui_story() {
+    if (ImGui::CollapsingHeader("Story")) {
+        if (level==Level::level1) {
+            ImGui::Text("Level 1: Some support robots are charging in a small station. This is the perfect time to destroy them");
+        }
+        if (level==Level::level2) {
+            ImGui::Text("Level 2: Some terminators are roaming around in south east direction. There are only 4 of them. It's perfect time to take down them and out what alphaGo is up to");
+        }
+        if (level==Level::level3) {
+            ImGui::Text("Level 3: Alpha go must be angry. 4 wizard like units are sent to hunt you. Find a way to break through");
+        }
+        if (level==Level::level4) {
+            ImGui::Text("Level 4: More enemies are coming. Sky looks grim");
+        }
+        if (level==Level::level5) {
+            ImGui::Text("Level 5: Scientists just created a virus that can destroy alphago. Capture all enemies and upload the virus");
+        }
+
+
+    }
+}
+
+void Game::imgui_level_selection_menu() {
+    if (ImGui::CollapsingHeader("Select a level")) {
         if (ImGui::Button("Sandbox")) {
             level = Level::sandbox;
             restart(level);
@@ -547,15 +614,17 @@ void Game::imgui_level_selection_menu(){
 void Game::imgui_battle_control_menu(){
     if (ImGui::CollapsingHeader("Battle"))
     {
-        if (ImGui::Button("Start battle")) {
-            has_battle_started = true;
-            battle_start_in = cool_down_unit * 2;
-        };
+        if(has_battle_started== false){
+            if (ImGui::Button("Start battle")) {
+                has_battle_started = true;
+                battle_start_in = cool_down_unit;
+            };
+        }
         if (ImGui::Button("Restart level")) restart(level);
     }
 };
 
-void Game::imgui_save_level(){
+void Game::imgui_save_sandbox_level(){
     std::string map;
     for(int j = 0; j < tile_matrix_dimension.y; j++){
         for(int i = 0; i< tile_matrix_dimension.x; i++){
@@ -564,7 +633,7 @@ void Game::imgui_save_level(){
     }
     nlohmann::json json;
     json["map"] = map;
-    save_json("sandbox.json", json);
+    save_json("sandbox_map.json", json);
 }
 
 void Game::load_grid(std::string map_string) {
@@ -580,17 +649,15 @@ void Game::load_grid(std::string map_string) {
     }
 }
 
-void Game::imgui_load_level(){
-    nlohmann::json json;
-    load_json("sandbox.json", json);
-    load_grid(json["map"]);
+void Game::imgui_load_sandbox_level(){
+    restart(Level::sandbox);
 }
 
 void Game::imgui_sandbox_menu(){
     if (level == Level::sandbox && ImGui::CollapsingHeader("sandbox"))
     {
-        if (ImGui::Button("Save Level")) imgui_save_level();
-        if (ImGui::Button("Load Level")) imgui_load_level();
+        if (ImGui::Button("Save Level")) imgui_save_sandbox_level();
+        if (ImGui::Button("Load Level")) imgui_load_sandbox_level();
         imgui_tile_menu();
         imgui_enemy_menu();
     }
@@ -614,14 +681,26 @@ void Game::imgui_ally_menu(){
     if (ImGui::CollapsingHeader("Ally"))
     {
         ImGui::Text("Choose an ally type and click on map to place the unit");
+
+        ImGui::RadioButton("player one", &player_index, 0);
+        ImGui::RadioButton("player two", &player_index, 1);
+        ImGui::Text("player one gold: %d", gold[0]);
+        ImGui::Text("player two gold: %d", gold[1]);
+
         ImGui::RadioButton("disabled", &imgui_entity_selection, 0);
         ImGui::RadioButton("terminator", &imgui_entity_selection, 4);
+        ImGui::Text("cost: %d", unit_cost[UnitType::human_terminator]);
 //        ImGuiImage(get_tile_texture_id(TileType::basic));
         ImGui::RadioButton("monitor", &imgui_entity_selection, 5);
+        ImGui::Text("cost: %d", unit_cost[UnitType::human_monitor]);
 //        ImGuiImage(get_tile_texture_id(TileType::water));
         ImGui::RadioButton("archer", &imgui_entity_selection, 6);
+        ImGui::Text("cost: %d", unit_cost[UnitType::human_archer]);
+
 //        ImGuiImage(get_tile_texture_id(TileType::forest));
         ImGui::RadioButton("healer", &imgui_entity_selection, 7);
+        ImGui::Text("cost: %d", unit_cost[UnitType::human_healer]);
+
 //        ImGuiImage(get_tile_texture_id(TileType::forest));
     }
 }
@@ -646,8 +725,10 @@ void Game::imgui(){
     if(show_imgui){
         ImGui::Begin("Menu");
         imgui_battle_control_menu();
+        imgui_game_mode();
         imgui_help_menu();
         imgui_level_selection_menu();
+        imgui_story();
         imgui_ally_menu();
         imgui_sandbox_menu();
         ImGui::End();

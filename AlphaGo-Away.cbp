@@ -135,6 +135,12 @@
 		<Unit filename="/Users/liwenxi/AIphaGo-Away/src/core/game.hpp">
 			<Option target="AlphaGo-Away"/>
 		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/src/core/loader.cpp">
+			<Option target="AlphaGo-Away"/>
+		</Unit>
+		<Unit filename="/Users/liwenxi/AIphaGo-Away/src/core/loader.hpp">
+			<Option target="AlphaGo-Away"/>
+		</Unit>
 		<Unit filename="/Users/liwenxi/AIphaGo-Away/src/core/map.cpp">
 			<Option target="AlphaGo-Away"/>
 		</Unit>

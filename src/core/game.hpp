@@ -14,6 +14,7 @@
 #include "system/ai.hpp"
 #include "entities/unit.hpp"
 #include "enum.hpp"
+#include "loader.hpp"
 
 // stlib
 #include <vector>
@@ -81,7 +82,10 @@ private:
     void on_mouse_click(int button, int action, int mods);
     void sandbox_on_click(int button, int action, int mods);
     void init_map_grid();
-
+    GameMode game_mode = GameMode::free_mode;
+    int gold[2] = {0, 0};
+    bool show_not_enough_gold_message;
+    int player_index = 0;
     // Loads the audio
     void init_audio();
 
@@ -106,6 +110,7 @@ private:
 	MapState mapState;
 	UnitMapState unitMapState;
     Level level = Level::sandbox;
+    Loader loader = Loader();
     bool is_paused = true;
     bool show_imgui = true;
 
@@ -117,9 +122,9 @@ private:
 
     TileType imgui_entity_selection_to_tileType();
 
-    void imgui_save_level();
+    void imgui_save_sandbox_level();
 
-    void imgui_load_level();
+    void imgui_load_sandbox_level();
 
     void load_grid(std::string);
 
@@ -142,6 +147,19 @@ private:
     void level_on_click(int button, int action, int mods);
 
 	void update_camera_pos();
+
+    void imgui_game_mode();
+
+    void init_gold();
+
+    std::map<UnitType, int> unit_cost = {
+            {UnitType::human_terminator,  100},
+            {UnitType::human_archer, 150},
+            {UnitType::human_monitor,  120},
+            {UnitType::human_healer,  200},
+    };
+
+    void imgui_story();
 };
 
 #endif //ALPHAGO_AWAY_GAME_HPP
