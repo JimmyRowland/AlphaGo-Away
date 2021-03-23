@@ -9,5 +9,8 @@ struct ScreenComponent{
 struct ButtonComponent
 {
 };
+struct resultComponent
+{
+};
 struct LoadingScreen{};
 #endif //ALPHAGO_AWAY_UI_HPP
