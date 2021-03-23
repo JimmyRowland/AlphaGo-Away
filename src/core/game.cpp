@@ -417,15 +417,15 @@ void Game::init_gold(){
 
 void Game::init_level() {
     init_gold();
-    if(level == Level::sandbox){
+    /*if(level == Level::sandbox){
         mapState = loader.load_map(level);
         unitMapState = loader.load_units(level);
         return;
     }
     mapState = makeMapState(level);
-    unitMapState = makeUnitState(level);
-
-
+    unitMapState = makeUnitState(level);*/
+    mapState = loader.load_map(level);
+    unitMapState = loader.load_units(level);
 
 }
 
