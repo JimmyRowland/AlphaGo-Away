@@ -230,6 +230,12 @@ void RenderSystem::draw(vec2 window_size_in_game_units)
         drawTexturedMesh(entity, projection_2D);
         gl_has_errors();
     }
+    
+    for (entt::entity entity : m_registry.view<ShadedMeshRef, resultComponent>())
+    {
+        drawTexturedMesh(entity, projection_2D);
+        gl_has_errors();
+    }
 
     ImGui::Render();
     ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());

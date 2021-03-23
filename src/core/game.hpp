@@ -99,6 +99,9 @@ private:
 
     bool has_battle_started;
     float battle_start_in;
+    bool battle_over = false;
+    float time = 0.f;
+    entt::entity battle_result;
     
     float frame = 1.f;
 

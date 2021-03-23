@@ -101,6 +101,26 @@ void Game::update(float elapsed_ms, vec2 window_size_in_game_units)
         }else{
             physics_update(elapsed_ms);
         }
+        if (!battle_over) {
+            if (m_registry.view<Ally>().size() == 0) {
+                battle_result = result_factory(false);
+                battle_over = true;
+                time = elapsed_ms;
+                std::cout << "human fails!!!" << std::endl;
+            } else if (m_registry.view<Enemy>().size() == 0){
+                battle_result = result_factory(true);
+                battle_over = true;
+                time = elapsed_ms;
+                std::cout << "ai fails!!!" << std::endl;
+            }
+        }
+//        else {
+//            if (elapsed_ms - time >= 60) {
+//                if (m_registry.valid (battle_result)) {
+//                    m_registry.destroy(battle_result);
+//                }
+//            }
+//        }
     }
     update_camera_pos();
     imgui();
@@ -111,6 +131,7 @@ void Game::update(float elapsed_ms, vec2 window_size_in_game_units)
 void Game::restart(Level level)
 {
     this->level = level;
+    battle_over = false;
 
     for(auto entity : m_registry.view<ShadedMeshRef>()){
         m_registry.destroy(entity);
