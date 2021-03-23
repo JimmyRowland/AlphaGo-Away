@@ -358,6 +358,21 @@ void background_factory(){
     ui_factory( "bg.png", {window_size_in_game_units.x / 2, window_size_in_game_units.y/2}, {window_size_in_game_units.y/405*540*12, window_size_in_game_units.y});
 }
 
+entt::entity result_factory(bool res) {
+    auto entity = m_registry.create();
+    if (res) {
+        m_registry.emplace<ShadedMeshRef>(entity, create_ui_mesh("win.jpg", "textured"));
+    } else {
+        m_registry.emplace<ShadedMeshRef>(entity, create_ui_mesh("lose.jpg", "textured"));
+    }
+    auto &position = m_registry.emplace<Position>(entity);
+    position.position = {window_size_in_game_units.x/2 - 200, window_size_in_game_units.y/2};
+    position.angle = 0.f;
+    position.scale = {560, 360};
+    m_registry.emplace<resultComponent>(entity);
+    return entity;
+}
+
 void swap_tile_texture(entt::entity entity, TileType tileType) {
     auto &tile_comp = m_registry.get<Tile>(entity);
     if (tile_comp.type != tileType) {

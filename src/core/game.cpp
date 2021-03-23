@@ -4,86 +4,87 @@
 
 
 
+
 // Game configuration
 const size_t TURTLE_DELAY_MS = 2000;
 
 // Create the fish world
 // Note, this has a lot of OpenGL specific things, could be moved to the renderer; but it also defines the callbacks to the mouse and keyboard. That is why it is called here.
 Game::Game(ivec2 window_size_px) :
-	points(0)
+        points(0)
 {
-	// Seeding rng with random device
-	rng = std::default_random_engine(std::random_device()());
+    // Seeding rng with random device
+    rng = std::default_random_engine(std::random_device()());
 
-	///////////////////////////////////////
-	// Initialize GLFW
-	auto glfw_err_callback = [](int error, const char* desc) { std::cerr << "OpenGL:" << error << desc << std::endl; };
-	glfwSetErrorCallback(glfw_err_callback);
-	if (!glfwInit())
-		throw std::runtime_error("Failed to initialize GLFW");
+    ///////////////////////////////////////
+    // Initialize GLFW
+    auto glfw_err_callback = [](int error, const char* desc) { std::cerr << "OpenGL:" << error << desc << std::endl; };
+    glfwSetErrorCallback(glfw_err_callback);
+    if (!glfwInit())
+        throw std::runtime_error("Failed to initialize GLFW");
 
-	//-------------------------------------------------------------------------
-	// GLFW / OGL Initialization, needs to be set before glfwCreateWindow
-	// Core Opengl 3.
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
-	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
-	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-	glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, 1);
+    //-------------------------------------------------------------------------
+    // GLFW / OGL Initialization, needs to be set before glfwCreateWindow
+    // Core Opengl 3.
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+    glfwWindowHint(GLFW_OPENGL_DEBUG_CONTEXT, 1);
 #if __APPLE__
-	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+    glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 #endif
-	glfwWindowHint(GLFW_RESIZABLE, 0);
-	// Create the main window (for rendering, keyboard, and mouse input)
-	window = glfwCreateWindow(window_size_px.x, window_size_px.y, "AlphaGo-Away", nullptr, nullptr);
-	if (window == nullptr)
-		throw std::runtime_error("Failed to glfwCreateWindow");
+    glfwWindowHint(GLFW_RESIZABLE, 0);
+    // Create the main window (for rendering, keyboard, and mouse input)
+    window = glfwCreateWindow(window_size_px.x, window_size_px.y, "AlphaGo-Away", nullptr, nullptr);
+    if (window == nullptr)
+        throw std::runtime_error("Failed to glfwCreateWindow");
 
-	// Setting callbacks to member functions (that's why the redirect is needed)
-	// Input is handled using GLFW, for more info see
-	// http://www.glfw.org/docs/latest/input_guide.html
-	glfwSetWindowUserPointer(window, this);
-	auto key_redirect = [](GLFWwindow* wnd, int _0, int _1, int _2, int _3) { ((Game*)glfwGetWindowUserPointer(wnd))->on_key(_0, _1, _2, _3); };
-	auto cursor_pos_redirect = [](GLFWwindow* wnd, double _0, double _1) { ((Game*)glfwGetWindowUserPointer(wnd))->on_mouse_move({_0, _1 }); };
+    // Setting callbacks to member functions (that's why the redirect is needed)
+    // Input is handled using GLFW, for more info see
+    // http://www.glfw.org/docs/latest/input_guide.html
+    glfwSetWindowUserPointer(window, this);
+    auto key_redirect = [](GLFWwindow* wnd, int _0, int _1, int _2, int _3) { ((Game*)glfwGetWindowUserPointer(wnd))->on_key(_0, _1, _2, _3); };
+    auto cursor_pos_redirect = [](GLFWwindow* wnd, double _0, double _1) { ((Game*)glfwGetWindowUserPointer(wnd))->on_mouse_move({_0, _1 }); };
     auto cursor_click_redirect = [](GLFWwindow *wnd, int _0, int _1, int _2) {
         ((Game*) glfwGetWindowUserPointer(wnd))->on_mouse_click(_0, _1, _2);
     };
-	glfwSetKeyCallback(window, key_redirect);
-	glfwSetCursorPosCallback(window, cursor_pos_redirect);
+    glfwSetKeyCallback(window, key_redirect);
+    glfwSetCursorPosCallback(window, cursor_pos_redirect);
     glfwSetMouseButtonCallback(window, cursor_click_redirect);
 
-	// Playing background music indefinitely
-	init_audio();
+    // Playing background music indefinitely
+    init_audio();
 //	Mix_PlayMusic(background_music, -1);
-	std::cout << "Loaded music\n";
+    std::cout << "Loaded music\n";
 }
 
 Game::~Game(){
-	// Destroy music components
-	if (background_music != nullptr)
-		Mix_FreeMusic(background_music);
-	Mix_CloseAudio();
+    // Destroy music components
+    if (background_music != nullptr)
+        Mix_FreeMusic(background_music);
+    Mix_CloseAudio();
 
-	// Close the window
-	glfwDestroyWindow(window);
+    // Close the window
+    glfwDestroyWindow(window);
     glfwTerminate();
     SDL_Quit();
 }
 
 void Game::init_audio()
 {
-	//////////////////////////////////////
-	// Loading music and sounds with SDL
-	if (SDL_Init(SDL_INIT_AUDIO) < 0)
-		throw std::runtime_error("Failed to initialize SDL Audio");
+    //////////////////////////////////////
+    // Loading music and sounds with SDL
+    if (SDL_Init(SDL_INIT_AUDIO) < 0)
+        throw std::runtime_error("Failed to initialize SDL Audio");
 
-	if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) == -1)
-		throw std::runtime_error("Failed to open audio device");
+    if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) == -1)
+        throw std::runtime_error("Failed to open audio device");
 
-	background_music = Mix_LoadMUS(audio_path("music.wav").c_str());
+    background_music = Mix_LoadMUS(audio_path("music.wav").c_str());
 
-	if (background_music == nullptr)
-		throw std::runtime_error("Failed to load sounds make sure the data directory is present: "+
-			audio_path("music.wav"));
+    if (background_music == nullptr)
+        throw std::runtime_error("Failed to load sounds make sure the data directory is present: "+
+                                 audio_path("music.wav"));
 
 }
 
@@ -143,7 +144,7 @@ void Game::handle_collisions()
 // Should the game be over ?
 bool Game::is_over() const
 {
-	return glfwWindowShouldClose(window)>0;
+    return glfwWindowShouldClose(window)>0;
 }
 
 void Game::update_camera_pos() {
@@ -167,21 +168,21 @@ void Game::update_camera_pos() {
 void Game::on_key(int key, int, int action, int mod)
 {
 
-	// Resetting game
-	if (action == GLFW_RELEASE && key == GLFW_KEY_R)
-	{
-		int w, h;
-		glfwGetWindowSize(window, &w, &h);
-		
+    // Resetting game
+    if (action == GLFW_RELEASE && key == GLFW_KEY_R)
+    {
+        int w, h;
+        glfwGetWindowSize(window, &w, &h);
+
 //		restart();
-	}
+    }
 
 //    game menu toggle
-	if (action == GLFW_RELEASE && key == GLFW_KEY_D){
+    if (action == GLFW_RELEASE && key == GLFW_KEY_D){
         show_imgui = !show_imgui;
-	}
+    }
 
-	//place units
+    //place units
     if (action == GLFW_PRESS && key == GLFW_KEY_P)
     {
         should_place = !should_place;
@@ -191,21 +192,21 @@ void Game::on_key(int key, int, int action, int mod)
     if (key == GLFW_KEY_B)
         DebugSystem::in_debug_mode = (action != GLFW_RELEASE);
 
-	// Control the current speed with `<` `>`
-	if (action == GLFW_RELEASE && (mod & GLFW_MOD_SHIFT) && key == GLFW_KEY_COMMA)
-	{
-		current_speed -= 0.1f;
-		std::cout << "Current speed = " << current_speed << std::endl;
-	}
-	if (action == GLFW_RELEASE && (mod & GLFW_MOD_SHIFT) && key == GLFW_KEY_PERIOD)
-	{
-		current_speed += 0.1f;
-		std::cout << "Current speed = " << current_speed << std::endl;
-	}
+    // Control the current speed with `<` `>`
+    if (action == GLFW_RELEASE && (mod & GLFW_MOD_SHIFT) && key == GLFW_KEY_COMMA)
+    {
+        current_speed -= 0.1f;
+        std::cout << "Current speed = " << current_speed << std::endl;
+    }
+    if (action == GLFW_RELEASE && (mod & GLFW_MOD_SHIFT) && key == GLFW_KEY_PERIOD)
+    {
+        current_speed += 0.1f;
+        std::cout << "Current speed = " << current_speed << std::endl;
+    }
 
 
 
-	current_speed = std::max(0.f, current_speed);
+    current_speed = std::max(0.f, current_speed);
 }
 
 
@@ -264,16 +265,16 @@ void Game::on_mouse_click(int button, int action, int mods) {
                     }
 
                     if (property.selected) {
-                            // Mark the selected unit
+                        // Mark the selected unit
 
-                            auto& bb = m_registry.get<BoundingBox>(entity);
+                        auto& bb = m_registry.get<BoundingBox>(entity);
                         std::cout << bb.vertices.size() << std::endl;
-                            for (auto& vertices : bb.vertices) {
-                                auto dotSize = vec2(5.f, 5.f);
-                                std::cout << "draw" << std::endl;
-                                DebugSystem::createLine(vertices, dotSize);
-                            }
-                            break;
+                        for (auto& vertices : bb.vertices) {
+                            auto dotSize = vec2(5.f, 5.f);
+                            std::cout << "draw" << std::endl;
+                            DebugSystem::createLine(vertices, dotSize);
+                        }
+                        break;
                     }
 
                 }
@@ -356,10 +357,10 @@ void Game::on_mouse_click(int button, int action, int mods) {
                     }
                 }
             }
-           //draw moving trajetory
+            //draw moving trajetory
             for (auto &entity: m_registry.view<UnitProperty>()) {
                 auto &property = m_registry.get<UnitProperty>(entity);
-               // std::cout << "test" << std::endl;
+                // std::cout << "test" << std::endl;
 //                if (property.selected) {
 //                    // Mark the selected unit
 //                    auto& bb = m_registry.get<BoundingBox>(entity);
@@ -369,7 +370,7 @@ void Game::on_mouse_click(int button, int action, int mods) {
 //                        DebugSystem::createLine(vertices, dotSize);
 //                    }
 //                }else
-                 if(property.selected_release){
+                if(property.selected_release){
                     //draw the moving  trajectory
                     auto &motion= m_registry.get<Motion>(entity);
                     auto &position = m_registry.get<Position>(entity);
@@ -410,7 +411,7 @@ TileType Game::imgui_entity_selection_to_tileType(){
         case 3: return TileType::forest;
         default: return TileType::basic;
     }
-	return TileType::forest;
+    return TileType::forest;
 }
 
 UnitType Game::imgui_entity_selection_to_unitType(){
@@ -425,7 +426,7 @@ UnitType Game::imgui_entity_selection_to_unitType(){
         case 11: return UnitType::ai_healer;
         default: return UnitType::human_terminator;
     }
-	return UnitType::ai_healer;
+    return UnitType::ai_healer;
 }
 
 void Game::place_an_ally(ivec2 tile_index) {
@@ -492,7 +493,7 @@ void Game::level_on_click(int button, int action, int mods){
 
 void Game::on_mouse_move(vec2 mouse_pos)
 {
-		(void)mouse_pos;
+    (void)mouse_pos;
 }
 
 void Game::init_gold(){
@@ -725,7 +726,7 @@ void Game::imgui(){
     if(show_imgui){
         //ImGui::SetNextWindowContentSize(ImVec2(200,200));
         ImGui::Begin("Menu");
-       // ImGui::SetCursorScreenPos(ImVec2( 200,  200));
+        // ImGui::SetCursorScreenPos(ImVec2( 200,  200));
         imgui_battle_control_menu();
         imgui_game_mode();
         imgui_help_menu();
@@ -739,4 +740,3 @@ void Game::imgui(){
 
     }
 }
-
