@@ -100,6 +100,8 @@ void Game::update(float elapsed_ms, vec2 window_size_in_game_units)
         }else{
             physics_update(elapsed_ms);
         }
+
+
     }
     update_camera_pos();
     imgui();
@@ -649,6 +651,9 @@ void Game::imgui(){
         imgui_ally_menu();
         imgui_sandbox_menu();
         ImGui::End();
+        ImGui::Begin("Menu2");
+        ImGui::End();
+
     }
 }
 
