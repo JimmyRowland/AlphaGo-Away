@@ -38,9 +38,10 @@ MapState Loader::load_map(Level level)
 		fileName = "sandbox_map.json";
 	}
 	load_json(fileName, json);
-	//auto map_arr = json["map"];
-	std::string unit_arr = json["map"];
+	auto map_arr = json["map"];
+	//std::string unit_arr = json["map"];
 
+	/*
 	auto entities = m_registry.view<Tile>();
 	for (int i = 0; i < tile_matrix_dimension.x; i++) {
 		for (int j = 0; j < tile_matrix_dimension.y; j++) {
@@ -52,16 +53,16 @@ MapState Loader::load_map(Level level)
 				state[ivec2(i, j)] = char_to_tileType(unit_arr[index]);
 			}
 		}
-	}
+	}*/
 
-	/*if (map_arr != NULL) {
+	if (map_arr != NULL) {
 		for (int i = 0; i < map_arr.size(); i++) {
 			auto tile = map_arr[i];
 			ivec2 tile_index = vec2(tile["position"]["x"], tile["position"]["y"]);
 			//std::cout << tile["tile_type"] << std::endl;
-			state[tile_index] = tile["unit_type"];
+			state[tile_index] = int_to_tileType(tile["tile_type"]);
 		}
-	}*/
+	}
 	return state;
 }
 
@@ -105,13 +106,11 @@ UnitMapState Loader::load_units(Level level) {
 		for (int i = 0; i < unit_arr.size(); i++) {
 			auto unit = unit_arr[i];
 			ivec2 tile_index = vec2(unit["position"]["x"], unit["position"]["y"]);
-			std::cout << unit["unit_type"] << std::endl;
+			//std::cout << unit["unit_type"] << std::endl;
 			state[tile_index] = int_to_unitType(unit["unit_type"]);
 		}
 	}
 	return state;
-
-
 }
 
 void Loader::save_map(Level level) {
@@ -126,7 +125,7 @@ void Loader::save_map(Level level) {
 				{"x", position.position.x},
 				{"y", position.position.y}
 			}},
-			{"tile_type", tile.type}
+			{"tile_type", tileType_to_int(tile.type)}
 		};
 		json["map"].push_back(tile_obj);
 		//std::cout << json["map"] << std::endl;
@@ -134,5 +133,5 @@ void Loader::save_map(Level level) {
 	std::cout << json << std::endl;
 	//std::ofstream o(json_path("sandbox_save_map.json"));
 	//o << std::setw(4) << json << std::endl;
-	save_json("sandbox_save_map.json", json);
+	save_json("sandbox_map.json", json);
 }
