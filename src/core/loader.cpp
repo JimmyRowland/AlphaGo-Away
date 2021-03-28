@@ -58,7 +58,7 @@ MapState Loader::load_map(Level level)
 	if (map_arr != NULL) {
 		for (int i = 0; i < map_arr.size(); i++) {
 			auto tile = map_arr[i];
-			ivec2 tile_index = vec2(tile["position"]["x"], tile["position"]["y"]);
+			ivec2 tile_index = get_tile_index(vec2(tile["position"]["x"], tile["position"]["y"]));
 			//std::cout << tile["tile_type"] << std::endl;
 			state[tile_index] = int_to_tileType(tile["tile_type"]);
 		}
@@ -121,7 +121,7 @@ void Loader::save_map(Level level) {
 		auto& position = m_registry.get<Position>(entity);
 		auto& tile = m_registry.get<Tile>(entity);
 		nlohmann::json tile_obj = {
-			{"pos", {
+			{"position", {
 				{"x", position.position.x},
 				{"y", position.position.y}
 			}},
@@ -130,8 +130,14 @@ void Loader::save_map(Level level) {
 		json["map"].push_back(tile_obj);
 		//std::cout << json["map"] << std::endl;
 	}
-	std::cout << json << std::endl;
+	//std::cout << json << std::endl;
 	//std::ofstream o(json_path("sandbox_save_map.json"));
 	//o << std::setw(4) << json << std::endl;
 	save_json("sandbox_map.json", json);
+	save_json("level_one_map.json", json);
+	save_json("level_two_map.json", json);
+	save_json("level_three_map.json", json);
+	save_json("level_four_map.json", json);
+	save_json("level_five_map.json", json);
+	save_json("path_finding_debug_map.json", json);
 }
