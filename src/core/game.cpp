@@ -535,7 +535,7 @@ void Game::imgui_battle_control_menu(){
 };
 
 void Game::imgui_save_sandbox_level(){
-    std::string map;
+    /*std::string map;
     for(int j = 0; j < tile_matrix_dimension.y; j++){
         for(int i = 0; i< tile_matrix_dimension.x; i++){
             map += tileType_to_char(mapState[ivec2(i,j)]);
@@ -543,7 +543,8 @@ void Game::imgui_save_sandbox_level(){
     }
     nlohmann::json json;
     json["map"] = map;
-    save_json("sandbox_map.json", json);
+    save_json("sandbox_map.json", json);*/
+    loader.save_map(level);
 }
 
 void Game::load_grid(std::string map_string) {

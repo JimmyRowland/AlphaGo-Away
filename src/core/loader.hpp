@@ -14,6 +14,8 @@ public:
 	MapState load_map(Level level);
 
 	UnitMapState load_units(Level level);
+
+	void save_map(Level level);
 };
 
 #endif
