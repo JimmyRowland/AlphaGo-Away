@@ -1,4 +1,5 @@
 #include "particleSystem.hpp"
+#include "../core/game.hpp"
 #include <iostream>
 
 ParticleSystem::ParticleSystem(float speed)
@@ -88,6 +89,8 @@ void ParticleSystem::update()
 void ParticleSystem::emitParticle(vec2 pos, int amount)
 {
     for (int i = 0; i < amount; i++){
+		Game::shake = true;
+
         auto entity = m_registry.create();
         ShadedMesh &resource = cache_resource("particle");
         if (resource.effect.program.resource == 0)

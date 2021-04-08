@@ -39,7 +39,7 @@ private:
     void initScreenTexture();
 
 	// Internal drawing functions for each entity type
-    void drawTexturedMesh(entt::entity, const mat3 &projection);
+	void drawTexturedMesh(entt::entity, const mat3 &projection, vec2 off);
 	void drawToScreen();
 
 	// Window handle
