@@ -145,29 +145,9 @@ void RenderSystem::drawParticle(const mat3& projection)
 
     // Input data location as in the vertex buffer
     GLint in_position_loc = glGetAttribLocation(texmesh.effect.program, "in_position");
-    GLint in_texcoord_loc = glGetAttribLocation(texmesh.effect.program, "in_texcoord");
-    GLint in_color_loc = glGetAttribLocation(texmesh.effect.program, "in_color");
-    if (in_texcoord_loc >= 0)
-    {
-        glEnableVertexAttribArray(in_position_loc);
-        glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), reinterpret_cast<void*>(0));
-        glEnableVertexAttribArray(in_texcoord_loc);
-        glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), reinterpret_cast<void*>(sizeof(vec3))); // note the stride to skip the preceeding vertex position
-        // Enabling and binding texture to slot 0
-        glActiveTexture(GL_TEXTURE0);
-        glBindTexture(GL_TEXTURE_2D, texmesh.texture.texture_id);
-    }
-    else if (in_color_loc >= 0)
-    {
-        glEnableVertexAttribArray(in_position_loc);
-        glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(ColoredVertex), reinterpret_cast<void*>(0));
-        glEnableVertexAttribArray(in_color_loc);
-        glVertexAttribPointer(in_color_loc, 3, GL_FLOAT, GL_FALSE, sizeof(ColoredVertex), reinterpret_cast<void*>(sizeof(vec3)));
-    }
-    else
-    {
-        throw std::runtime_error("This type of entity is not yet supported");
-    }
+
+    glEnableVertexAttribArray(in_position_loc);
+    glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(ColoredVertex), reinterpret_cast<void*>(0));
     gl_has_errors();
 
     // Getting uniform locations for glUniform* calls

@@ -159,19 +159,19 @@ void ParticleSystem::emitParticle(vec2 pos, int amount) {
                 v.position = {0.5f * std::cos(float(PI) * 2.0f * static_cast<float>(i) / NUM_TRIANGLES),
                               0.5f * std::sin(float(PI) * 2.0f * static_cast<float>(i) / NUM_TRIANGLES),
                               z};
-                v.color = {0.8, 0.8, 0.8};
+
                 vertices.push_back(v);
 
                 // Point on the circle ahead by on eposition in counter-clockwise direction
                 v.position = {0.5f * std::cos(float(PI) * 2.0f * static_cast<float>(i + 1) / NUM_TRIANGLES),
                               0.5f * std::sin(float(PI) * 2.0f * static_cast<float>(i + 1) / NUM_TRIANGLES),
                               z};
-                v.color = {0.8, 0.8, 0.8};
+
                 vertices.push_back(v);
 
                 // Circle center
                 v.position = {0, 0, z};
-                v.color = {0.8, 0.8, 0.8};
+
                 vertices.push_back(v);
 
                 // Indices
