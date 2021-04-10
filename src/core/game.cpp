@@ -405,13 +405,51 @@ void Game::on_mouse_move(vec2 mouse_pos)
 		(void)mouse_pos;
 }
 
-void Game::init_gold(){
-    if(game_mode == GameMode::free_mode){
+void Game::init_gold() {
+    if (game_mode == GameMode::free_mode) {
         gold[0] = 999999999;
         gold[1] = 999999999;
-    }else{
-        gold[0] = 1000;
-        gold[1] = 1000;
+    } else {
+        if(level == Level::level1){
+            gold[0] = 300;
+            gold[1] = 300;
+        } else if (level == Level::level2){
+            gold[0] = 450;
+            gold[1] = 450;
+        } else if (level == Level::level3){
+            gold[0] = 600;
+            gold[1] = 600;
+        } else if (level == Level::level4){
+            gold[0] = 800;
+            gold[1] = 800;
+        } else if (level == Level::level5){
+            gold[0] = 950;
+            gold[1] = 950;
+        } else {
+            gold[0] = 1000;
+            gold[1] = 1000;
+        }
+//        switch (level) {
+//            case Level::level1:
+//                gold[0] = 400;
+//                gold[1] = 400;
+//            case Level::level2:
+//                gold[0] = 1000;
+//                gold[1] = 1000;
+//            case Level::level3:
+//                gold[0] = 1000;
+//                gold[1] = 1000;
+//            case Level::level4:
+//                gold[0] = 1000;
+//                gold[1] = 1000;
+//            case Level::level5:
+//                gold[0] = 1000;
+//                gold[1] = 1000;
+//            default:
+//                gold[0] = 1000;
+//                gold[1] = 1000;
+//        }
+
     }
 }
 

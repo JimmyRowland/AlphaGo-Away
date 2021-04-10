@@ -72,58 +72,58 @@ namespace {
             case UnitType::human_terminator:
                 property.attackRange = 1;
                 property.damage = 10;
-                property.hp = 1000;
-                property.maxhp = 1000;
+                property.hp = 200;
+                property.maxhp = 200;
                 property.close_combat_damage_modifier = 1.f;
                 return property;
             case UnitType::human_monitor:
                 property.attackRange = 2;
                 property.damage = 15;
-                property.hp = 180;
-                property.maxhp = 180;
-                property.close_combat_damage_modifier = .5f;
+                property.hp = 1010;
+                property.maxhp = 1010;
+                property.close_combat_damage_modifier = .8f;
                 return property;
             case UnitType::human_archer:
                 property.attackRange = 5;
-                property.damage = 25;
+                property.damage = 35;
                 property.hp = 75;
                 property.maxhp = 75;
                 property.close_combat_damage_modifier = .1f;
                 return property ;
             case UnitType::human_healer:
                 property.attackRange = 3;
-                property.damage = 7;
-                property.hp = 95;
-                property.maxhp = 95;
-                property.close_combat_damage_modifier = .2f;
+                property.damage = 15;
+                property.hp = 180;
+                property.maxhp = 180;
+                property.close_combat_damage_modifier = .5f;
                 return property ;
             case UnitType::ai_terminator:
                 property.attackRange = 1;
                 property.damage = 12;
-                property.hp = 1000;
-                property.maxhp = 1000;
+                property.hp = 190;
+                property.maxhp = 190;
                 property.close_combat_damage_modifier = 1.f;
                 return property ;
             case UnitType::ai_monitor:
                 property.attackRange = 2;
-                property.damage = 12;
-                property.hp = 190;
-                property.maxhp = 190;
-                property.close_combat_damage_modifier = .5f;
+                property.damage = 13;
+                property.hp = 1020;
+                property.maxhp = 1020;
+                property.close_combat_damage_modifier = .8f;
                 return property ;
             case UnitType::ai_archer:
                 property.attackRange = 5;
-                property.damage = 30;
+                property.damage = 32;
                 property.hp = 70;
                 property.maxhp = 70;
                 property.close_combat_damage_modifier = .1f;
                 return property ;
             case UnitType::ai_healer:
                 property.attackRange = 3;
-                property.damage = 5;
-                property.hp = 100;
-                property.maxhp = 100;
-                property.close_combat_damage_modifier = .2f;
+                property.damage = 16;
+                property.hp = 190;
+                property.maxhp = 190;
+                property.close_combat_damage_modifier = .5f;
                 return property;
             default:
                 assert(false);

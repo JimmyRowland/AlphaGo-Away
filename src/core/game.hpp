@@ -156,9 +156,9 @@ private:
 
     std::map<UnitType, int> unit_cost = {
             {UnitType::human_terminator,  100},
-            {UnitType::human_archer, 150},
-            {UnitType::human_monitor,  120},
-            {UnitType::human_healer,  200},
+            {UnitType::human_archer, 200},
+            {UnitType::human_monitor,  150},
+            {UnitType::human_healer,  120},
     };
 
     void imgui_story();
