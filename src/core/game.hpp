@@ -51,6 +51,8 @@ public:
 	// restart level
     void restart(Level level= Level::start_screen);
 
+    void restart_without_loading_level(Level level = Level::start_screen);
+
 	// Steps the game ahead by ms milliseconds
 	void update(float elapsed_ms, vec2 window_size_in_game_units);
 
@@ -110,7 +112,8 @@ private:
 	std::default_random_engine rng;
 	std::uniform_real_distribution<float> uniform_dist; // number between 0..1
 	MapState mapState;
-	UnitMapState unitMapState;
+    UnitMapState unitMapState;
+    UnitHPMapState unitHPState;
     Level level = Level::sandbox;
     Loader loader = Loader();
     bool is_paused = true;
@@ -152,7 +155,7 @@ private:
 
     void imgui_game_mode();
 
-    void init_gold();
+    void init_gold(int income[]);
 
     std::map<UnitType, int> unit_cost = {
             {UnitType::human_terminator,  100},

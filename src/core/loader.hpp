@@ -15,7 +15,25 @@ public:
 
 	UnitMapState load_units(Level level);
 
-	void save_map(Level level);
+	void save_map(Level level, int gold[2]);
+
+	void save_units(Level level);
+
+	MapState initial_map_load(Level level);
+
+	UnitMapState initial_units_load(Level level);
+
+	void level_builder_map(Level level, int gold[2]);
+
+	void level_builder_units(Level level);
+
+	int * get_gold(Level level);
+
+	int* get_gold_level_builder(Level level);
+
+	UnitHPMapState load_units_hp(Level level);
+
+	UnitHPMapState initial_units_hp_load(Level level);
 };
 
 #endif

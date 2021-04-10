@@ -1,5 +1,6 @@
 // Header
 #include "game.hpp"
+#include <tuple>
 
 
 
@@ -152,6 +153,27 @@ void Game::restart(Level level)
     }
 }
 
+void Game::restart_without_loading_level(Level level) {
+    this->level = level;
+    battle_over = false;
+
+    for (auto entity : m_registry.view<ShadedMeshRef>()) {
+        m_registry.destroy(entity);
+    }
+    std::cout << "Restarting\n";
+    current_speed = 1.f;
+    has_battle_started = false;
+
+    if (level == Level::start_screen) {
+        frame = 1.f;
+        loading_screen_factory();
+        this->level = level;
+    }
+    else {
+        background_factory();
+    }
+}
+
 // Compute collisions between entities
 void Game::handle_collisions()
 {
@@ -239,7 +261,7 @@ ivec2 Game::get_window_size(){
 }
 
 void Game::on_mouse_click(int button, int action, int mods) {
-    if(level == Level::sandbox) return sandbox_on_click(button, action, mods);
+    if(level == Level::sandbox || game_mode == GameMode::free_mode) return sandbox_on_click(button, action, mods);
     if(level == Level::level1 || level == Level::level2 ||level == Level::level3 ||level == Level::level4 ||level == Level::level5){
         return level_on_click(button, action, mods);
     }
@@ -405,18 +427,17 @@ void Game::on_mouse_move(vec2 mouse_pos)
 		(void)mouse_pos;
 }
 
-void Game::init_gold(){
+void Game::init_gold(int income[2]){
     if(game_mode == GameMode::free_mode){
         gold[0] = 999999999;
         gold[1] = 999999999;
     }else{
-        gold[0] = 1000;
-        gold[1] = 1000;
+        gold[0] = income[0];
+        gold[1] = income[1];
     }
 }
 
 void Game::init_level() {
-    init_gold();
     /*if(level == Level::sandbox){
         mapState = loader.load_map(level);
         unitMapState = loader.load_units(level);
@@ -424,8 +445,12 @@ void Game::init_level() {
     }
     mapState = makeMapState(level);
     unitMapState = makeUnitState(level);*/
-    mapState = loader.load_map(level);
-    unitMapState = loader.load_units(level);
+
+        mapState = loader.initial_map_load(level);
+        auto income = loader.get_gold_level_builder(level);
+        init_gold(income);
+        unitHPState = loader.initial_units_hp_load(level);
+        unitMapState = loader.initial_units_load(level);
 
 }
 
@@ -444,8 +469,10 @@ void Game::init_unit_grid() {
         float xpos = tile_size.x/2 + tile_size.x * i;
         for (int j = 0; j < tile_matrix_dimension.y; j++) {
             float ypos = tile_size.y/2 + tile_size.y * j;
-            if(unitMapState[ivec2(i,j)]!=UnitType::empty){
-                unit_factory(vec2(xpos,ypos), unitMapState[ivec2(i,j)]);
+            if(unitMapState[ivec2(i,j)] != UnitType::empty){
+                auto unit = unit_factory(vec2(xpos,ypos), unitMapState[ivec2(i,j)]);
+                auto property = m_registry.get<UnitProperty>(unit);
+                property.hp = unitHPState[ivec2(i,j)];   
                 particles->emitParticle(vec2(xpos,ypos), 20);
             }
         }
@@ -544,7 +571,14 @@ void Game::imgui_save_sandbox_level(){
     nlohmann::json json;
     json["map"] = map;
     save_json("sandbox_map.json", json);*/
-    loader.save_map(level);
+    if (game_mode == GameMode::free_mode) {
+        loader.level_builder_map(level, gold);
+        loader.level_builder_units(level);
+    }
+    else {
+        loader.save_map(level, gold);
+        loader.save_units(level);
+    }
 }
 
 void Game::load_grid(std::string map_string) {
@@ -561,17 +595,34 @@ void Game::load_grid(std::string map_string) {
 }
 
 void Game::imgui_load_sandbox_level(){
-    restart(Level::sandbox);
+    restart_without_loading_level(level);
+    if (game_mode == GameMode::free_mode) {
+        mapState = loader.initial_map_load(level);
+        auto income = loader.get_gold_level_builder(level);
+        init_gold(income);
+        unitHPState = loader.initial_units_hp_load(level);
+        unitMapState = loader.initial_units_load(level);
+    }
+    else {
+        mapState = loader.load_map(level);
+        auto income = loader.get_gold(level);
+        init_gold(income);
+        unitHPState = loader.load_units_hp(level);
+        unitMapState = loader.load_units(level);
+    }
+    init_map_grid();
+    init_unit_grid();
+    
 }
 
 void Game::imgui_sandbox_menu(){
-    if (level == Level::sandbox && ImGui::CollapsingHeader("sandbox"))
-    {
+    //if (level == Level::sandbox && ImGui::CollapsingHeader("sandbox"))
+    //{
         if (ImGui::Button("Save Level")) imgui_save_sandbox_level();
         if (ImGui::Button("Load Level")) imgui_load_sandbox_level();
         imgui_tile_menu();
         imgui_enemy_menu();
-    }
+    //}
 };
 
 void Game::imgui_tile_menu(){

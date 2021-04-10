@@ -1,7 +1,7 @@
 {
     "gold": {
-        "player1": 1000,
-        "player2": 1000
+        "player1": 400,
+        "player2": 400
     },
     "map": [
         {
@@ -450,42 +450,42 @@
                 "x": 680.0,
                 "y": 520.0
             },
-            "tile_type": 1
+            "tile_type": 0
         },
         {
             "position": {
                 "x": 680.0,
                 "y": 440.0
             },
-            "tile_type": 1
+            "tile_type": 0
         },
         {
             "position": {
                 "x": 680.0,
                 "y": 360.0
             },
-            "tile_type": 1
+            "tile_type": 0
         },
         {
             "position": {
                 "x": 680.0,
                 "y": 280.0
             },
-            "tile_type": 1
+            "tile_type": 0
         },
         {
             "position": {
                 "x": 680.0,
                 "y": 200.0
             },
-            "tile_type": 1
+            "tile_type": 0
         },
         {
             "position": {
                 "x": 680.0,
                 "y": 120.0
             },
-            "tile_type": 1
+            "tile_type": 0
         },
         {
             "position": {
@@ -520,42 +520,42 @@
                 "x": 600.0,
                 "y": 520.0
             },
-            "tile_type": 1
+            "tile_type": 0
         },
         {
             "position": {
                 "x": 600.0,
                 "y": 440.0
             },
-            "tile_type": 1
+            "tile_type": 0
         },
         {
             "position": {
                 "x": 600.0,
                 "y": 360.0
             },
-            "tile_type": 1
+            "tile_type": 0
         },
         {
             "position": {
                 "x": 600.0,
                 "y": 280.0
             },
-            "tile_type": 1
+            "tile_type": 0
         },
         {
             "position": {
                 "x": 600.0,
                 "y": 200.0
             },
-            "tile_type": 1
+            "tile_type": 0
         },
         {
             "position": {
                 "x": 600.0,
                 "y": 120.0
             },
-            "tile_type": 1
+            "tile_type": 0
         },
         {
             "position": {
