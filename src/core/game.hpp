@@ -163,6 +163,8 @@ private:
     };
 
     void imgui_story();
+
+    void map_on_click(int button, int action, int mods);
 };
 
 #endif //ALPHAGO_AWAY_GAME_HPP
