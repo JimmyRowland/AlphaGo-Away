@@ -31,7 +31,6 @@ void ParticleSystem::update()
 			auto &curpos = m_registry.get<Position>(cur);
 			auto &curmot = m_registry.get<Motion>(cur);
 			
-			std::cout << p.life << std::endl;
 			if (p.life < 0.99f) 
 			{
 
