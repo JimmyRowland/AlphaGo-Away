@@ -15,6 +15,45 @@ vec2 Clamp(vec2 ori, float fixedLength)
 	return { (float)(ori.x / scale), (float)(ori.y / scale) };
 }
 
+float get_mass(Position position){
+    return pow(position.scale.y,2);
+}
+void perfect_elastic_collision(entt::entity entity_i, entt::entity entity_j){
+    auto&& [position_i, motion_i] = m_registry.get<Position, Motion>(entity_i);
+    auto&& [position_j, motion_j] = m_registry.get<Position, Motion>(entity_j);
+    float mass_i = get_mass(position_i);
+    float mass_j = get_mass(position_j);
+    float mass_sum = mass_i + mass_j;
+    motion_i.velocity = motion_i.velocity -
+                        (position_i.position-position_j.position)
+                        * (2*mass_j)/mass_sum
+                        *glm::dot(motion_i.velocity-motion_j.velocity, position_i.position-position_j.position)
+                        /(float) pow(glm::distance(position_i.position,position_j.position),2);
+    motion_j.velocity = motion_j.velocity +
+                        (position_j.position-position_i.position)
+                        * (2*mass_i)/mass_sum
+                        *glm::dot(motion_j.velocity-motion_i.velocity, position_j.position-position_i.position)
+                        /(float) pow(glm::distance(position_j.position,position_i.position),2);
+    position_i.position = position_j.position + glm::normalize(position_i.position-position_j.position)*((position_i.scale.y + position_j.scale.y)/4+1);
+}
+
+bool bounces(const Position& position1, const Position& position2)
+{
+    return glm::distance(position1.position,position2.position) <= position1.scale.y/4 + position2.scale.y/4;
+}
+
+float gravitational_constant = 0.1;
+
+vec2 getGravitationalAcceleration(Position position){
+    vec2 acceleration = vec2(0,0);
+    for(auto&&[entity, unit_property, unit_position]: m_registry.view<UnitProperty, Position>().each()){
+        vec2 difference = unit_position.position - position.position;
+        float distance = glm::length(difference);
+        acceleration += glm::normalize(difference)* (float) (gravitational_constant * unit_property.hp/pow(distance,1));
+    }
+    return acceleration;
+}
+
 
 void ParticleSystem::update()
 {
@@ -24,14 +63,17 @@ void ParticleSystem::update()
 
         auto &p = m_registry.get<Particle>(cur);
         p.life -= killSpeed; // reduce life
-		//p.life -= 0.1f; // reduce life
+//		p.life -= 0.1f; // reduce life
 
         if (p.life > 0.0f)
         {    // particle is alive, thus update
 			auto &curpos = m_registry.get<Position>(cur);
 			auto &curmot = m_registry.get<Motion>(cur);
+			if(gravity_toggle){
+                acceleration+=getGravitationalAcceleration(curpos);
+            }
 
-			if (p.life < 0.99f) 
+			if (p.life < 0.99f && swarm_behavior_toggle)
 			{
 
 				int count = 0;
@@ -61,15 +103,16 @@ void ParticleSystem::update()
 
 					avgSpeed = Clamp(avgSpeed, 1);
 
-					acceleration = { avgSpeed.x - curmot.velocity.x, avgSpeed.y - curmot.velocity.y };
+					acceleration += vec2( avgSpeed.x - curmot.velocity.x, avgSpeed.y - curmot.velocity.y );
 
 					acceleration = Clamp(acceleration, FIXED_SPEED);
 				}
 			}
 
 			curmot.velocity = { curmot.velocity.x + acceleration.x, curmot.velocity.y + acceleration.y };
-
-			curmot.velocity = Clamp(curmot.velocity, 5);
+            if(swarm_behavior_toggle){
+                curmot.velocity = Clamp(curmot.velocity, 5);
+            }
 
 			curpos.position += curmot.velocity;
             if(is_out_of_boundary(cur)){
@@ -80,6 +123,31 @@ void ParticleSystem::update()
             m_registry.destroy(cur);
         }
     }
+
+    if(elastic_collision_toggle){
+        auto entities = m_registry.view<Particle>();
+        for (unsigned int i=0; i<entities.size(); i++)
+        {
+
+            Position& motion_i = m_registry.get<Position>(entities[i]);
+            for (unsigned int j=i+1; j<entities.size(); j++)
+            {
+
+                Position& motion_j = m_registry.get<Position>(entities[j]);
+                if (bounces(motion_i, motion_j))
+                {
+                    perfect_elastic_collision(entities[i],entities[j]);
+                }
+
+            }
+
+        }
+    }
+
+
+
+
+
 
 }
 
@@ -97,6 +165,7 @@ void ParticleSystem::emitParticle(vec2 pos, int amount)
         float random1 = ((rand() % 100) - 50) / 10.0f;
         float random2 = ((rand() % 100) - 50) / 10.0f;
         float rColor = 0.5f + ((rand() % 100) / 100.0f);
+        float rScale = 35.f * (rand()%20)/10;
         
         m_registry.emplace<ShadedMeshRef>(entity, resource);
         auto &motion = m_registry.emplace<Motion>(entity);
@@ -104,7 +173,7 @@ void ParticleSystem::emitParticle(vec2 pos, int amount)
         auto &position = m_registry.emplace<Position>(entity);
         position.position = pos + random1;
         position.angle = 0.f;
-        position.scale = {35.f, 35.f};
+        position.scale = {rScale, rScale};
         
         auto &particle = m_registry.emplace<Particle>(entity);
         particle.color = vec4(rColor, rColor, rColor, 1.0f);

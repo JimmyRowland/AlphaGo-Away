@@ -546,6 +546,15 @@ void Game::imgui_save_sandbox_level(){
     save_json("sandbox_map.json", json);
 }
 
+void Game::imgui_particle_menu(){
+    if (ImGui::CollapsingHeader("Particle settings"))
+    {
+        ImGui::Checkbox("Swarm behavior", &particles->swarm_behavior_toggle);
+        ImGui::Checkbox("Gravitational force", &particles->gravity_toggle);
+        ImGui::Checkbox("Elastic collision", &particles->elastic_collision_toggle);
+    }
+}
+
 void Game::load_grid(std::string map_string) {
     auto entities = m_registry.view<Tile>();
     for (int i = 0; i < tile_matrix_dimension.x; i++) {
@@ -641,6 +650,7 @@ void Game::imgui(){
         imgui_story();
         imgui_ally_menu();
         imgui_sandbox_menu();
+        imgui_particle_menu();
         ImGui::End();
     }
 }

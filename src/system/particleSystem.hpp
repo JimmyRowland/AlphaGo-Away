@@ -35,6 +35,10 @@ public:
 
 	const float FIXED_SPEED = 2;
 
+	bool swarm_behavior_toggle = false;
+	bool gravity_toggle = true;
+	bool elastic_collision_toggle = true;
+
     void emitParticle(vec2 pos, int amount);
 private:
     // state
@@ -49,7 +53,7 @@ private:
     // returns the first Particle index that's currently unused e.g. Life <= 0.0f or 0 if no particle is currently inactive
 //    unsigned int firstUnusedParticle();
     // respawns particle
-    float killSpeed = 0.08f;
+    float killSpeed = 0.5f;
 	//float killSpeed = 0.00005f;
 };
 

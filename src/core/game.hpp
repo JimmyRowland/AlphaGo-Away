@@ -131,6 +131,7 @@ private:
     void load_grid(std::string);
 
     void imgui_tile_menu();
+    void imgui_particle_menu();
 
     void imgui_ally_menu();
 
