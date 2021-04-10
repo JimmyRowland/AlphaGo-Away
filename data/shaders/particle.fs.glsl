@@ -6,12 +6,12 @@ in vec2 texcoord;
 
 // Application data
 uniform sampler2D sampler0;
-uniform vec4 particleColor;
+
 
 // Output color
 layout(location = 0) out  vec4 color;
 
 void main()
 {
-	color = particleColor * texture(sampler0, vec2(texcoord.x, texcoord.y));
+	color = texture(sampler0, vec2(texcoord.x, texcoord.y));
 }

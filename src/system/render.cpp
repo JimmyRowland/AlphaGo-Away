@@ -71,12 +71,9 @@ void RenderSystem::drawTexturedMesh(entt::entity entity, const mat3 &projection)
 
 	// Getting uniform locations for glUniform* calls
 	GLint color_uloc = glGetUniformLocation(texmesh.effect.program, "fcolor");
-    GLint particleColor_uloc = glGetUniformLocation(texmesh.effect.program, "particleColor");
+
 	glUniform3fv(color_uloc, 1, (float*)&texmesh.texture.color);
-    if (m_registry.has<Particle>(entity)) {
-        auto &p = m_registry.get<Particle>(entity);
-        glUniform4fv(particleColor_uloc, 1, (float*)&p.color);
-    }
+
 	gl_has_errors();
 
 	// Get number of indices from index buffer, which has elements uint16_t
@@ -96,6 +93,120 @@ void RenderSystem::drawTexturedMesh(entt::entity entity, const mat3 &projection)
 	// Drawing of num_indices/3 triangles specified in the index buffer
 	glDrawElements(GL_TRIANGLES, num_indices, GL_UNSIGNED_SHORT, nullptr);
 	glBindVertexArray(0);
+}
+
+void RenderSystem::drawParticle(const mat3& projection)
+{
+
+
+    std::vector<vec2> particle_positions;
+    std::vector<vec2> particle_sizes;
+    std::vector<entt::entity> particle_entities;
+    for(auto&&[entity, particle, shadedMeshRef, position]: m_registry.view<Particle, ShadedMeshRef, Position>().each()){
+        particle_positions.push_back(position.position);
+        particle_sizes.push_back(position.scale);
+        if(particle_entities.empty()){
+            particle_entities.push_back(entity);
+        }
+        gl_has_errors();
+    }
+    if(particle_entities.empty()) return;
+    auto& mesh_ref = m_registry.get<ShadedMeshRef>(particle_entities[0]);
+    auto& texmesh = *mesh_ref.reference_to_cache;
+
+
+    // Transformation code, see Rendering and Transformation in the template specification for more info
+    // Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
+    Transform transform;
+//    transform.translate(motion.position);
+    transform.rotate(0);
+
+
+//    transform.scale(motion.scale);
+
+    // Setting shaders
+    glUseProgram(texmesh.effect.program);
+    glBindVertexArray(texmesh.mesh.vao);
+    gl_has_errors();
+
+    // Enabling alpha channel for textures
+    glEnable(GL_BLEND); glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glDisable(GL_DEPTH_TEST);
+    gl_has_errors();
+
+    GLint transform_uloc = glGetUniformLocation(texmesh.effect.program, "transform");
+    GLint projection_uloc = glGetUniformLocation(texmesh.effect.program, "projection");
+    gl_has_errors();
+
+    // Setting vertex and index buffers
+    glBindBuffer(GL_ARRAY_BUFFER, texmesh.mesh.vbo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, texmesh.mesh.ibo);
+    gl_has_errors();
+
+    // Input data location as in the vertex buffer
+    GLint in_position_loc = glGetAttribLocation(texmesh.effect.program, "in_position");
+    GLint in_texcoord_loc = glGetAttribLocation(texmesh.effect.program, "in_texcoord");
+    GLint in_color_loc = glGetAttribLocation(texmesh.effect.program, "in_color");
+    if (in_texcoord_loc >= 0)
+    {
+        glEnableVertexAttribArray(in_position_loc);
+        glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), reinterpret_cast<void*>(0));
+        glEnableVertexAttribArray(in_texcoord_loc);
+        glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), reinterpret_cast<void*>(sizeof(vec3))); // note the stride to skip the preceeding vertex position
+        // Enabling and binding texture to slot 0
+        glActiveTexture(GL_TEXTURE0);
+        glBindTexture(GL_TEXTURE_2D, texmesh.texture.texture_id);
+    }
+    else if (in_color_loc >= 0)
+    {
+        glEnableVertexAttribArray(in_position_loc);
+        glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(ColoredVertex), reinterpret_cast<void*>(0));
+        glEnableVertexAttribArray(in_color_loc);
+        glVertexAttribPointer(in_color_loc, 3, GL_FLOAT, GL_FALSE, sizeof(ColoredVertex), reinterpret_cast<void*>(sizeof(vec3)));
+    }
+    else
+    {
+        throw std::runtime_error("This type of entity is not yet supported");
+    }
+    gl_has_errors();
+
+    // Getting uniform locations for glUniform* calls
+    GLint color_uloc = glGetUniformLocation(texmesh.effect.program, "fcolor");
+    glUniform3fv(color_uloc, 1, (float*)&texmesh.texture.color);
+    gl_has_errors();
+
+    // Get number of indices from index buffer, which has elements uint16_t
+    GLint size = 0;
+    glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
+    gl_has_errors();
+    GLsizei num_indices = size / sizeof(uint16_t);
+    //GLsizei num_triangles = num_indices / 3;
+
+    // Setting uniform values to the currently bound program
+    glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform.mat);
+    glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
+    gl_has_errors();
+
+    unsigned int instanceVBO;
+    glGenBuffers(1, &instanceVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+    GLfloat offsets[particle_positions.size()*3];
+    for (int i = 0; i < particle_positions.size(); i++){
+        offsets[i*3] = (GLfloat) particle_positions[i].x;
+        offsets[i*3+1] = (GLfloat) particle_positions[i].y;
+        offsets[i*3+2] = (GLfloat) particle_sizes[i].y;
+    }
+
+    glBufferData(GL_ARRAY_BUFFER, sizeof(offsets), offsets, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glVertexAttribDivisor(0, 3);
+    glDrawArraysInstanced(GL_TRIANGLES, 0, num_indices, particle_positions.size()*3);
+
+
+//    glDrawElements(GL_TRIANGLES, num_indices, GL_UNSIGNED_SHORT, nullptr);
+
+    glBindVertexArray(0);
 }
 
 // Draw the intermediate texture to the screen, with some distortion to simulate water
@@ -219,11 +330,13 @@ void RenderSystem::draw(vec2 window_size_in_game_units)
         gl_has_errors();
     }
     
-    for (entt::entity entity : m_registry.view<ShadedMeshRef, Particle>())
-    {
-        drawTexturedMesh(entity, projection_2D);
-        gl_has_errors();
-    }
+//    for (entt::entity entity : m_registry.view<ShadedMeshRef, Particle>())
+//    {
+//        drawTexturedMesh(entity, projection_2D);
+//        gl_has_errors();
+//    }
+
+    drawParticle(projection_2D);
 
     for (entt::entity entity : m_registry.view<ShadedMeshRef, DebugComponent>())
     {

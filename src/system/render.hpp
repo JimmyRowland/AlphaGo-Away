@@ -51,5 +51,7 @@ private:
 	GLResource<RENDER_BUFFER> depth_render_buffer_id;
     entt::entity screen_state_entity;
     float frame_num = 0.f;
+
+    void drawParticle(const mat3 &projection);
 };
 #endif //ALPHAGO_AWAY_RENDER_HPP

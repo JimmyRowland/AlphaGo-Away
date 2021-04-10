@@ -65,6 +65,16 @@ https://github.com/guillaume-haerinck/imac-tower-defense
 
 https://github.com/Kerndog73/EnTT-Pacman
 
+- Mesh generator:
+  
+https://www.taketechease.com/
+
+- Free texture:
+
+https://www.kenney.nl/
+
+https://itch.io/game-assets/free/tag-explosions
+
 
 
 

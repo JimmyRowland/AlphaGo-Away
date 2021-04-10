@@ -30,8 +30,7 @@ void ParticleSystem::update()
         {    // particle is alive, thus update
 			auto &curpos = m_registry.get<Position>(cur);
 			auto &curmot = m_registry.get<Motion>(cur);
-			
-			std::cout << p.life << std::endl;
+
 			if (p.life < 0.99f) 
 			{
 
@@ -92,7 +91,9 @@ void ParticleSystem::emitParticle(vec2 pos, int amount)
         ShadedMesh &resource = cache_resource("particle");
         if (resource.effect.program.resource == 0)
             RenderSystem::createSprite(resource, textures_path("particle.png"), "particle");
-        
+
+
+
         float random1 = ((rand() % 100) - 50) / 10.0f;
         float random2 = ((rand() % 100) - 50) / 10.0f;
         float rColor = 0.5f + ((rand() % 100) / 100.0f);
