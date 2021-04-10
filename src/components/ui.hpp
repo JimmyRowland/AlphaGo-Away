@@ -9,6 +9,9 @@ struct ScreenComponent{
 struct ButtonComponent
 {
 };
+struct TutorialComponent
+{
+};
 struct resultComponent
 {
 };

@@ -140,11 +140,19 @@ void Game::restart(Level level)
     current_speed = 1.f;
     has_battle_started = false;
 
-    if(level == Level::start_screen){
+    if(level == Level::story){
+        story_page = 0;
+        story_factory(story_page);
+        background_factory();
+    } else if (level == Level::start_screen){
         frame = 1.f;
         loading_screen_factory();
         this->level = level;
     }else{
+        if (level == Level::tutorial) {
+            tutorial_num = 0;
+            tutorial_factory(tutorial_num);
+        }
         background_factory();
         init_level();
         init_map_grid();
@@ -166,7 +174,7 @@ bool Game::is_over() const
 }
 
 void Game::update_camera_pos() {
-    if(level!=Level::start_screen){
+    if((level!=Level::start_screen) && (level!=Level::story)){
         ivec2 window_size = get_window_size();
         double xpos, ypos;
         glfwGetCursorPos(window, &xpos, &ypos);
@@ -243,6 +251,8 @@ void Game::on_mouse_click(int button, int action, int mods) {
     if(level == Level::level1 || level == Level::level2 ||level == Level::level3 ||level == Level::level4 ||level == Level::level5){
         return level_on_click(button, action, mods);
     }
+    if (level == Level::story) return story_on_click(button, action, mods);
+    if (level == Level::tutorial) return tutorial_on_click(button, action, mods);
     if (button == GLFW_MOUSE_BUTTON_LEFT) {
 //        TODO restore relocating units
 //        double xpos, ypos;
@@ -400,6 +410,65 @@ void Game::level_on_click(int button, int action, int mods){
     }
 }
 
+void Game::story_on_click(int button, int action, int mods){
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+        double xpos, ypos;
+        glfwGetCursorPos(window, &xpos, &ypos);
+        // check if next button is pressed
+        bool x_in_next = (xpos <= next_pos.x + button_size.x/2) && (xpos >= next_pos.x - button_size.x/2);
+        bool y_in_next = (ypos <= next_pos.y + button_size.y/2) && (ypos >= next_pos.y - button_size.y/2);
+        bool next_pressed = x_in_next && y_in_next;
+        // check if skip button is pressed
+        bool x_in_skip = (xpos <= skip_pos.x + button_size.x/2) && (xpos >= skip_pos.x - button_size.x/2);
+        bool y_in_skip = (ypos <= skip_pos.y + button_size.y/2) && (ypos >= skip_pos.y - button_size.y/2);
+        bool skip_pressed = x_in_skip && y_in_skip;
+        ///
+        if (next_pressed || skip_pressed) {
+            for(entt::entity entity: m_registry.view<ScreenComponent>()){
+                m_registry.destroy(entity);
+            }
+            for(entt::entity entity: m_registry.view<ButtonComponent>()){
+                m_registry.destroy(entity);
+            }
+            for (entt::entity entity : m_registry.view<ShadedMeshRef, UnitProperty>())
+            {
+                m_registry.destroy(entity);
+            }
+            // handle next
+            if (next_pressed) {
+                story_page++;
+                if (story_page <= 3) {
+                    story_factory(story_page);
+                    background_factory();
+                } else {
+                    level = Level::tutorial;
+                    restart(level);
+                }
+            } else if (skip_pressed) {
+                level = Level::tutorial;
+                restart(level);
+            }
+        }
+        
+    }
+}
+
+void Game::tutorial_on_click(int button, int action, int mods){
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+        if (tutorial_num == 0) {
+            for(entt::entity entity: m_registry.view<TutorialComponent>()){
+                m_registry.destroy(entity);
+            }
+            tutorial_num++;
+        }
+        double xpos, ypos;
+        glfwGetCursorPos(window, &xpos, &ypos);
+        // check if done button is pressed
+        bool x_in_done = (xpos <= done_pos.x + button_size.x/2) && (xpos >= done_pos.x - button_size.x/2);
+        bool y_in_done = (ypos <= done_pos.y + button_size.y/2) && (ypos >= done_pos.y - button_size.y/2);
+    }
+}
+
 void Game::on_mouse_move(vec2 mouse_pos)
 {
 		(void)mouse_pos;
@@ -469,7 +538,7 @@ void Game::imgui_game_mode() {
     if (ImGui::CollapsingHeader("Game Mode")) {
         ImGui::Text("Choose a game mode");
         if (ImGui::Button("story mode")) {
-            level = Level::start_screen;
+            level = Level::story;
             restart(level);
             game_mode = GameMode::story_mode;
         }

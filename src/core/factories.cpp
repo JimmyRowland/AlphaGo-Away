@@ -328,9 +328,14 @@ entt::entity ui_factory(std::string texture_path, vec2 pos, vec2 size, std::stri
     position.position = pos;
     position.angle = 0.f;
     position.scale = size;
-    m_registry.emplace<ScreenComponent>(entity);
-    if(texture_path == "buttons/PlayButton.jpg"){
+    if((texture_path.find("buttons") == std::string::npos) && texture_path.find("tutorial") == std::string::npos){
+        m_registry.emplace<ScreenComponent>(entity);
+    }
+    if(texture_path.find("buttons") != std::string::npos){
         m_registry.emplace<ButtonComponent>(entity);
+    }
+    if(texture_path.find("tutorial") != std::string::npos){
+        m_registry.emplace<TutorialComponent>(entity);
     }
     return entity;
 }
@@ -356,6 +361,26 @@ void loading_screen_factory(){
 
 void background_factory(){
     ui_factory( "bg.png", {window_size_in_game_units.x / 2, window_size_in_game_units.y/2}, {window_size_in_game_units.y/405*540*12, window_size_in_game_units.y});
+}
+
+void story_factory(int story_num){
+    ui_factory("buttons/next.png", next_pos, button_size);
+    ui_factory("buttons/skip.png", skip_pos, button_size);
+    ui_factory("Story/story" + std::to_string(story_num) + ".png", {tile_matrix_dimension.x*tile_size.x/2, tile_matrix_dimension.y*tile_size.y/2},
+               {tile_matrix_dimension.x*tile_size.x, tile_matrix_dimension.y*tile_size.y});
+    if (story_num == 1) {
+        for (int i = 0; i < 4; i++)
+            unit_factory({tile_matrix_dimension.x*tile_size.x/2 - 200 + i * 100, tile_matrix_dimension.y*tile_size.y-100}, UnitType::ai_terminator);
+    } else if (story_num == 2) {
+        unit_factory({tile_matrix_dimension.x*tile_size.x/2 - 200, tile_matrix_dimension.y*tile_size.y-100}, UnitType::human_monitor);
+        unit_factory({tile_matrix_dimension.x*tile_size.x/2 - 100, tile_matrix_dimension.y*tile_size.y-100}, UnitType::human_archer);
+        unit_factory({tile_matrix_dimension.x*tile_size.x/2, tile_matrix_dimension.y*tile_size.y-100}, UnitType::human_healer);
+        unit_factory({tile_matrix_dimension.x*tile_size.x/2 + 100, tile_matrix_dimension.y*tile_size.y-100}, UnitType::human_terminator);
+    }
+}
+
+void tutorial_factory(int tutorial_num) {
+    ui_factory("tutorial/tutorial" + std::to_string(tutorial_num) + ".png", {tile_matrix_dimension.x*tile_size.x/2, map_y_min}, tutorial_size);
 }
 
 entt::entity result_factory(bool res) {

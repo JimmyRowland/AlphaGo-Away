@@ -9,6 +9,7 @@
 #include "unitmap.hpp"
 #include "components/ui.hpp"
 #include "entities/unit.hpp"
+#include<string>
 
 
 void init_factories();
@@ -20,6 +21,8 @@ GLuint get_tile_texture_id(TileType tileType);
 void screenUpdate(float frame);
 void loading_screen_factory();
 void background_factory();
+void story_factory(int story_num);
+void tutorial_factory(int tutorial_num);
 entt::entity result_factory(bool res);
 entt::entity explosion_factory(vec2 pos);
 #endif //ALPHAGO_AWAY_FACTORIES_HPP

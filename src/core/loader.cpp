@@ -34,6 +34,9 @@ MapState Loader::load_map(Level level)
 	case Level::path_finding_debug:
 		fileName = "path_finding_debug_map.json";
 		break;
+    case Level::tutorial:
+        fileName = "sandbox_map.json";
+        break;
 	default:
 		fileName = "sandbox_map.json";
 	}
@@ -86,6 +89,9 @@ UnitMapState Loader::load_units(Level level) {
 	case Level::path_finding_debug:
 		fileName = "path_finding_debug_units.json";
 		break;
+    case Level::tutorial:
+        fileName = "tutorial_units.json";
+        break;
 	default:
 		fileName = "sandbox_units.json";
 	}

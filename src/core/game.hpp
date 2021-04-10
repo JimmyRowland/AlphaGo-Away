@@ -104,7 +104,8 @@ private:
     entt::entity battle_result;
     
     float frame = 1.f;
-
+    int story_page = 0;
+    int tutorial_num = 0;
 
 	// C++ random number generator
 	std::default_random_engine rng;
@@ -147,6 +148,10 @@ private:
     void place_an_enemy(ivec2 tile_index);
 
     void level_on_click(int button, int action, int mods);
+    
+    void story_on_click(int button, int action, int mods);
+    
+    void tutorial_on_click(int button, int action, int mods);
 
 	void update_camera_pos();
 
