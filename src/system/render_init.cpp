@@ -75,6 +75,7 @@ void RenderSystem::createSprite(ShadedMesh& sprite, std::string texture_path, st
 
 void RenderSystem::set_last_firework_time(vec2 cursor_position){
     RenderSystem::last_firework_time = glfwGetTime() * 1.0f;
+    RenderSystem::cursor_position = cursor_position;
 }
 
 void RenderSystem::set_dark_mode(bool is_dark_mode) {

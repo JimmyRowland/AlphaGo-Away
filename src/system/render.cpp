@@ -151,6 +151,7 @@ void RenderSystem::drawParticle(const mat3& projection)
     glUniform1f(time_uloc, static_cast<float>(glfwGetTime() * 10.0f));
     gl_has_errors();
 
+    
     // Get number of indices from index buffer, which has elements uint16_t
     GLint size = 0;
     glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
@@ -218,7 +219,6 @@ void RenderSystem::drawToScreen()
 
 	// Draw the screen texture on the quad geometry
 	gl_has_errors();
-
 	// Set clock
 	GLuint time_uloc       = glGetUniformLocation(screen_sprite.effect.program, "time");
     GLuint illumination_uloc       = glGetUniformLocation(screen_sprite.effect.program, "illumination_param");
@@ -232,8 +232,16 @@ void RenderSystem::drawToScreen()
 	auto& screen =  m_registry.get<ScreenState>(screen_state_entity);
 	glUniform1f(dead_timer_uloc, screen.darken_screen_factor);
 	gl_has_errors();
+    GLuint cursor_x_uloc       = glGetUniformLocation(screen_sprite.effect.program, "cursor_x");
+    glUniform1f(cursor_x_uloc, (GLfloat)(RenderSystem::cursor_position.x));
+    gl_has_errors();
 
-	// Set the vertex position and vertex texture coordinates (both stored in the same VBO)
+    GLuint cursor_y_uloc       = glGetUniformLocation(screen_sprite.effect.program, "cursor_y");
+    glUniform1f(cursor_y_uloc, (GLfloat)(RenderSystem::cursor_position.y));
+    gl_has_errors();
+
+
+    // Set the vertex position and vertex texture coordinates (both stored in the same VBO)
 	GLint in_position_loc = glGetAttribLocation(screen_sprite.effect.program, "in_position");
 	glEnableVertexAttribArray(in_position_loc);
 	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)0);
