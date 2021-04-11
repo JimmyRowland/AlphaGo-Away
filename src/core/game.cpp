@@ -612,6 +612,7 @@ void Game::imgui_particle_menu() {
         ImGui::Checkbox("Swarm behavior", &particles->swarm_behavior_toggle);
         ImGui::Checkbox("Gravitational force", &particles->gravity_toggle);
         ImGui::Checkbox("Elastic collision", &particles->elastic_collision_toggle);
+        ImGui::Checkbox("Precise collision", &particles->is_precise_collision);
         ImGui::Checkbox("Dark mode", reinterpret_cast<bool *>(&RenderSystem::dark_mode));
         ImGui::SliderFloat("float", &RenderSystem::illumination_param, 1.f, 150.0f);
     }

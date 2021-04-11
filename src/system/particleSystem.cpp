@@ -54,6 +54,28 @@ vec2 getGravitationalAcceleration(Position position) {
     return acceleration;
 }
 
+vec2 get_location_after_rotation(vec2 location, float angle){
+    return vec2(location.x * cos(angle) - location.y * sin(angle), location.y * cos(angle) + location.x * sin(angle));
+}
+
+Position get_mesh_bounding_box(entt::entity entity){
+    auto &&[meshRef, position] = m_registry.get<ShadedMeshRef, Position>(entity);
+    float xMin = 99999, xMax = 0, yMin = 99999, yMax = 0;
+    for(auto vertex : meshRef.reference_to_cache->mesh.vertices){
+        vec2 vertex_position = get_location_after_rotation(vec2(vertex.position.x, vertex.position.y)*position.scale, position.angle)+position.position;
+        xMin = min(vertex_position.x, xMin);
+        xMax = max(vertex_position.x, xMax);
+        yMin = min(vertex_position.y, yMin);
+        yMax = max(vertex_position.y, yMax);
+    }
+    Position result = {
+            .position =  vec2((xMax+xMin)/2, (yMax+yMin)/2),
+            .angle = position.angle,
+            .scale = vec2(xMax-xMin, yMax-yMin)
+    };
+    return result;
+}
+
 
 void ParticleSystem::update() {
     for (auto &cur: m_registry.view<Particle>()) {
@@ -110,9 +132,26 @@ void ParticleSystem::update() {
             }
 
             curpos.position += curmot.velocity;
-            if (is_out_of_boundary(cur)) {
-                m_registry.destroy(cur);
+            if(is_precise_collision){
+                Position precise_bounding_box = get_mesh_bounding_box(cur);
+                vec2 size = precise_bounding_box.scale;
+                if((precise_bounding_box.position.y < size.y/2 && curmot.velocity.y<0) ||
+                   (precise_bounding_box.position.y > window_size_in_game_units.y - size.y/2 && curmot.velocity.y>0)||
+                   (precise_bounding_box.position.x < size.x/2 && curmot.velocity.x<0)||
+                   (precise_bounding_box.position.x > tile_matrix_dimension.x*tile_size.x - size.x/2 && curmot.velocity.x>0)){
+                    curmot.velocity.x *= -0.2;
+                    curmot.velocity.y *= -0.2;
+                    if(curpos.position.y < size.y/2) curpos.position.y = size.y/2;
+                    else if(curpos.position.y > window_size_in_game_units.y - size.y/2) curpos.position.y = window_size_in_game_units.y - size.y/2;
+                    if(curpos.position.x < size.x/2) curpos.position.x = size.x/2;
+                    else if(curpos.position.x > window_size_in_game_units.x - size.x/2) curpos.position.x = window_size_in_game_units.x - size.x/2;
+                }
+            }else{
+                if (is_out_of_boundary(cur)) {
+                    m_registry.destroy(cur);
+                }
             }
+
             p.color.a -= killSpeed * 10.f;
         } else {
             m_registry.destroy(cur);

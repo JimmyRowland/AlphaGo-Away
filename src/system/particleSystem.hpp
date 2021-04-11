@@ -41,6 +41,8 @@ public:
 	bool elastic_collision_toggle = true;
 
     void emitParticle(vec2 pos, int amount, bool emit_light = false);
+
+    bool is_precise_collision = false;
 private:
     // state
 //    std::vector<entt::entity> particles;
