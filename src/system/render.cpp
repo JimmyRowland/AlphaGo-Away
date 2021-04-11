@@ -97,8 +97,6 @@ void RenderSystem::drawTexturedMesh(entt::entity entity, const mat3 &projection)
 
 void RenderSystem::drawParticle(const mat3& projection)
 {
-
-
     std::vector<vec2> particle_positions;
     std::vector<vec2> particle_sizes;
     std::vector<entt::entity> particle_entities;
@@ -145,14 +143,12 @@ void RenderSystem::drawParticle(const mat3& projection)
 
     // Input data location as in the vertex buffer
     GLint in_position_loc = glGetAttribLocation(texmesh.effect.program, "in_position");
-
     glEnableVertexAttribArray(in_position_loc);
     glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(ColoredVertex), reinterpret_cast<void*>(0));
     gl_has_errors();
 
-    // Getting uniform locations for glUniform* calls
-    GLint color_uloc = glGetUniformLocation(texmesh.effect.program, "fcolor");
-    glUniform3fv(color_uloc, 1, (float*)&texmesh.texture.color);
+    GLuint time_uloc       = glGetUniformLocation(texmesh.effect.program, "time");
+    glUniform1f(time_uloc, static_cast<float>(glfwGetTime() * 10.0f));
     gl_has_errors();
 
     // Get number of indices from index buffer, which has elements uint16_t
@@ -192,6 +188,10 @@ void RenderSystem::drawParticle(const mat3& projection)
 // Draw the intermediate texture to the screen, with some distortion to simulate water
 void RenderSystem::drawToScreen()
 {
+
+
+
+
 	// Setting shaders
 	glUseProgram(screen_sprite.effect.program);
 	glBindVertexArray(screen_sprite.mesh.vao);
@@ -221,8 +221,10 @@ void RenderSystem::drawToScreen()
 
 	// Set clock
 	GLuint time_uloc       = glGetUniformLocation(screen_sprite.effect.program, "time");
+    GLuint last_firework_time_uloc       = glGetUniformLocation(screen_sprite.effect.program, "last_firework_time");
 	GLuint dead_timer_uloc = glGetUniformLocation(screen_sprite.effect.program, "darken_screen_factor");
-	glUniform1f(time_uloc, static_cast<float>(glfwGetTime() * 10.0f));
+	glUniform1f(time_uloc, static_cast<float>(glfwGetTime() * 1.0f));
+    glUniform1f(last_firework_time_uloc, static_cast<float>(RenderSystem::last_firework_time));
 	auto& screen =  m_registry.get<ScreenState>(screen_state_entity);
 	glUniform1f(dead_timer_uloc, screen.darken_screen_factor);
 	gl_has_errors();
@@ -235,6 +237,34 @@ void RenderSystem::drawToScreen()
 	glEnableVertexAttribArray(in_texcoord_loc);
 	glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)sizeof(vec3)); // note the stride to skip the preceeding vertex position
 	gl_has_errors();
+
+
+
+    std::vector<float> particle_x;
+    std::vector<float> particle_y;
+    for(auto&&[entity, particle, shadedMeshRef, position]: m_registry.view<Particle, ShadedMeshRef, Position>().each()){
+        particle_x.push_back(position.position.x);
+        particle_y.push_back(position.position.y);
+    }
+    GLint particle_x_uloc = glGetUniformLocation(screen_sprite.effect.program, "particle_x");
+    glUniform1fv(particle_x_uloc, particle_x.size(), (const GLfloat*) &particle_x);
+    GLint particle_y_uloc = glGetUniformLocation(screen_sprite.effect.program, "particle_y");
+    glUniform1fv(particle_y_uloc, particle_x.size(), (const GLfloat*) &particle_y);
+//    GLfloat offsets[particle_positions.size()*2];
+//    for (int i = 0; i < particle_positions.size(); i++){
+//        offsets[i*2] = (GLfloat) particle_positions[i].x;
+//        offsets[i*2+1] = (GLfloat) particle_positions[i].y;
+//    }
+//    unsigned int instanceVBO;
+//    glGenBuffers(1, &instanceVBO);
+//    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+//    glBufferData(GL_ARRAY_BUFFER, sizeof(offsets), offsets, GL_STATIC_DRAW);
+//    glEnableVertexAttribArray(0);
+//    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
+    gl_has_errors();
+
+
+
 
 	// Bind our texture in Texture Unit 0
 	glActiveTexture(GL_TEXTURE0);

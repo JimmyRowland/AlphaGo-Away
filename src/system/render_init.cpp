@@ -27,7 +27,9 @@ RenderSystem::~RenderSystem()
 	// delete allocated resources
 	glDeleteFramebuffers(1, &frame_buffer);
 }
+float RenderSystem::last_firework_time = 0;
 
+vec2 RenderSystem::cursor_position = vec2(0,0);
 // Create a new sprite and register it with ECS
 void RenderSystem::createSprite(ShadedMesh& sprite, std::string texture_path, std::string shader_name)
 {
@@ -67,6 +69,10 @@ void RenderSystem::createSprite(ShadedMesh& sprite, std::string texture_path, st
 
 	// Loading shaders
 	sprite.effect.load_from_file(shader_path(shader_name) + ".vs.glsl", shader_path(shader_name) + ".fs.glsl");
+}
+
+void RenderSystem::set_last_firework_time(vec2 cursor_position){
+    RenderSystem::last_firework_time = glfwGetTime() * 1.0f;
 }
 
 // Load a new mesh from disc and register it with ECS

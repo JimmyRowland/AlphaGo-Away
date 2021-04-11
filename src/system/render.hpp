@@ -32,6 +32,9 @@ public:
 	// Expose the creating of visual representations to other systems
 	static void createSprite(ShadedMesh& mesh_container, std::string texture_path, std::string shader_name);
 	static void createColoredMesh(ShadedMesh& mesh_container, std::string shader_name);
+	static float last_firework_time;
+    static vec2 cursor_position;
+	static void set_last_firework_time(vec2 cursor_position);
 
 private:
 	// Initialize the screeen texture used as intermediate render target

@@ -230,6 +230,7 @@ ivec2 Game::get_window_size() {
 }
 
 void Game::on_mouse_click(int button, int action, int mods) {
+    RenderSystem::set_last_firework_time(get_cursor_position());
     if (!has_battle_started && (level == Level::level1 || level == Level::level2 || level == Level::level3 || level == Level::level4 ||
                                 level == Level::level5)) {
         map_on_click(button, action, mods);
