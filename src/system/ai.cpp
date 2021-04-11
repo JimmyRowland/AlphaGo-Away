@@ -139,6 +139,42 @@ namespace {
         }
 
     }
+
+    entt::entity get_best_target( const std::map<entt::entity, int>& targets){
+        int most_frequent_target_count = 0;
+        entt::entity best_target = entt::null;;
+        for (auto const& [target, count] : targets){
+            if(count > most_frequent_target_count){
+                most_frequent_target_count = count;
+                best_target = target;
+            }
+        }
+        return  best_target;
+    }
+
+
+    template<typename Component>
+    void set_best_target(){
+        std::map<entt::entity, int> archer_targets = {};
+        for(auto&&[entity, unit_property, position]: m_registry.view<UnitProperty, Position, Component, Enemy>().each()){
+            if(archer_targets.count(unit_property.actualTarget)>0){
+                archer_targets[unit_property.actualTarget]+=1;
+            }else{
+                archer_targets[unit_property.actualTarget]=1;
+            }
+        }
+        auto best_target = get_best_target(archer_targets);
+        for(auto&&[entity, unit_property, position]: m_registry.view<UnitProperty, Position, Component, Enemy>().each()){
+            unit_property.actualTarget = best_target;
+        }
+    }
+
+    void group_behavior() {
+        set_best_target<Archer>();
+        set_best_target<Terminator>();
+        set_best_target<Healer>();
+        set_best_target<Monitor>();
+    }
 }
 
 void ai_update(float elapsed_ms) {
@@ -147,6 +183,7 @@ void ai_update(float elapsed_ms) {
         cooldown += cool_down_unit;
         clear_explosions();
         set_targets();
+        group_behavior();
         set_path();
         set_projectile_targets();
        // set_projectile_path();

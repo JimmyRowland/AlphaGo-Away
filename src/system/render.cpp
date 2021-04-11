@@ -221,10 +221,12 @@ void RenderSystem::drawToScreen()
 
 	// Set clock
 	GLuint time_uloc       = glGetUniformLocation(screen_sprite.effect.program, "time");
+    GLuint illumination_uloc       = glGetUniformLocation(screen_sprite.effect.program, "illumination_param");
     GLuint last_firework_time_uloc       = glGetUniformLocation(screen_sprite.effect.program, "last_firework_time");
     GLuint dark_mode_uloc       = glGetUniformLocation(screen_sprite.effect.program, "dark_mode");
 	GLuint dead_timer_uloc = glGetUniformLocation(screen_sprite.effect.program, "darken_screen_factor");
 	glUniform1f(time_uloc, static_cast<float>(glfwGetTime() * 1.0f));
+    glUniform1f(illumination_uloc, static_cast<float>(RenderSystem::illumination_param));
     glUniform1i(dark_mode_uloc, RenderSystem::dark_mode);
     glUniform1f(last_firework_time_uloc, static_cast<float>(RenderSystem::last_firework_time));
 	auto& screen =  m_registry.get<ScreenState>(screen_state_entity);

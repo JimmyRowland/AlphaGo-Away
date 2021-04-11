@@ -36,6 +36,7 @@ public:
     static vec2 cursor_position;
 	static void set_last_firework_time(vec2 cursor_position);
     static int dark_mode;
+    static float illumination_param;
     static void set_dark_mode(bool is_dark_mode);
 
 private:

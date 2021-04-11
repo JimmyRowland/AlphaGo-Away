@@ -31,6 +31,7 @@ float RenderSystem::last_firework_time = 0;
 
 vec2 RenderSystem::cursor_position = vec2(0,0);
 int RenderSystem::dark_mode = 0;
+float RenderSystem::illumination_param = 100.f;
 // Create a new sprite and register it with ECS
 void RenderSystem::createSprite(ShadedMesh& sprite, std::string texture_path, std::string shader_name)
 {

@@ -3,6 +3,7 @@
 uniform sampler2D screen_texture;
 uniform float time;
 uniform int dark_mode;
+uniform float illumination_param;
 uniform float darken_screen_factor;
 uniform float particle_x[max_particle];
 uniform float particle_y[max_particle];
@@ -76,7 +77,7 @@ vec4 mainImage( vec2 uv )
 	{
 		if(particle_x[sampleIndex] <= -1) break;
 		vec2 p = vec2((particle_x[sampleIndex]/1600.0-0.5), (0.5-particle_y[sampleIndex]/800.0));
-		vec2 temp = (((uv-0.5))-p.xy)*100.0;
+		vec2 temp = (((uv-0.5))-p.xy)*illumination_param;
 		temp/=800.0/300.0;
 		float s = sqrt(dot(temp,temp));
 		s*=800.0*.05;
