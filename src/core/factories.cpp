@@ -380,7 +380,14 @@ void story_factory(int story_num){
 }
 
 void tutorial_factory(int tutorial_num) {
+    /* tutorial_num when used as explanation: 10 for basic grid; 11 for forest grid; 12 for river grid;
+       20 for human_terminator; 21 for human_monitor; 22 for human_archer; 23 for human_healer;
+       24 for ai_terminator; 25 for ai_monitor; 26 for ai_archer; 27 for ai_healer;
+    */
     ui_factory("tutorial/tutorial" + std::to_string(tutorial_num) + ".png", {tile_matrix_dimension.x*tile_size.x/2, map_y_min}, tutorial_size);
+    if (tutorial_num >= 10) {
+        
+    }
 }
 
 entt::entity result_factory(bool res) {
