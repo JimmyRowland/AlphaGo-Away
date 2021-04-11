@@ -8,10 +8,12 @@ in vec3 in_position;
 uniform mat3 transform;
 uniform mat3 projection;
 out vec2 vl;
+out vec2 texCoords;
 
 layout (location = 0) in vec3 aOffset;
 void main()
 {
+	texCoords=in_position.xy;
 	mat3 offset = mat3(
 	aOffset.z, 0.0, 0.0,
 	0.0, aOffset.z, 0.0,

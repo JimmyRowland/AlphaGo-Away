@@ -32,7 +32,7 @@ public:
     void update();
     // render all particles
 //    void Draw();
-	const float MAX_DISTANCE = 30.f;
+	static float max_distance;
 
 	const float FIXED_SPEED = 2;
 

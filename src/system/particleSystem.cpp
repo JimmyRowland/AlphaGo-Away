@@ -76,6 +76,8 @@ Position get_mesh_bounding_box(entt::entity entity){
     return result;
 }
 
+float ParticleSystem::max_distance = 30.f;
+
 
 void ParticleSystem::update() {
     for (auto &cur: m_registry.view<Particle>()) {
@@ -108,7 +110,7 @@ void ParticleSystem::update() {
                     float distance = sqrt((pos.position.x - curpos.position.x) * (pos.position.x - curpos.position.x) +
                                           (pos.position.y - curpos.position.y) * (pos.position.y - curpos.position.y));
 
-                    if (np.life < 0.99f && entity != cur && distance < MAX_DISTANCE) {
+                    if (np.life < 0.99f && entity != cur && distance < ParticleSystem::max_distance) {
                         avgSpeed = {avgSpeed.x + mot.velocity.x, avgSpeed.y + mot.velocity.y};
                         avgPos = {avgPos.x + pos.position.x, avgPos.y + pos.position.y};
                         count++;
