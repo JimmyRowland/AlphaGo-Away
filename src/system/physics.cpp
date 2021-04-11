@@ -154,6 +154,11 @@ void physics_update(float elapsed_ms) {
         }
         set_transformed_bounding_box(entity);
         is_out_of_boundary(entity);
+        //basic health bar
+        vec2 pos = {position.position.x, position.position.y - tile_size.y/2};
+        //vec2 scale = {unit_property.hp, 5};
+        vec2 scale = {((tile_size.x-10)/unit_property.maxhp) * unit_property.hp, 5};
+        DebugSystem::createLine(pos, scale);
     }
 
     for (auto&&[entity, motion, position, projectile_property]: m_registry.view<Motion, Position, ProjectileProperty>().each()) {
