@@ -17,6 +17,7 @@ struct Particle {
     vec4 color;
     float life;
 };
+struct Light{};
 
 
 // ParticleGenerator acts as a container for rendering a large number of
@@ -39,7 +40,7 @@ public:
 	bool gravity_toggle = true;
 	bool elastic_collision_toggle = true;
 
-    void emitParticle(vec2 pos, int amount);
+    void emitParticle(vec2 pos, int amount, bool emit_light = false);
 private:
     // state
 //    std::vector<entt::entity> particles;

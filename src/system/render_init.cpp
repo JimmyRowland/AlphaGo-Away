@@ -30,6 +30,7 @@ RenderSystem::~RenderSystem()
 float RenderSystem::last_firework_time = 0;
 
 vec2 RenderSystem::cursor_position = vec2(0,0);
+int RenderSystem::dark_mode = 0;
 // Create a new sprite and register it with ECS
 void RenderSystem::createSprite(ShadedMesh& sprite, std::string texture_path, std::string shader_name)
 {
@@ -73,6 +74,10 @@ void RenderSystem::createSprite(ShadedMesh& sprite, std::string texture_path, st
 
 void RenderSystem::set_last_firework_time(vec2 cursor_position){
     RenderSystem::last_firework_time = glfwGetTime() * 1.0f;
+}
+
+void RenderSystem::set_dark_mode(bool is_dark_mode) {
+    RenderSystem::dark_mode = is_dark_mode?1:0;
 }
 
 // Load a new mesh from disc and register it with ECS

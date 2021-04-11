@@ -222,8 +222,10 @@ void RenderSystem::drawToScreen()
 	// Set clock
 	GLuint time_uloc       = glGetUniformLocation(screen_sprite.effect.program, "time");
     GLuint last_firework_time_uloc       = glGetUniformLocation(screen_sprite.effect.program, "last_firework_time");
+    GLuint dark_mode_uloc       = glGetUniformLocation(screen_sprite.effect.program, "dark_mode");
 	GLuint dead_timer_uloc = glGetUniformLocation(screen_sprite.effect.program, "darken_screen_factor");
 	glUniform1f(time_uloc, static_cast<float>(glfwGetTime() * 1.0f));
+    glUniform1i(dark_mode_uloc, RenderSystem::dark_mode);
     glUniform1f(last_firework_time_uloc, static_cast<float>(RenderSystem::last_firework_time));
 	auto& screen =  m_registry.get<ScreenState>(screen_state_entity);
 	glUniform1f(dead_timer_uloc, screen.darken_screen_factor);
@@ -239,30 +241,25 @@ void RenderSystem::drawToScreen()
 	gl_has_errors();
 
 
-
-    std::vector<float> particle_x;
-    std::vector<float> particle_y;
-    for(auto&&[entity, particle, shadedMeshRef, position]: m_registry.view<Particle, ShadedMeshRef, Position>().each()){
-        particle_x.push_back(position.position.x);
-        particle_y.push_back(position.position.y);
+    if(RenderSystem::dark_mode>0){
+        auto view = m_registry.view<Light, ShadedMeshRef, Position>();
+        int size = view.size_hint();
+        GLfloat particle_x[size+1];
+        GLfloat particle_y[size+1];
+        int i = 0;
+        for(auto&&[entity, shadedMeshRef, position]: view.each()){
+            particle_x[i] = position.position.x;
+            particle_y[i] = position.position.y;
+            i++;
+        }
+        particle_x[i] = -1;
+        particle_y[i] = -1;
+        GLint particle_x_uloc = glGetUniformLocation(screen_sprite.effect.program, "particle_x");
+        glUniform1fv(particle_x_uloc, size+1,(const GLfloat*)  &particle_x);
+        GLint particle_y_uloc = glGetUniformLocation(screen_sprite.effect.program, "particle_y");
+        glUniform1fv(particle_y_uloc, size+1, (const GLfloat*) &particle_y);
+        gl_has_errors();
     }
-    GLint particle_x_uloc = glGetUniformLocation(screen_sprite.effect.program, "particle_x");
-    glUniform1fv(particle_x_uloc, particle_x.size(), (const GLfloat*) &particle_x);
-    GLint particle_y_uloc = glGetUniformLocation(screen_sprite.effect.program, "particle_y");
-    glUniform1fv(particle_y_uloc, particle_x.size(), (const GLfloat*) &particle_y);
-//    GLfloat offsets[particle_positions.size()*2];
-//    for (int i = 0; i < particle_positions.size(); i++){
-//        offsets[i*2] = (GLfloat) particle_positions[i].x;
-//        offsets[i*2+1] = (GLfloat) particle_positions[i].y;
-//    }
-//    unsigned int instanceVBO;
-//    glGenBuffers(1, &instanceVBO);
-//    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
-//    glBufferData(GL_ARRAY_BUFFER, sizeof(offsets), offsets, GL_STATIC_DRAW);
-//    glEnableVertexAttribArray(0);
-//    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 0, 0);
-    gl_has_errors();
-
 
 
 

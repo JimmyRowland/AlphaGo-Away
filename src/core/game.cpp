@@ -147,7 +147,11 @@ void Game::restart(Level level) {
         init_level();
         init_map_grid();
         init_unit_grid();
+        init_dark_mode();
     }
+}
+void Game::init_dark_mode(){
+        RenderSystem::dark_mode = level==Level::level2?1:0;
 }
 
 // Compute collisions between entities
@@ -230,7 +234,6 @@ ivec2 Game::get_window_size() {
 }
 
 void Game::on_mouse_click(int button, int action, int mods) {
-    RenderSystem::set_last_firework_time(get_cursor_position());
     if (!has_battle_started && (level == Level::level1 || level == Level::level2 || level == Level::level3 || level == Level::level4 ||
                                 level == Level::level5)) {
         map_on_click(button, action, mods);
@@ -414,14 +417,16 @@ void Game::level_on_click(int button, int action, int mods) {
 
 void Game::map_on_click(int button, int action, int mods) {
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-
-
-        auto cursor_position = get_cursor_position();
-        ivec2 tile_index = get_tile_index(cursor_position);
-        std::cout << "tile_index" << tile_index.x << tile_index.y << !is_tile_out_of_index(tile_index) << '\n';
-        if (!is_tile_out_of_index(tile_index)) {
-            particles->emitParticle(cursor_position, rand() % 5);
+        if(number_of_flash_light > 0){
+            auto cursor_position = get_cursor_position();
+            ivec2 tile_index = get_tile_index(cursor_position);
+            std::cout << "tile_index" << tile_index.x << tile_index.y << !is_tile_out_of_index(tile_index) << '\n';
+            if (!is_tile_out_of_index(tile_index)) {
+                particles->emitParticle(cursor_position, rand() % 5 + 1, true);
+            }
+            number_of_flash_light--;
         }
+
 
 
     }
@@ -435,9 +440,11 @@ void Game::init_gold() {
     if (game_mode == GameMode::free_mode) {
         gold[0] = 999999999;
         gold[1] = 999999999;
+        number_of_flash_light = 99999999;
     } else {
         gold[0] = 1000;
         gold[1] = 1000;
+        number_of_flash_light = 20;
     }
 }
 
@@ -578,6 +585,10 @@ void Game::imgui_battle_control_menu() {
             if (ImGui::Button("Start battle")) {
                 has_battle_started = true;
                 battle_start_in = cool_down_unit;
+                RenderSystem::dark_mode=0;
+                for(auto entity: m_registry.view<Particle>()){
+                    m_registry.destroy(entity);
+                }
             };
         }
         if (ImGui::Button("Restart level")) restart(level);
@@ -645,6 +656,7 @@ void Game::imgui_tile_menu() {
 
 void Game::imgui_ally_menu() {
     if (ImGui::CollapsingHeader("Ally")) {
+        ImGui::Text("Number of flash light: %d", number_of_flash_light);
         ImGui::Text("Choose an ally type and click on map to place the unit");
 
         ImGui::RadioButton("player one", &player_index, 0);

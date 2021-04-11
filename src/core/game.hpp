@@ -83,6 +83,7 @@ private:
     void init_map_grid();
     GameMode game_mode = GameMode::free_mode;
     int gold[2] = {0, 0};
+    int number_of_flash_light = 20;
     bool show_not_enough_gold_message;
     int player_index = 0;
     // Loads the audio
@@ -165,6 +166,8 @@ private:
     void imgui_story();
 
     void map_on_click(int button, int action, int mods);
+
+    void init_dark_mode();
 };
 
 #endif //ALPHAGO_AWAY_GAME_HPP
