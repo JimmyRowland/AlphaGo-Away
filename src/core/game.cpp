@@ -727,6 +727,11 @@ void Game::imgui_enemy_menu() {
 //        ImGuiImage(get_tile_texture_id(TileType::forest));
     }
 }
+void Game::imgui_camera_control_menu() {
+    if (ImGui::CollapsingHeader("Camera")) {
+        if (ImGui::Button("Shake")) Game::shake = true;
+    }
+};
 
 void Game::imgui() {
     if (show_imgui) {
@@ -740,6 +745,7 @@ void Game::imgui() {
         imgui_sandbox_menu();
         imgui_flash_light_menu();
         imgui_particle_menu();
+        imgui_camera_control_menu();
         ImGui::End();
     }
 }
