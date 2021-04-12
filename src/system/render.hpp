@@ -38,7 +38,7 @@ public:
     static int dark_mode;
     static float illumination_param;
     static void set_dark_mode(bool is_dark_mode);
-
+    static int flash_light_type;
 private:
 	// Initialize the screeen texture used as intermediate render target
 	// The draw loop first renders to this texture, then it is used for the water shader

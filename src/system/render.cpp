@@ -225,11 +225,15 @@ void RenderSystem::drawToScreen()
     GLuint last_firework_time_uloc       = glGetUniformLocation(screen_sprite.effect.program, "last_firework_time");
     GLuint dark_mode_uloc       = glGetUniformLocation(screen_sprite.effect.program, "dark_mode");
 	GLuint dead_timer_uloc = glGetUniformLocation(screen_sprite.effect.program, "darken_screen_factor");
-	glUniform1f(time_uloc, static_cast<float>(glfwGetTime() * 1.0f));
+    GLuint flash_light_type_uloc      = glGetUniformLocation(screen_sprite.effect.program, "flash_light_type");
+
+    glUniform1f(time_uloc, static_cast<float>(glfwGetTime() * 1.0f));
     glUniform1f(illumination_uloc, static_cast<float>(RenderSystem::illumination_param));
     glUniform1i(dark_mode_uloc, RenderSystem::dark_mode);
     glUniform1f(last_firework_time_uloc, static_cast<float>(RenderSystem::last_firework_time));
-	auto& screen =  m_registry.get<ScreenState>(screen_state_entity);
+    glUniform1i(flash_light_type_uloc, RenderSystem::flash_light_type);
+
+    auto& screen =  m_registry.get<ScreenState>(screen_state_entity);
 	glUniform1f(dead_timer_uloc, screen.darken_screen_factor);
 	gl_has_errors();
     GLuint cursor_x_uloc       = glGetUniformLocation(screen_sprite.effect.program, "cursor_x");

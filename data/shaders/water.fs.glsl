@@ -4,6 +4,7 @@ uniform sampler2D screen_texture;
 uniform float time;
 uniform float last_firework_time;
 uniform int dark_mode;
+uniform int flash_light_type;
 uniform float illumination_param;
 uniform float darken_screen_factor;
 uniform float particle_x[max_particle];
@@ -43,8 +44,8 @@ layout(location = 0) out vec4 color;
 //could have optimised for this particular example... meh...
 float second(float a, float b, float c)
 {
-    float x1 = (-b+sqrt((b*b-4.0*a*c)))/(2.0*a);
-    float x2= (-b-sqrt((b*b-4.0*a*c)))/(2.0*a);
+    float x1 = (-b+sqrt((b*b-2.0*a*c)))/(a);
+    float x2= (-b-sqrt((b*b-2.0*a*c)))/(a);
     return max(x1, x2);
 }
 
@@ -54,17 +55,17 @@ vec3 physics(vec3 pos, vec3 vel, vec3 acc, float t)
     //this loop processes upto max_bounces collisions... nice :)
     for (int i=0; i<max_floor_bounce; i++)
     {
-        float tc = second(acc.y*.5, vel.y, pos.y);
+        float tc = second(acc.y, vel.y, pos.y);
         //now we know that there will be a collision with the plane
         //in exactly tc seconds
 
         if (t>tc)//if time is greater than time of collision
         {
             t-=tc;//process the collision
-            pos = pos + vel*tc + acc*tc*tc*.5;
+            pos.x = pos.x + vel.x*tc + acc.x*tc*tc*.5;
+            pos.y = .1;
             vel = vel + acc*tc;
-            vel.y*=-.5;//make it bounce
-            vel.x=vel.x*.8+sin(pos.x*4.0)*length(vel)*.5;
+            vel.y*=-.5;
         }
         else break;//it wont collide, yay!
     }
@@ -73,10 +74,11 @@ vec3 physics(vec3 pos, vec3 vel, vec3 acc, float t)
 
     float ar = 2.0;
     float hwall = 8.0*ar;
+    float right_wall = 16.0 * 0.5;
 
     for (int i=0; i<max_wall_bounce; i++)
     {
-        if (pos.x>+hwall) pos.x = 2.0*hwall-pos.x;
+        if (pos.x>+right_wall) pos.x = 2.0*right_wall-pos.x;
         else if (pos.x<-hwall) pos.x = -2.0*hwall-pos.x;
         else break;
     }
@@ -162,13 +164,7 @@ vec4 shader_particle_flash_light(vec2 uv)
         float imagnitude = 64.0*hash(iseed+15.420)*hash(seed+14.2)+4.0;
         float angle = 3.14159*2.0*hash(seed);
         float magnitude = 148.0*hash(seed)*hash(seed+4.0);
-        //        vec2 pos = vec2(hash(seed+2.0), hash(seed+3.0))*8.0-4.0;
         vec2 pos = vec2((cursor_x/1600.0-0.5)*32.0, (1.0-cursor_y/800.0)*16.0);
-        //		vec2 pos = vec2(-16.0, 16.0);
-
-
-
-
         vec3 p = (
         physics(
         vec3(pos.x, pos.y, 8.0), //initial position
@@ -253,8 +249,11 @@ void main()
     color = color_shift(in_color);
     color = fade_color(color);
     if (texcoord.x<0.75 && dark_mode > 0){
-        //                color *= particle_entity_flash_light(texcoord);
-        color *= shader_particle_flash_light(texcoord);
+        if(flash_light_type==2){
+            color *= shader_particle_flash_light(texcoord);
+        }else{
+            color *= particle_entity_flash_light(texcoord);
+        }
     }
 
 }

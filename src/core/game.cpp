@@ -5,6 +5,7 @@
 // Game configuration
 const size_t TURTLE_DELAY_MS = 2000;
 
+
 // Create the fish world
 // Note, this has a lot of OpenGL specific things, could be moved to the renderer; but it also defines the callbacks to the mouse and keyboard. That is why it is called here.
 Game::Game(ivec2 window_size_px) :
@@ -419,18 +420,26 @@ void Game::level_on_click(int button, int action, int mods) {
 
 void Game::map_on_click(int button, int action, int mods) {
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-        if (number_of_flash_light > 0) {
-            auto cursor_position = get_cursor_position();
-            ivec2 tile_index = get_tile_index(cursor_position);
-            std::cout << "tile_index" << tile_index.x << tile_index.y << !is_tile_out_of_index(tile_index) << '\n';
-            if (!is_tile_out_of_index(tile_index)) {
-                particles->emitParticle(cursor_position, rand() % 5 + 1, true);
-            }
-            number_of_flash_light--;
 
 
-            RenderSystem::set_last_firework_time(get_cursor_position());
-        }
+                auto cursor_position = get_cursor_position();
+                ivec2 tile_index = get_tile_index(cursor_position);
+                std::cout << "tile_index" << tile_index.x << tile_index.y << !is_tile_out_of_index(tile_index) << '\n';
+                if (!is_tile_out_of_index(tile_index)) {
+                    if(RenderSystem::flash_light_type == 1 && number_of_entity_flash_light > 0){
+                        particles->emitParticle(cursor_position, rand() % 5 + 1, true);
+                        number_of_entity_flash_light--;
+
+                    }
+                    if(RenderSystem::dark_mode && RenderSystem::flash_light_type==2 && number_of_shader_flash_light > 0){
+                        RenderSystem::set_last_firework_time(get_cursor_position());
+                        number_of_shader_flash_light --;
+                    }
+
+                }
+
+
+
 
 
     }
@@ -444,11 +453,13 @@ void Game::init_gold() {
     if (game_mode == GameMode::free_mode) {
         gold[0] = 999999999;
         gold[1] = 999999999;
-        number_of_flash_light = 99999999;
+        number_of_entity_flash_light = 99999999;
+        number_of_shader_flash_light = 99999999;
     } else {
         gold[0] = 1000;
         gold[1] = 1000;
-        number_of_flash_light = 20;
+        number_of_entity_flash_light = 20;
+        number_of_shader_flash_light = 1;
     }
 }
 
@@ -665,7 +676,6 @@ void Game::imgui_tile_menu() {
 
 void Game::imgui_ally_menu() {
     if (ImGui::CollapsingHeader("Ally")) {
-        ImGui::Text("Number of flash light: %d", number_of_flash_light);
         ImGui::Text("Choose an ally type and click on map to place the unit");
 
         ImGui::RadioButton("player one", &player_index, 0);
@@ -688,6 +698,17 @@ void Game::imgui_ally_menu() {
         ImGui::Text("cost: %d", unit_cost[UnitType::human_healer]);
 
 //        ImGuiImage(get_tile_texture_id(TileType::forest));
+    }
+}
+
+void Game::imgui_flash_light_menu() {
+    if (ImGui::CollapsingHeader("Flash Light")) {
+        ImGui::Text("Choose a flash light type");
+        ImGui::RadioButton("disabled", &RenderSystem::flash_light_type, 0);
+        ImGui::RadioButton("Searching flash light", &RenderSystem::flash_light_type, 1);
+        ImGui::RadioButton("Mass flash light", &RenderSystem::flash_light_type, 2);
+        ImGui::Text("Number of searching flash light: %d", number_of_entity_flash_light);
+        ImGui::Text("Number of mass flash light: %d", number_of_shader_flash_light);
     }
 }
 
@@ -716,6 +737,7 @@ void Game::imgui() {
         imgui_story();
         imgui_ally_menu();
         imgui_sandbox_menu();
+        imgui_flash_light_menu();
         imgui_particle_menu();
         ImGui::End();
     }
