@@ -165,7 +165,7 @@ private:
 
     void imgui_game_mode();
 
-    void init_gold(int income[]);
+    void init_gold(ivec2);
 
     std::map<UnitType, int> unit_cost = {
             {UnitType::human_terminator,  100},

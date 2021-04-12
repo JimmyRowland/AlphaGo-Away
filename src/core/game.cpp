@@ -261,12 +261,12 @@ ivec2 Game::get_window_size() {
 }
 
 void Game::on_mouse_click(int button, int action, int mods) {
-    if(level == Level::sandbox || game_mode == GameMode::free_mode) return sandbox_on_click(button, action, mods);
     if (!has_battle_started &&
         (level == Level::level1 || level == Level::level2 || level == Level::level3 || level == Level::level4 ||
          level == Level::level5)) {
         map_on_click(button, action, mods);
     }
+    if(level == Level::sandbox || game_mode == GameMode::free_mode) return sandbox_on_click(button, action, mods);
     if (level == Level::level1 || level == Level::level2 || level == Level::level3 || level == Level::level4 ||
         level == Level::level5) {
         return level_on_click(button, action, mods);
@@ -388,7 +388,7 @@ void Game::place_an_ally(ivec2 tile_index) {
         unit_factory(get_tile_center_from_index(tile_index), imgui_entity_selection_to_unitType());
         gold[player_index] -= cost;
         show_not_enough_gold_message = false;
-        particles->emitParticle(get_tile_center_from_index(tile_index), 20);
+        particles->emitParticle(get_tile_center_from_index(tile_index), 10);
     } else {
         show_not_enough_gold_message = true;
     }
@@ -474,7 +474,7 @@ void Game::on_mouse_move(vec2 mouse_pos) {
     (void) mouse_pos;
 }
 
-void Game::init_gold(int income[2]){
+void Game::init_gold(ivec2 income){
     if(game_mode == GameMode::free_mode){
         gold[0] = 999999999;
         gold[1] = 999999999;
@@ -764,6 +764,12 @@ void Game::imgui_flash_light_menu() {
     }
 }
 
+void imgui_remove_all_units(){
+    for(auto entity: m_registry.view<UnitProperty>()){
+        m_registry.destroy(entity);
+    }
+}
+
 void Game::imgui_enemy_menu() {
     if (ImGui::CollapsingHeader("Enemy")) {
         ImGui::Text("Choose an enemy type and click on map to place the unit");
@@ -776,6 +782,12 @@ void Game::imgui_enemy_menu() {
 //        ImGuiImage(get_tile_texture_id(TileType::forest));
         ImGui::RadioButton("healer", &imgui_entity_selection, 11);
 //        ImGuiImage(get_tile_texture_id(TileType::forest));
+        if(!has_battle_started){
+            if (ImGui::Button("Remove all units")) {
+                imgui_remove_all_units();
+                unitMapState.reset(UnitType::empty);
+            }
+        }
     }
 }
 void Game::imgui_camera_control_menu() {
