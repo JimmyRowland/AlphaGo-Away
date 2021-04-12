@@ -1,5 +1,6 @@
 // Header
 #include "game.hpp"
+#include <tuple>
 
 
 // Game configuration
@@ -149,8 +150,30 @@ void Game::restart(Level level) {
     }
 }
 
+void Game::restart_without_loading_level(Level level) {
+    this->level = level;
+    battle_over = false;
+
+    for (auto entity : m_registry.view<ShadedMeshRef>()) {
+        m_registry.destroy(entity);
+    }
+    std::cout << "Restarting\n";
+    current_speed = 1.f;
+    has_battle_started = false;
+
+    if (level == Level::start_screen) {
+        frame = 1.f;
+        loading_screen_factory();
+        this->level = level;
+    }
+    else {
+        background_factory();
+    }
+}
+
 void Game::init_dark_mode() {
-    RenderSystem::dark_mode = level == Level::level2 ? 1 : 0;
+//    RenderSystem::dark_mode = level == Level::level2 ? 1 : 0;
+    RenderSystem::dark_mode = 0;
 }
 
 // Compute collisions between entities
@@ -244,7 +267,7 @@ void Game::on_mouse_click(int button, int action, int mods) {
          level == Level::level5)) {
         map_on_click(button, action, mods);
     }
-    if (level == Level::sandbox) return sandbox_on_click(button, action, mods);
+    if(level == Level::sandbox || game_mode == GameMode::free_mode) return sandbox_on_click(button, action, mods);
     if (level == Level::level1 || level == Level::level2 || level == Level::level3 || level == Level::level4 ||
         level == Level::level5) {
         return level_on_click(button, action, mods);
@@ -366,7 +389,7 @@ void Game::place_an_ally(ivec2 tile_index) {
         unit_factory(get_tile_center_from_index(tile_index), imgui_entity_selection_to_unitType());
         gold[player_index] -= cost;
         show_not_enough_gold_message = false;
-        particles->emitParticle(get_tile_center_from_index(tile_index), 20);
+        particles->emitParticle(get_tile_center_from_index(tile_index), 10);
     } else {
         show_not_enough_gold_message = true;
     }
@@ -452,22 +475,21 @@ void Game::on_mouse_move(vec2 mouse_pos) {
     (void) mouse_pos;
 }
 
-void Game::init_gold() {
-    if (game_mode == GameMode::free_mode) {
+void Game::init_gold(ivec2 income){
+    if(game_mode == GameMode::free_mode){
         gold[0] = 999999999;
         gold[1] = 999999999;
         number_of_entity_flash_light = 99999999;
         number_of_shader_flash_light = 99999999;
-    } else {
-        gold[0] = 1000;
-        gold[1] = 1000;
+    }else{
+        gold[0] = income[0];
+        gold[1] = income[1];
         number_of_entity_flash_light = 20;
         number_of_shader_flash_light = 1;
     }
 }
 
 void Game::init_level() {
-    init_gold();
     /*if(level == Level::sandbox){
         mapState = loader.load_map(level);
         unitMapState = loader.load_units(level);
@@ -475,8 +497,12 @@ void Game::init_level() {
     }
     mapState = makeMapState(level);
     unitMapState = makeUnitState(level);*/
-    mapState = loader.load_map(level);
-    unitMapState = loader.load_units(level);
+
+        mapState = loader.initial_map_load(level);
+        auto income = loader.get_gold_level_builder(level);
+        init_gold(income);
+        unitHPState = loader.initial_units_hp_load(level);
+        unitMapState = loader.initial_units_load(level);
 
 }
 
@@ -497,23 +523,23 @@ void Game::init_unit_grid() {
         for (int j = 0; j < tile_matrix_dimension.y; j++) {
             float ypos = tile_size.y / 2 + tile_size.y * j;
             if (unitMapState[ivec2(i, j)] != UnitType::empty) {
-                unit_factory(vec2(xpos, ypos), unitMapState[ivec2(i, j)]);
+                auto unit = unit_factory(vec2(xpos, ypos), unitMapState[ivec2(i, j)]);
+                auto property = m_registry.get<UnitProperty>(unit);
+                property.hp = unitHPState[ivec2(i, j)];
                 particles->emitParticle(vec2(xpos, ypos), 20);
             }
         }
     }
 }
 
-namespace {
-    void imgui_help_menu() {
-        if (ImGui::CollapsingHeader("Help")) {
-            ImGui::Text("ABOUT THIS DEMO:");
-            ImGui::BulletText("Click ally dropdown and select a unit. Click map to add a unit");
-            ImGuiHelpImage("help/place_ally.png");
-            ImGui::BulletText("Click sandbox and then ally dropdown and select a unit. Click map to add a unit");
-            ImGuiHelpImage("help/place_enemy.png");
-        }
-    }
+void imgui_help_menu() {
+    if (ImGui::CollapsingHeader("Help")) {
+        ImGui::Text("ABOUT THIS DEMO:");
+        ImGui::BulletText("Click ally dropdown and select a unit. Click map to add a unit");
+        ImGuiHelpImage("help/place_ally.png");
+        ImGui::BulletText("Click sandbox and then ally dropdown and select a unit. Click map to add a unit");
+        ImGuiHelpImage("help/place_enemy.png");
+       }
 }
 
 void Game::imgui_game_mode() {
@@ -613,16 +639,24 @@ void Game::imgui_battle_control_menu() {
     }
 };
 
-void Game::imgui_save_sandbox_level() {
-    std::string map;
-    for (int j = 0; j < tile_matrix_dimension.y; j++) {
-        for (int i = 0; i < tile_matrix_dimension.x; i++) {
-            map += tileType_to_char(mapState[ivec2(i, j)]);
+void Game::imgui_save_sandbox_level(){
+    /*std::string map;
+    for(int j = 0; j < tile_matrix_dimension.y; j++){
+        for(int i = 0; i< tile_matrix_dimension.x; i++){
+            map += tileType_to_char(mapState[ivec2(i,j)]);
         }
     }
     nlohmann::json json;
     json["map"] = map;
-    save_json("sandbox_map.json", json);
+    save_json("sandbox_map.json", json);*/
+    if (game_mode == GameMode::free_mode) {
+        loader.level_builder_map(level, gold);
+        loader.level_builder_units(level);
+    }
+    else {
+        loader.save_map(level, gold);
+        loader.save_units(level);
+    }
 }
 
 void Game::imgui_particle_menu() {
@@ -652,10 +686,26 @@ void Game::load_grid(std::string map_string) {
     }
 }
 
-void Game::imgui_load_sandbox_level() {
-    restart(Level::sandbox);
-}
+void Game::imgui_load_sandbox_level(){
+    restart_without_loading_level(level);
+    if (game_mode == GameMode::free_mode) {
+        mapState = loader.initial_map_load(level);
+        auto income = loader.get_gold_level_builder(level);
+        init_gold(income);
+        unitHPState = loader.initial_units_hp_load(level);
+        unitMapState = loader.initial_units_load(level);
+    }
+    else {
+        mapState = loader.load_map(level);
+        auto income = loader.get_gold(level);
+        init_gold(income);
+        unitHPState = loader.load_units_hp(level);
+        unitMapState = loader.load_units(level);
+    }
+    init_map_grid();
+    init_unit_grid();
 
+}
 void Game::imgui_sandbox_menu() {
     if (level == Level::sandbox && ImGui::CollapsingHeader("sandbox")) {
         if (ImGui::Button("Save Level")) imgui_save_sandbox_level();
@@ -690,16 +740,23 @@ void Game::imgui_ally_menu() {
         ImGui::RadioButton("disabled", &imgui_entity_selection, 0);
         ImGui::RadioButton("terminator", &imgui_entity_selection, 4);
         ImGui::Text("cost: %d", unit_cost[UnitType::human_terminator]);
+        ImGui::Text("maxhp: 200, damage: 10");
 //        ImGuiImage(get_tile_texture_id(TileType::basic));
         ImGui::RadioButton("monitor", &imgui_entity_selection, 5);
         ImGui::Text("cost: %d", unit_cost[UnitType::human_monitor]);
+        ImGui::Text("maxhp: 1010, damage: 15");
 //        ImGuiImage(get_tile_texture_id(TileType::water));
         ImGui::RadioButton("archer", &imgui_entity_selection, 6);
         ImGui::Text("cost: %d", unit_cost[UnitType::human_archer]);
+        ImGui::Text("maxhp: 75, damage: 35");
 
 //        ImGuiImage(get_tile_texture_id(TileType::forest));
         ImGui::RadioButton("healer", &imgui_entity_selection, 7);
         ImGui::Text("cost: %d", unit_cost[UnitType::human_healer]);
+        ImGui::Text("maxhp: 180, damage: 15");
+
+        ImGui::Text("***Press p, then you can drag");
+        ImGui::Text(" to change the unit location ***");
 
 //        ImGuiImage(get_tile_texture_id(TileType::forest));
     }
@@ -716,6 +773,12 @@ void Game::imgui_flash_light_menu() {
     }
 }
 
+void imgui_remove_all_units(){
+    for(auto entity: m_registry.view<UnitProperty>()){
+        m_registry.destroy(entity);
+    }
+}
+
 void Game::imgui_enemy_menu() {
     if (ImGui::CollapsingHeader("Enemy")) {
         ImGui::Text("Choose an enemy type and click on map to place the unit");
@@ -728,6 +791,12 @@ void Game::imgui_enemy_menu() {
 //        ImGuiImage(get_tile_texture_id(TileType::forest));
         ImGui::RadioButton("healer", &imgui_entity_selection, 11);
 //        ImGuiImage(get_tile_texture_id(TileType::forest));
+        if(!has_battle_started){
+            if (ImGui::Button("Remove all units")) {
+                imgui_remove_all_units();
+                unitMapState.reset(UnitType::empty);
+            }
+        }
     }
 }
 void Game::imgui_camera_control_menu() {

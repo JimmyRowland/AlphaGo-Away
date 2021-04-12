@@ -12,6 +12,28 @@ MapState stateStr_to_tileType(MapState &state, const char (&str)[Size]) {
 }
 }
 
+TileType int_to_tileType(const int i) {
+    switch (i) {
+    case 0: return TileType::basic;
+    case 1: return TileType::water;
+    case 2: return TileType::forest;
+    default:
+        assert(false);
+        return {};
+    }
+}
+
+int tileType_to_int(const TileType tt) {
+    switch (tt) {
+    case TileType::basic: return 0;
+    case TileType::water: return 1;
+    case TileType::forest: return 2;
+    default: 
+        assert(false);
+        return {};
+    }
+}
+
 TileType char_to_tileType(const char c) {
     switch (c) {
         case ' ': return TileType::basic;
