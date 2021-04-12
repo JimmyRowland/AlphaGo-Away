@@ -1,8 +1,8 @@
 #version 330
 // Output color
 layout(location = 0) out vec4 color;
-in vec2 vl;
+in vec2 TexCoords;
 void main()
 {
-	color = vec4(sin(vl.x*9),sin(vl.y*9),cos((vl.x+vl.y)*9), 1.0);
+	color = vec4(sin(TexCoords.x*9.0),sin(TexCoords.y*9.0),cos((TexCoords.x+TexCoords.y)*9.0), 1.0);
 }

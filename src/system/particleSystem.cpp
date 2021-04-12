@@ -78,6 +78,7 @@ Position get_mesh_bounding_box(entt::entity entity){
 }
 
 float ParticleSystem::max_distance = 30.f;
+float ParticleSystem::start_explosion_time = -10000.f;
 
 
 void ParticleSystem::update() {
@@ -224,7 +225,7 @@ void ParticleSystem::emitParticle(vec2 pos, int amount, bool emit_light) {
             }
             resource.mesh.vertices = vertices;
             resource.mesh.vertex_indices = indices;
-            RenderSystem::createColoredMesh(resource, key);
+            RenderSystem::createColoredMesh(resource, key, true);
         }
 
 

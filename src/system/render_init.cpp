@@ -84,7 +84,7 @@ void RenderSystem::set_dark_mode(bool is_dark_mode) {
 }
 
 // Load a new mesh from disc and register it with ECS
-void RenderSystem::createColoredMesh(ShadedMesh& texmesh, std::string shader_name)
+void RenderSystem::createColoredMesh(ShadedMesh& texmesh, std::string shader_name, bool has_geometry_shader)
 {
 	// Vertex Array
 	glGenVertexArrays(1, texmesh.mesh.vao.data());
@@ -109,7 +109,13 @@ void RenderSystem::createColoredMesh(ShadedMesh& texmesh, std::string shader_nam
 	glBindVertexArray(0); // Unbind VAO (it's always a good thing to unbind any buffer/array to prevent strange bugs), remember: do NOT unbind the EBO, keep it bound to this VAO
 
 	// Loading shaders
-	texmesh.effect.load_from_file(shader_path(shader_name)+".vs.glsl", shader_path(shader_name)+".fs.glsl");
+	if(has_geometry_shader){
+        texmesh.effect.load_from_file(shader_path(shader_name)+".vs.glsl", shader_path(shader_name)+".fs.glsl", shader_path(shader_name)+".gs.glsl");
+
+    }else{
+        texmesh.effect.load_from_file(shader_path(shader_name)+".vs.glsl", shader_path(shader_name)+".fs.glsl");
+
+    }
 }
 
 // Initialize the screen texture from a standard sprite

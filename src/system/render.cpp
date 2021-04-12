@@ -100,6 +100,13 @@ void RenderSystem::drawTexturedMesh(entt::entity entity, const mat3 &projection,
 
 void RenderSystem::drawParticle(const mat3& projection)
 {
+    float explosion_duration = ParticleSystem::start_explosion_time - glfwGetTime();
+    if(explosion_duration<0 && explosion_duration>-2.f){
+        for(auto entity: m_registry.view<Particle>()){
+            m_registry.destroy(entity);
+        }
+        return;
+    }
     std::vector<vec2> particle_positions;
     std::vector<vec2> particle_sizes;
     std::vector<entt::entity> particle_entities;
@@ -151,7 +158,11 @@ void RenderSystem::drawParticle(const mat3& projection)
     gl_has_errors();
 
     GLuint time_uloc       = glGetUniformLocation(texmesh.effect.program, "time");
-    glUniform1f(time_uloc, static_cast<float>(glfwGetTime() * 10.0f));
+    glUniform1f(time_uloc, static_cast<float>(glfwGetTime() * 1.0f));
+    gl_has_errors();
+
+    GLuint particle_explosion_time_uloc       = glGetUniformLocation(texmesh.effect.program, "particle_explosion_time");
+    glUniform1f(particle_explosion_time_uloc, static_cast<float>(ParticleSystem::start_explosion_time));
     gl_has_errors();
 
 
