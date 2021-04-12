@@ -1,4 +1,5 @@
 #include "particleSystem.hpp"
+#include "../core/game.hpp"
 #include <iostream>
 
 ParticleSystem::ParticleSystem(float speed)

@@ -66,6 +66,10 @@ public:
 	// parallax offset
 	float parallax_offset;
 
+	static bool shake;
+
+	static float timeleft;
+
 	// OpenGL window handle
 	GLFWwindow* window;
 
@@ -154,7 +158,7 @@ private:
 
     void level_on_click(int button, int action, int mods);
 
-	void update_camera_pos();
+	void update_camera_pos(float time);
 
     void imgui_game_mode();
 

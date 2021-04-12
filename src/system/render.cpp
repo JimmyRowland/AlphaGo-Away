@@ -1,12 +1,13 @@
 // internal
 #include "render.hpp"
 #include "render_components.hpp"
+#include "../core/game.hpp"
 
 #include <iostream>
 #include <imgui.h>
 #include "gui/imgui_impl_glfw.h"
 #include "gui/imgui_impl_opengl3.h"
-void RenderSystem::drawTexturedMesh(entt::entity entity, const mat3 &projection)
+void RenderSystem::drawTexturedMesh(entt::entity entity, const mat3 &projection, vec2 off)
 {
 	auto& position = m_registry.get<Position>(entity);
 	auto& mesh_ref = m_registry.get<ShadedMeshRef>(entity);
@@ -15,9 +16,11 @@ void RenderSystem::drawTexturedMesh(entt::entity entity, const mat3 &projection)
 	// Transformation code, see Rendering and Transformation in the template specification for more info
 	// Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
 	Transform transform;
-	transform.translate(position.position);
+
+	transform.translate({position.position.x + off.x, position.position.y + off.y});
     transform.rotate(position.angle);
 	transform.scale(position.scale);
+
 
 
 	// Setting shaders
@@ -151,7 +154,7 @@ void RenderSystem::drawParticle(const mat3& projection)
     glUniform1f(time_uloc, static_cast<float>(glfwGetTime() * 10.0f));
     gl_has_errors();
 
-    
+
     // Get number of indices from index buffer, which has elements uint16_t
     GLint size = 0;
     glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
@@ -322,32 +325,56 @@ void RenderSystem::draw(vec2 window_size_in_game_units)
 
 	// Draw all textured meshes that have a position and size component
 
+	vec2 off = { 0, 0 };
+	if (Game::shake)
+	{
+		float tempx = rand() % 100 + 1;
+		float tempy = rand() % 100 + 1;
+		float x = 0;
+		float y = 0;
+		if (tempx < 50)
+		{
+			x = rand() % 10 + 1;
+		}
+		else {
+			x = -(rand() % 10 + 1);
+		}
+		if (tempy < 50)
+		{
+			y = rand() % 10 + 1;
+		}
+		else {
+			y = -(rand() % 10 + 1);
+		}
+		off = { x, y };
+	}
+
 	for(entt::entity entity: m_registry.view<ScreenComponent>()){
-        drawTexturedMesh(entity, projection_2D);
+        drawTexturedMesh(entity, projection_2D, off);
         gl_has_errors();
 	}
 
     for (entt::entity entity : m_registry.view<ShadedMeshRef, Tile>())
     {
-        drawTexturedMesh(entity, projection_2D);
+        drawTexturedMesh(entity, projection_2D, off);
         gl_has_errors();
     }
 
     for (entt::entity entity : m_registry.view<ShadedMeshRef, Explosion>())
     {
-        drawTexturedMesh(entity, projection_2D);
+        drawTexturedMesh(entity, projection_2D, off);
         gl_has_errors();
     }
 
     for (entt::entity entity : m_registry.view<ShadedMeshRef, ProjectileProperty>())
     {
-        drawTexturedMesh(entity, projection_2D);
+        drawTexturedMesh(entity, projection_2D, off);
         gl_has_errors();
     }
 
     for (entt::entity entity : m_registry.view<ShadedMeshRef, UnitProperty>())
     {
-        drawTexturedMesh(entity, projection_2D);
+        drawTexturedMesh(entity, projection_2D, off);
         gl_has_errors();
     }
     
@@ -361,13 +388,13 @@ void RenderSystem::draw(vec2 window_size_in_game_units)
 
     for (entt::entity entity : m_registry.view<ShadedMeshRef, DebugComponent>())
     {
-        drawTexturedMesh(entity, projection_2D);
+        drawTexturedMesh(entity, projection_2D, off);
         gl_has_errors();
     }
     
     for (entt::entity entity : m_registry.view<ShadedMeshRef, resultComponent>())
     {
-        drawTexturedMesh(entity, projection_2D);
+        drawTexturedMesh(entity, projection_2D, off);
         gl_has_errors();
     }
 

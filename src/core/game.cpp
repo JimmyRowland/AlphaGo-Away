@@ -5,6 +5,8 @@
 // Game configuration
 const size_t TURTLE_DELAY_MS = 2000;
 
+bool Game::shake = false;
+float Game::timeleft = 500.f;
 
 // Create the fish world
 // Note, this has a lot of OpenGL specific things, could be moved to the renderer; but it also defines the callbacks to the mouse and keyboard. That is why it is called here.
@@ -114,15 +116,8 @@ void Game::update(float elapsed_ms, vec2 window_size_in_game_units) {
                 std::cout << "ai fails!!!" << std::endl;
             }
         }
-//        else {
-//            if (elapsed_ms - time >= 60) {
-//                if (m_registry.valid (battle_result)) {
-//                    m_registry.destroy(battle_result);
-//                }
-//            }
-//        }
     }
-    update_camera_pos();
+    update_camera_pos(elapsed_ms);
     imgui();
 
 }
@@ -167,8 +162,14 @@ bool Game::is_over() const {
     return glfwWindowShouldClose(window) > 0;
 }
 
-void Game::update_camera_pos() {
-    if (level != Level::start_screen) {
+void Game::update_camera_pos(float elapsed_ms) {
+	if (timeleft > 0 && shake) timeleft -= elapsed_ms;
+	if (timeleft < 0) {
+		shake = false;
+		timeleft = 500.f;
+	}
+
+    if(level!=Level::start_screen){
         ivec2 window_size = get_window_size();
         double xpos, ypos;
         glfwGetCursorPos(window, &xpos, &ypos);
@@ -176,8 +177,8 @@ void Game::update_camera_pos() {
             parallax_offset += 1 * xpos <= 20 ? 1 : -1;
             parallax_offset = ((int) parallax_offset % (int) (window_size.x));
             if (current_speed == 1) {
-                for (auto&&[entity, position]: m_registry.view<Position, ScreenComponent>().each()) {
-                    position.position.x = window_size_in_game_units.x / 2 + parallax_offset;
+                for (auto&&[entity, position, screenComponent]: m_registry.view<Position,ScreenComponent>().each()){
+                    position.position.x = window_size_in_game_units.x / 2 + screenComponent.parallax_speed * parallax_offset;
                 }
             }
         }
