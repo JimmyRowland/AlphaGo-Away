@@ -1,7 +1,7 @@
 {
     "gold": {
-        "player1": 450,
-        "player2": 450
+        "player1": 999999999,
+        "player2": 999999999
     },
     "map": [
         {
@@ -331,21 +331,21 @@
                 "x": 840.0,
                 "y": 280.0
             },
-            "tile_type": 1
+            "tile_type": 0
         },
         {
             "position": {
                 "x": 840.0,
                 "y": 200.0
             },
-            "tile_type": 1
+            "tile_type": 0
         },
         {
             "position": {
                 "x": 840.0,
                 "y": 120.0
             },
-            "tile_type": 1
+            "tile_type": 0
         },
         {
             "position": {
@@ -401,21 +401,21 @@
                 "x": 760.0,
                 "y": 280.0
             },
-            "tile_type": 2
+            "tile_type": 0
         },
         {
             "position": {
                 "x": 760.0,
                 "y": 200.0
             },
-            "tile_type": 2
+            "tile_type": 0
         },
         {
             "position": {
                 "x": 760.0,
                 "y": 120.0
             },
-            "tile_type": 2
+            "tile_type": 0
         },
         {
             "position": {
@@ -1017,7 +1017,7 @@
                 "x": 40.0,
                 "y": 440.0
             },
-            "tile_type": 2
+            "tile_type": 0
         },
         {
             "position": {
@@ -1031,7 +1031,7 @@
                 "x": 40.0,
                 "y": 280.0
             },
-            "tile_type": 2
+            "tile_type": 1
         },
         {
             "position": {
