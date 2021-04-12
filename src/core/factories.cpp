@@ -402,8 +402,10 @@ entt::entity result_factory(bool res) {
     auto entity = m_registry.create();
     if (res) {
         m_registry.emplace<ShadedMeshRef>(entity, create_ui_mesh("win.jpg", "textured"));
+        ui_factory("buttons/next_level.png", result_button_pos, button_size);
     } else {
         m_registry.emplace<ShadedMeshRef>(entity, create_ui_mesh("lose.jpg", "textured"));
+        ui_factory("buttons/replay.png", result_button_pos, button_size);
     }
     auto &position = m_registry.emplace<Position>(entity);
     position.position = {window_size_in_game_units.x/2 - 200, window_size_in_game_units.y/2};

@@ -22,6 +22,7 @@ constexpr float map_y_max = tile_matrix_dimension.y*tile_size.y- tile_size.y/2;
 constexpr vec2 tutorial_pos = {tile_matrix_dimension.x*tile_size.x/2, map_y_min + 8};
 constexpr vec2 skip_t_pos = {tile_size.x*2, map_y_max-10};
 constexpr vec2 done_pos = {tile_matrix_dimension.x*tile_size.x-160, map_y_max-10};
+constexpr vec2 result_button_pos = {window_size_in_game_units.x/2 - 200, map_y_max-10};
 constexpr float unit_speed = 100;
 constexpr float cool_down_unit = tile_size.x / unit_speed * 1000;
 constexpr float projectile_speed = 500;

@@ -100,7 +100,6 @@ private:
     bool has_battle_started;
     float battle_start_in;
     bool battle_over = false;
-    float time = 0.f;
     entt::entity battle_result;
     
     float frame = 1.f;
@@ -113,6 +112,7 @@ private:
 	MapState mapState;
 	UnitMapState unitMapState;
     Level level = Level::sandbox;
+    int level_res = 0;
     Loader loader = Loader();
     bool is_paused = true;
     bool show_imgui = true;
@@ -156,6 +156,8 @@ private:
     void tutorial_on_click(int button, int action, int mods);
     
     void info_on_click(int button, int action, int mods);
+    
+    void result_on_click(int button, int action, int mods);
 
 	void update_camera_pos();
 
