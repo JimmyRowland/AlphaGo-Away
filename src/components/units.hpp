@@ -45,6 +45,7 @@ struct UnitProperty{
     bool selected_release = false;
     vec2 init_pos = {0,0};
     float close_combat_damage_modifier = 1.f;
+    bool is_human = false;
 
 };
 

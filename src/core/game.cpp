@@ -262,7 +262,7 @@ void Game::on_mouse_click(int button, int action, int mods) {
         int winWidth, winHeight;
         glfwGetWindowSize(window, &winWidth, &winHeight);
         //auto& selected_unit = ECS::registry<Unit>.entities[0];
-        if (should_place) {
+        if (should_place && !has_battle_started) {
             if (action == GLFW_PRESS) {
                 for (auto &entity: m_registry.view<UnitProperty>()) {
                     auto &motion = m_registry.get<Motion>(entity);
@@ -270,110 +270,119 @@ void Game::on_mouse_click(int button, int action, int mods) {
                     auto dis_x = abs(position.position.x - xpos);
                     auto dis_y = abs(position.position.y - ypos);
                     auto &property = m_registry.get<UnitProperty>(entity);
-                    if (dis_x < tile_size.x/2 && dis_y < tile_size.y/2) {
-                        //Propertyed_unit = entity;
+                    if(property.is_human){
+                        if (dis_x < tile_size.x/2 && dis_y < tile_size.y/2) {
+                            //Propertyed_unit = entity;
 
-                        DebugSystem::in_debug_mode = true;
-                        property.selected = true;
-                        property.init_pos = position.position;
-                        glfwGetCursorPos(window, &xpos, &ypos);
-                        position.position.x = xpos;
-                        position.position.y = ypos;
+                            DebugSystem::in_debug_mode = true;
+                            property.selected = true;
+                            property.init_pos = position.position;
+                            glfwGetCursorPos(window, &xpos, &ypos);
+                            position.position.x = xpos;
+                            position.position.y = ypos;
 
 
-                    }
-
-                    if (property.selected) {
-                        // Mark the selected unit
-
-                        auto& bb = m_registry.get<BoundingBox>(entity);
-                        std::cout << bb.vertices.size() << std::endl;
-                        for (auto& vertices : bb.vertices) {
-                            auto dotSize = vec2(5.f, 5.f);
-                            std::cout << "draw" << std::endl;
-                            DebugSystem::createLine(vertices, dotSize);
                         }
-                        break;
+
+                        if (property.selected) {
+                            // Mark the selected unit
+
+                            auto& bb = m_registry.get<BoundingBox>(entity);
+                            std::cout << bb.vertices.size() << std::endl;
+                            for (auto& vertices : bb.vertices) {
+                                auto dotSize = vec2(5.f, 5.f);
+                                std::cout << "draw" << std::endl;
+                                DebugSystem::createLine(vertices, dotSize);
+                            }
+                            break;
+                        }
+
                     }
 
                 }
             } else if (action == GLFW_RELEASE) {
                 for (auto &entity: m_registry.view<UnitProperty>()) {
                     auto &property = m_registry.get<UnitProperty>(entity);
-                    if (property.selected) {
-                        auto &motion = m_registry.get<Motion>(entity);
-                        auto &position = m_registry.get<Position>(entity);
-                        int grid_pos_x = 1200;
-                        int grid_pos_y = 800;
-                        glfwGetCursorPos(window, &xpos, &ypos);
-                        auto dis_x = xpos - grid_pos_x;
-                        auto dis_y = ypos - grid_pos_y;
-                        if (dis_x > tile_size.x/2 || dis_y > tile_size.x/2) {
+                    if(property.is_human){
+                        if (property.selected) {
+                            auto &motion = m_registry.get<Motion>(entity);
+                            auto &position = m_registry.get<Position>(entity);
+                            int grid_pos_x = 1200;
+                            int grid_pos_y = 800;
+                            glfwGetCursorPos(window, &xpos, &ypos);
+                            auto dis_x = xpos - grid_pos_x;
+                            auto dis_y = ypos - grid_pos_y;
+                            if (dis_x > tile_size.x/2 || dis_y > tile_size.x/2) {
 
-                            property.selected = false;
-                            property.selected_release = true;
-                        } else {
-                            for (int i = 0; i < tile_matrix_dimension.x; i++) {
-                                float grid_pos_x = tile_size.x/2 + tile_size.x * i;
-                                for (int j = 0; j < tile_matrix_dimension.y; j++) {
-                                    float  grid_pos_y = tile_size.y/2 + tile_size.y * j;
-                                    glfwGetCursorPos(window, &xpos, &ypos);
-                                    dis_x = abs(xpos - grid_pos_x);
-                                    dis_y = abs(ypos - grid_pos_y);
-                                    if (dis_x < tile_size.x/2 && dis_y < tile_size.x/2) {
-                                        position.position.x = grid_pos_x;
-                                        position.position.y = grid_pos_y;
+                                property.selected = false;
+                                property.selected_release = true;
+                            } else {
+                                for (int i = 0; i < tile_matrix_dimension.x; i++) {
+                                    float grid_pos_x = tile_size.x/2 + tile_size.x * i;
+                                    for (int j = 0; j < tile_matrix_dimension.y; j++) {
+                                        float  grid_pos_y = tile_size.y/2 + tile_size.y * j;
+                                        glfwGetCursorPos(window, &xpos, &ypos);
+                                        dis_x = abs(xpos - grid_pos_x);
+                                        dis_y = abs(ypos - grid_pos_y);
+                                        if (dis_x < tile_size.x/2 && dis_y < tile_size.x/2) {
+                                            position.position.x = grid_pos_x;
+                                            position.position.y = grid_pos_y;
 
-                                        DebugSystem::in_debug_mode = false;
-                                        property.selected = false;
-                                        property.selected_release = true;
-                                        break;
+                                            DebugSystem::in_debug_mode = false;
+                                            property.selected = false;
+                                            property.selected_release = true;
+                                            break;
+                                        }
                                     }
                                 }
                             }
+
+
                         }
-
-
                     }
+
                 }
             } else if (action == GLFW_REPEAT) {
                 for (auto &entity: m_registry.view<UnitProperty>()) {
                     auto &property = m_registry.get<UnitProperty>(entity);
-                    if (property.selected) {
-                        auto &motion = m_registry.get<Motion>(entity);
-                        auto &position = m_registry.get<Position>(entity);
-                        int grid_pos_x = 1200;
-                        int grid_pos_y = 800;
-                        glfwGetCursorPos(window, &xpos, &ypos);
-                        auto dis_x = xpos - grid_pos_x;
-                        auto dis_y = ypos - grid_pos_y;
-                        if (dis_x > tile_size.x/2 || dis_y > tile_size.x/2) {
+                    if(property.is_human){
+                        if (property.selected) {
+                            auto &motion = m_registry.get<Motion>(entity);
+                            auto &position = m_registry.get<Position>(entity);
+                            int grid_pos_x = 1200;
+                            int grid_pos_y = 800;
+                            glfwGetCursorPos(window, &xpos, &ypos);
+                            auto dis_x = xpos - grid_pos_x;
+                            auto dis_y = ypos - grid_pos_y;
+                            if (dis_x > tile_size.x/2 || dis_y > tile_size.x/2) {
 
-                            property.selected = false;
-                            property.selected_release = true;
-                        } else {
-                            for (int i = 0; i < tile_matrix_dimension.x; i++) {
-                                float grid_pos_x = tile_size.x/2 + tile_size.x * i;
-                                for (int j = 0; j < tile_matrix_dimension.y; j++) {
-                                    float  grid_pos_y = tile_size.y/2 + tile_size.y * j;
-                                    glfwGetCursorPos(window, &xpos, &ypos);
-                                    dis_x = abs(xpos - grid_pos_x);
-                                    dis_y = abs(ypos - grid_pos_y);
-                                    if (dis_x <  tile_size.x/2 && dis_y <  tile_size.y/2) {
-                                        position.position.x = grid_pos_x;
-                                        position.position.y = grid_pos_y;
+                                property.selected = false;
+                                property.selected_release = true;
+                            } else {
+                                for (int i = 0; i < tile_matrix_dimension.x; i++) {
+                                    float grid_pos_x = tile_size.x/2 + tile_size.x * i;
+                                    for (int j = 0; j < tile_matrix_dimension.y; j++) {
+                                        float  grid_pos_y = tile_size.y/2 + tile_size.y * j;
+                                        glfwGetCursorPos(window, &xpos, &ypos);
+                                        dis_x = abs(xpos - grid_pos_x);
+                                        dis_y = abs(ypos - grid_pos_y);
+                                        if (dis_x <  tile_size.x/2 && dis_y <  tile_size.y/2) {
+                                            position.position.x = grid_pos_x;
+                                            position.position.y = grid_pos_y;
 
-                                        DebugSystem::in_debug_mode = false;
-                                        //property.selected = false;
-                                        property.selected_release = true;
-                                        break;
+                                            DebugSystem::in_debug_mode = false;
+                                            //property.selected = false;
+                                            property.selected_release = true;
+                                            break;
+                                        }
                                     }
                                 }
                             }
+
+
                         }
-
-
                     }
+
                 }
             }
             //draw moving trajetory
@@ -389,35 +398,39 @@ void Game::on_mouse_click(int button, int action, int mods) {
 //                        DebugSystem::createLine(vertices, dotSize);
 //                    }
 //                }else
-                if(property.selected_release){
-                    //draw the moving  trajectory
-                    auto &motion= m_registry.get<Motion>(entity);
-                    auto &position = m_registry.get<Position>(entity);
-                    vec2 tri_pos = {(position.position.x-property.init_pos.x)/2+property.init_pos.x, (position.position.y-property.init_pos.y)/2+property.init_pos.y};
-                    float x1 = position.position.x-property.init_pos.x;
-                    float y1 = position.position.y-property.init_pos.y;
-                    // use dot product to calculate the angle
 
-                    vec2 v1 = normalize(vec2({x1, y1}));
+                if(property.is_human){
+                    if(property.selected){
+                        //draw the moving  trajectory
+                        auto &motion= m_registry.get<Motion>(entity);
+                        auto &position = m_registry.get<Position>(entity);
+                        vec2 tri_pos = {(position.position.x-property.init_pos.x)/2+property.init_pos.x, (position.position.y-property.init_pos.y)/2+property.init_pos.y};
+                        float x1 = position.position.x-property.init_pos.x;
+                        float y1 = position.position.y-property.init_pos.y;
+                        // use dot product to calculate the angle
 
-                    float angle = acos(dot(v1, {1.f, 0.f}));
-                    if (y1 < 0.f) {
-                        //clock wise
-                        angle *= -1.f;
+                        vec2 v1 = normalize(vec2({x1, y1}));
+
+                        float angle = acos(dot(v1, {1.f, 0.f}));
+                        if (y1 < 0.f) {
+                            //clock wise
+                            angle *= -1.f;
+                        }
+                        if (y1==0){
+
+                            DebugSystem::createDirectTri(tri_pos,{x1/2,30},0.f);
+                            std::cout << "tri" << std::endl;
+                        } else if (x1==0){
+                            DebugSystem::createDirectTri(tri_pos,{30,y1/2},M_PI/2*y1/abs(y1));
+                            std::cout << "tri" << std::endl;
+                        }else {
+                            DebugSystem::createDirectTri(tri_pos, {abs((position.position.x-property.init_pos.x)/2),abs((position.position.y-property.init_pos.y)/2)},angle);
+                            std::cout << "tri" << std::endl;
+                        }
+                        property.selected_release = false;
                     }
-                    if (y1==0){
-
-                        DebugSystem::createDirectTri(tri_pos,{x1/2,30},0.f);
-                        std::cout << "tri" << std::endl;
-                    } else if (x1==0){
-                        DebugSystem::createDirectTri(tri_pos,{30,y1/2},M_PI/2*y1/abs(y1));
-                        std::cout << "tri" << std::endl;
-                    }else {
-                        DebugSystem::createDirectTri(tri_pos, {abs((position.position.x-property.init_pos.x)/2),abs((position.position.y-property.init_pos.y)/2)},angle);
-                        std::cout << "tri" << std::endl;
-                    }
-                    property.selected_release = false;
                 }
+
             }
         }
     }

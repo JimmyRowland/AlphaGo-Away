@@ -135,16 +135,16 @@ bool is_out_of_boundary(entt::entity entity) {
 
 void physics_update(float elapsed_ms) {
 
-//    if (DebugSystem::in_debug_mode) {
-//        for (auto&&[entity, boundingBox] :m_registry.view<BoundingBox>().each()) {
-//            if (m_registry.valid(entity)) {
-//                for (auto &vertices : boundingBox.transformed_vertices) {
-//                    auto dotSize = vec2(5.f, 5.f);
-//                    DebugSystem::createLine(vertices, dotSize);
-//                }
-//            }
-//        }
-//    }
+    if (DebugSystem::in_debug_mode) {
+        for (auto&&[entity, boundingBox] :m_registry.view<BoundingBox>().each()) {
+            if (m_registry.valid(entity)) {
+                for (auto &vertices : boundingBox.transformed_vertices) {
+                    auto dotSize = vec2(5.f, 5.f);
+                    DebugSystem::createLine(vertices, dotSize);
+                }
+            }
+        }
+    }
 //    for (auto &entity: m_registry.view<UnitProperty>()) {
 //        auto &property = m_registry.get<UnitProperty>(entity);
 //        std::cout << "test" << std::endl;

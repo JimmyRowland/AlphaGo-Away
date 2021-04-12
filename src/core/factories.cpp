@@ -75,6 +75,7 @@ namespace {
                 property.hp = 1000;
                 property.maxhp = 1000;
                 property.close_combat_damage_modifier = 1.f;
+                property.is_human = true;
                 return property;
             case UnitType::human_monitor:
                 property.attackRange = 2;
@@ -82,6 +83,7 @@ namespace {
                 property.hp = 180;
                 property.maxhp = 180;
                 property.close_combat_damage_modifier = .5f;
+                property.is_human = true;
                 return property;
             case UnitType::human_archer:
                 property.attackRange = 5;
@@ -89,6 +91,7 @@ namespace {
                 property.hp = 75;
                 property.maxhp = 75;
                 property.close_combat_damage_modifier = .1f;
+                property.is_human = true;
                 return property ;
             case UnitType::human_healer:
                 property.attackRange = 3;
@@ -96,6 +99,7 @@ namespace {
                 property.hp = 95;
                 property.maxhp = 95;
                 property.close_combat_damage_modifier = .2f;
+                property.is_human = true;
                 return property ;
             case UnitType::ai_terminator:
                 property.attackRange = 1;
