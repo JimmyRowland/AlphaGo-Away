@@ -170,7 +170,7 @@ void Game::restart_without_loading_level(Level level) {
         background_factory();
     }
 }
-  
+
 void Game::init_dark_mode() {
     RenderSystem::dark_mode = level == Level::level2 ? 1 : 0;
 }
@@ -702,7 +702,7 @@ void Game::imgui_load_sandbox_level(){
     }
     init_map_grid();
     init_unit_grid();
-    
+
 }
 void Game::imgui_sandbox_menu() {
     if (level == Level::sandbox && ImGui::CollapsingHeader("sandbox")) {
@@ -738,16 +738,23 @@ void Game::imgui_ally_menu() {
         ImGui::RadioButton("disabled", &imgui_entity_selection, 0);
         ImGui::RadioButton("terminator", &imgui_entity_selection, 4);
         ImGui::Text("cost: %d", unit_cost[UnitType::human_terminator]);
+        ImGui::Text("maxhp: 200, damage: 10");
 //        ImGuiImage(get_tile_texture_id(TileType::basic));
         ImGui::RadioButton("monitor", &imgui_entity_selection, 5);
         ImGui::Text("cost: %d", unit_cost[UnitType::human_monitor]);
+        ImGui::Text("maxhp: 1010, damage: 15");
 //        ImGuiImage(get_tile_texture_id(TileType::water));
         ImGui::RadioButton("archer", &imgui_entity_selection, 6);
         ImGui::Text("cost: %d", unit_cost[UnitType::human_archer]);
+        ImGui::Text("maxhp: 75, damage: 35");
 
 //        ImGuiImage(get_tile_texture_id(TileType::forest));
         ImGui::RadioButton("healer", &imgui_entity_selection, 7);
         ImGui::Text("cost: %d", unit_cost[UnitType::human_healer]);
+        ImGui::Text("maxhp: 180, damage: 15");
+
+        ImGui::Text("***Press p, then you can drag");
+        ImGui::Text(" to change the unit location ***");
 
 //        ImGuiImage(get_tile_texture_id(TileType::forest));
     }
