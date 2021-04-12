@@ -55,5 +55,10 @@ struct ProjectileProperty{
 struct ProjectileTimer{
 
     float timer = 30;
+}; 
+
+struct CameraShake 
+{
+	float time = 0;
 };
 #endif //ALPHAGO_AWAY_UNITS_HPP
