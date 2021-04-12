@@ -1,85 +1,40 @@
 {
-    "unit_arr": [
-        {
-            "damage": 12,
-            "hp": 1000,
-            "position": {
-                "x": 12,
-                "y": 4
-            },
-            "unit_type": 5
-        },
-        {
-            "damage": 12,
-            "hp": 1000,
-            "position": {
-                "x": 12,
-                "y": 3
-            },
-            "unit_type": 5
-        },
-        {
-            "damage": 5,
-            "hp": 100,
-            "position": {
-                "x": 13,
-                "y": 6
-            },
-            "unit_type": 8
-        },
-        {
-            "damage": 5,
-            "hp": 100,
-            "position": {
-                "x": 13,
-                "y": 5
-            },
-            "unit_type": 8
-        },
-        {
-            "damage": 30,
-            "hp": 70,
-            "position": {
-                "x": 13,
-                "y": 3
-            },
-            "unit_type": 7
-        },
-        {
-            "damage": 30,
-            "hp": 70,
-            "position": {
-                "x": 13,
-                "y": 4
-            },
-            "unit_type": 7
-        },
-        {
-            "damage": 12,
-            "hp": 1000,
-            "position": {
-                "x": 9,
-                "y": 5
-            },
-            "unit_type": 5
-        },
-        {
-            "damage": 12,
-            "hp": 1000,
-            "position": {
-                "x": 9,
-                "y": 4
-            },
-            "unit_type": 5
-        },
-        {
-            "damage": 5,
-            "hp": 100,
-            "position": {
-                "x": 12,
-                "y": 7
-            },
-            "unit_type": 8
-        }
-    ]
+  "unit_arr": [
+    {
+      "hp": 190,
+      "damage": 12,
+      "position": {
+        "x": 12,
+        "y": 7
+      },
+      "unit_type":5
+    },
+    {
+      "hp": 1020,
+      "damage": 13,
+ "position": {
+        "x": 13,
+        "y": 7
+      },
+      "unit_type": 6
+    },
+    {
+      "hp": 70,
+      "damage": 32,
+      "position": {
+        "x": 12,
+        "y": 8
+      },
+      "unit_type":7
+    },
+    {
+      "hp": 190,
+      "damage": 16,
+      "position": {
+        "x": 13,
+        "y": 8
+      },
+      "unit_type":8
+    }
+  ]
 }
