@@ -74,12 +74,9 @@ void RenderSystem::drawTexturedMesh(entt::entity entity, const mat3 &projection,
 
 	// Getting uniform locations for glUniform* calls
 	GLint color_uloc = glGetUniformLocation(texmesh.effect.program, "fcolor");
-    GLint particleColor_uloc = glGetUniformLocation(texmesh.effect.program, "particleColor");
+
 	glUniform3fv(color_uloc, 1, (float*)&texmesh.texture.color);
-    if (m_registry.has<Particle>(entity)) {
-        auto &p = m_registry.get<Particle>(entity);
-        glUniform4fv(particleColor_uloc, 1, (float*)&p.color);
-    }
+
 	gl_has_errors();
 
 	// Get number of indices from index buffer, which has elements uint16_t
@@ -101,9 +98,104 @@ void RenderSystem::drawTexturedMesh(entt::entity entity, const mat3 &projection,
 	glBindVertexArray(0);
 }
 
+void RenderSystem::drawParticle(const mat3& projection)
+{
+    std::vector<vec2> particle_positions;
+    std::vector<vec2> particle_sizes;
+    std::vector<entt::entity> particle_entities;
+    for(auto&&[entity, particle, shadedMeshRef, position]: m_registry.view<Particle, ShadedMeshRef, Position>().each()){
+        particle_positions.push_back(position.position);
+        particle_sizes.push_back(position.scale);
+        if(particle_entities.empty()){
+            particle_entities.push_back(entity);
+        }
+        gl_has_errors();
+    }
+    if(particle_entities.empty()) return;
+    auto& mesh_ref = m_registry.get<ShadedMeshRef>(particle_entities[0]);
+    auto& texmesh = *mesh_ref.reference_to_cache;
+
+
+    // Transformation code, see Rendering and Transformation in the template specification for more info
+    // Incrementally updates transformation matrix, thus ORDER IS IMPORTANT
+    Transform transform;
+//    transform.translate(motion.position);
+    transform.rotate(0);
+
+
+//    transform.scale(motion.scale);
+
+    // Setting shaders
+    glUseProgram(texmesh.effect.program);
+    glBindVertexArray(texmesh.mesh.vao);
+    gl_has_errors();
+
+    // Enabling alpha channel for textures
+    glEnable(GL_BLEND); glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+    glDisable(GL_DEPTH_TEST);
+    gl_has_errors();
+
+    GLint transform_uloc = glGetUniformLocation(texmesh.effect.program, "transform");
+    GLint projection_uloc = glGetUniformLocation(texmesh.effect.program, "projection");
+    gl_has_errors();
+
+    // Setting vertex and index buffers
+    glBindBuffer(GL_ARRAY_BUFFER, texmesh.mesh.vbo);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, texmesh.mesh.ibo);
+    gl_has_errors();
+
+    // Input data location as in the vertex buffer
+    GLint in_position_loc = glGetAttribLocation(texmesh.effect.program, "in_position");
+    glEnableVertexAttribArray(in_position_loc);
+    glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(ColoredVertex), reinterpret_cast<void*>(0));
+    gl_has_errors();
+
+    GLuint time_uloc       = glGetUniformLocation(texmesh.effect.program, "time");
+    glUniform1f(time_uloc, static_cast<float>(glfwGetTime() * 10.0f));
+    gl_has_errors();
+
+
+    // Get number of indices from index buffer, which has elements uint16_t
+    GLint size = 0;
+    glGetBufferParameteriv(GL_ELEMENT_ARRAY_BUFFER, GL_BUFFER_SIZE, &size);
+    gl_has_errors();
+    GLsizei num_indices = size / sizeof(uint16_t);
+    //GLsizei num_triangles = num_indices / 3;
+
+    // Setting uniform values to the currently bound program
+    glUniformMatrix3fv(transform_uloc, 1, GL_FALSE, (float*)&transform.mat);
+    glUniformMatrix3fv(projection_uloc, 1, GL_FALSE, (float*)&projection);
+    gl_has_errors();
+
+    unsigned int instanceVBO;
+    glGenBuffers(1, &instanceVBO);
+    glBindBuffer(GL_ARRAY_BUFFER, instanceVBO);
+    GLfloat offsets[particle_positions.size()*3];
+    for (int i = 0; i < particle_positions.size(); i++){
+        offsets[i*3] = (GLfloat) particle_positions[i].x;
+        offsets[i*3+1] = (GLfloat) particle_positions[i].y;
+        offsets[i*3+2] = (GLfloat) particle_sizes[i].y;
+    }
+
+    glBufferData(GL_ARRAY_BUFFER, sizeof(offsets), offsets, GL_STATIC_DRAW);
+    glEnableVertexAttribArray(0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 0, 0);
+    glVertexAttribDivisor(0, 3);
+    glDrawArraysInstanced(GL_TRIANGLES, 0, num_indices, particle_positions.size()*3);
+
+
+//    glDrawElements(GL_TRIANGLES, num_indices, GL_UNSIGNED_SHORT, nullptr);
+
+    glBindVertexArray(0);
+}
+
 // Draw the intermediate texture to the screen, with some distortion to simulate water
 void RenderSystem::drawToScreen()
 {
+
+
+
+
 	// Setting shaders
 	glUseProgram(screen_sprite.effect.program);
 	glBindVertexArray(screen_sprite.mesh.vao);
@@ -130,16 +222,33 @@ void RenderSystem::drawToScreen()
 
 	// Draw the screen texture on the quad geometry
 	gl_has_errors();
-
 	// Set clock
 	GLuint time_uloc       = glGetUniformLocation(screen_sprite.effect.program, "time");
+    GLuint illumination_uloc       = glGetUniformLocation(screen_sprite.effect.program, "illumination_param");
+    GLuint last_firework_time_uloc       = glGetUniformLocation(screen_sprite.effect.program, "last_firework_time");
+    GLuint dark_mode_uloc       = glGetUniformLocation(screen_sprite.effect.program, "dark_mode");
 	GLuint dead_timer_uloc = glGetUniformLocation(screen_sprite.effect.program, "darken_screen_factor");
-	glUniform1f(time_uloc, static_cast<float>(glfwGetTime() * 10.0f));
-	auto& screen =  m_registry.get<ScreenState>(screen_state_entity);
+    GLuint flash_light_type_uloc      = glGetUniformLocation(screen_sprite.effect.program, "flash_light_type");
+
+    glUniform1f(time_uloc, static_cast<float>(glfwGetTime() * 1.0f));
+    glUniform1f(illumination_uloc, static_cast<float>(RenderSystem::illumination_param));
+    glUniform1i(dark_mode_uloc, RenderSystem::dark_mode);
+    glUniform1f(last_firework_time_uloc, static_cast<float>(RenderSystem::last_firework_time));
+    glUniform1i(flash_light_type_uloc, RenderSystem::flash_light_type);
+
+    auto& screen =  m_registry.get<ScreenState>(screen_state_entity);
 	glUniform1f(dead_timer_uloc, screen.darken_screen_factor);
 	gl_has_errors();
+    GLuint cursor_x_uloc       = glGetUniformLocation(screen_sprite.effect.program, "cursor_x");
+    glUniform1f(cursor_x_uloc, (GLfloat)(RenderSystem::cursor_position.x));
+    gl_has_errors();
 
-	// Set the vertex position and vertex texture coordinates (both stored in the same VBO)
+    GLuint cursor_y_uloc       = glGetUniformLocation(screen_sprite.effect.program, "cursor_y");
+    glUniform1f(cursor_y_uloc, (GLfloat)(RenderSystem::cursor_position.y));
+    gl_has_errors();
+
+
+    // Set the vertex position and vertex texture coordinates (both stored in the same VBO)
 	GLint in_position_loc = glGetAttribLocation(screen_sprite.effect.program, "in_position");
 	glEnableVertexAttribArray(in_position_loc);
 	glVertexAttribPointer(in_position_loc, 3, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)0);
@@ -147,6 +256,29 @@ void RenderSystem::drawToScreen()
 	glEnableVertexAttribArray(in_texcoord_loc);
 	glVertexAttribPointer(in_texcoord_loc, 2, GL_FLOAT, GL_FALSE, sizeof(TexturedVertex), (void*)sizeof(vec3)); // note the stride to skip the preceeding vertex position
 	gl_has_errors();
+
+
+    if(RenderSystem::dark_mode>0){
+        auto view = m_registry.view<Light, ShadedMeshRef, Position>();
+        int size = view.size_hint();
+        GLfloat particle_x[size+1];
+        GLfloat particle_y[size+1];
+        int i = 0;
+        for(auto&&[entity, shadedMeshRef, position]: view.each()){
+            particle_x[i] = position.position.x;
+            particle_y[i] = position.position.y;
+            i++;
+        }
+        particle_x[i] = -1;
+        particle_y[i] = -1;
+        GLint particle_x_uloc = glGetUniformLocation(screen_sprite.effect.program, "particle_x");
+        glUniform1fv(particle_x_uloc, size+1,(const GLfloat*)  &particle_x);
+        GLint particle_y_uloc = glGetUniformLocation(screen_sprite.effect.program, "particle_y");
+        glUniform1fv(particle_y_uloc, size+1, (const GLfloat*) &particle_y);
+        gl_has_errors();
+    }
+
+
 
 	// Bind our texture in Texture Unit 0
 	glActiveTexture(GL_TEXTURE0);
@@ -246,11 +378,13 @@ void RenderSystem::draw(vec2 window_size_in_game_units)
         gl_has_errors();
     }
     
-    for (entt::entity entity : m_registry.view<ShadedMeshRef, Particle>())
-    {
-        drawTexturedMesh(entity, projection_2D, off);
-        gl_has_errors();
-    }
+//    for (entt::entity entity : m_registry.view<ShadedMeshRef, Particle>())
+//    {
+//        drawTexturedMesh(entity, projection_2D);
+//        gl_has_errors();
+//    }
+
+    drawParticle(projection_2D);
 
     for (entt::entity entity : m_registry.view<ShadedMeshRef, DebugComponent>())
     {

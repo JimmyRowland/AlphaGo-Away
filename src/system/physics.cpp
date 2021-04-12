@@ -95,11 +95,6 @@ namespace {
             }
         }
     }
-
-
-
-
-
 }
 
 bool is_out_of_boundary(entt::entity entity) {
@@ -184,5 +179,6 @@ void physics_update(float elapsed_ms) {
         }
 
     }
+
 
 }
