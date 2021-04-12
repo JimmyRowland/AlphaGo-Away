@@ -400,7 +400,7 @@ void Game::place_an_ally(ivec2 tile_index) {
         unit_factory(get_tile_center_from_index(tile_index), imgui_entity_selection_to_unitType());
         gold[player_index] -= cost;
         show_not_enough_gold_message = false;
-        particles->emitParticle(get_tile_center_from_index(tile_index), 10);
+        particles->emitParticle(get_tile_center_from_index(tile_index), 5);
     } else {
         show_not_enough_gold_message = true;
     }
@@ -429,9 +429,8 @@ void Game::sandbox_on_click(int button, int action, int mods) {
                         //                TODO refactor  sandbox_add_unit
                     } else {
                         place_an_ally(tile_index);
-                        particles->emitParticle(get_tile_center_from_index(tile_index), 20);
                         place_an_enemy(tile_index);
-                        particles->emitParticle(get_tile_center_from_index(tile_index), 20);
+                        particles->emitParticle(get_tile_center_from_index(tile_index), 5);
                     }
                 }
             }
@@ -663,7 +662,7 @@ void Game::init_unit_grid() {
                 auto unit = unit_factory(vec2(xpos, ypos), unitMapState[ivec2(i, j)]);
                 auto property = m_registry.get<UnitProperty>(unit);
                 property.hp = unitHPState[ivec2(i, j)];
-                particles->emitParticle(vec2(xpos, ypos), 20);
+                particles->emitParticle(vec2(xpos, ypos), 1);
             }
         }
     }
@@ -851,7 +850,7 @@ void Game::imgui_save_menu() {
 };
 
 void Game::imgui_sandbox_menu() {
-    if (game_mode == GameMode::free_mode && ImGui::CollapsingHeader("Save and reload")) {
+    if (game_mode == GameMode::free_mode && ImGui::CollapsingHeader("Sandbox")) {
 
             imgui_tile_menu();
             imgui_enemy_menu();
