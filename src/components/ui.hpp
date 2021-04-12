@@ -10,6 +10,12 @@ struct ScreenComponent{
 struct ButtonComponent
 {
 };
+struct TutorialComponent
+{
+};
+struct InfoComponent
+{
+};
 struct resultComponent
 {
 };

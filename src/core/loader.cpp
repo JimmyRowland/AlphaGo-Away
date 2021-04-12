@@ -35,6 +35,9 @@ MapState Loader::load_map(Level level)
 	case Level::path_finding_debug:
 		fileName = "path_finding_debug_save_map.json";
 		break;
+    case Level::tutorial:
+        fileName = "tutorial_map.json";
+        break;
 	default:
 		fileName = "sandbox_map.json";
 	}
@@ -100,6 +103,9 @@ UnitMapState Loader::load_units(Level level) {
 	case Level::path_finding_debug:
 		fileName = "path_finding_debug_save_units.json";
 		break;
+    case Level::tutorial:
+        fileName = "tutorial_units.json";
+        break;
 	default:
 		fileName = "sandbox_units.json";
 	}
@@ -266,6 +272,9 @@ MapState Loader::initial_map_load(Level level)
 	case Level::path_finding_debug:
 		fileName = "path_finding_debug_map.json";
 		break;
+    case Level::tutorial:
+        fileName = "tutorial_map.json";
+        break;
 	default:
 		fileName = "sandbox_map.json";
 	}
@@ -318,6 +327,9 @@ UnitMapState Loader::initial_units_load(Level level)
 	case Level::path_finding_debug:
 		fileName = "path_finding_debug_units.json";
 		break;
+    case Level::tutorial:
+        fileName = "tutorial_units.json";
+        break;
 	default:
 		fileName = "sandbox_units.json";
 	}
@@ -382,6 +394,9 @@ void Loader::level_builder_map(Level level, int gold[2])
 	case Level::path_finding_debug:
 		save_json("path_finding_debug_map.json", json);
 		break;
+    case Level::tutorial:
+        save_json("tutorial_map.json", json);
+        break;
 	default:
 		save_json("sandbox_map.json", json);
 	}

@@ -111,11 +111,11 @@ private:
     bool has_battle_started;
     float battle_start_in;
     bool battle_over = false;
-    float time = 0.f;
     entt::entity battle_result;
     
     float frame = 1.f;
-
+    int story_page = 0;
+    int tutorial_num = 0;
 
 	// C++ random number generator
 	std::default_random_engine rng;
@@ -124,6 +124,7 @@ private:
     UnitMapState unitMapState;
     UnitHPMapState unitHPState;
     Level level = Level::sandbox;
+    int level_res = 0;
     Loader loader = Loader();
     bool is_paused = true;
     bool show_imgui = true;
@@ -148,6 +149,8 @@ private:
     void imgui_ally_menu();
 
     void imgui_enemy_menu();
+    
+    void imgui_tutorial_menu();
 
     UnitType imgui_entity_selection_to_unitType();
 
@@ -160,6 +163,14 @@ private:
     void place_an_enemy(ivec2 tile_index);
 
     void level_on_click(int button, int action, int mods);
+    
+    void story_on_click(int button, int action, int mods);
+    
+    void tutorial_on_click(int button, int action, int mods);
+    
+    void info_on_click(int button, int action, int mods);
+    
+    void result_on_click(int button, int action, int mods);
 
 	void update_camera_pos(float time);
 
@@ -175,6 +186,7 @@ private:
     };
 
     void imgui_story();
+    void imgui_save_menu();
 
     void map_on_click(int button, int action, int mods);
 

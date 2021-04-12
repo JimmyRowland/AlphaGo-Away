@@ -328,10 +328,20 @@ entt::entity ui_factory(std::string texture_path, vec2 pos, vec2 size, std::stri
     position.position = pos;
     position.angle = 0.f;
     position.scale = size;
-    auto& sc = m_registry.emplace<ScreenComponent>(entity);
-    sc.parallax_speed = parallax_speed;
-    if(texture_path == "buttons/PlayButton.jpg"){
+    if((texture_path.find("buttons") == std::string::npos) &&
+       (texture_path.find("tutorial") == std::string::npos) &&
+       (texture_path.find("info") == std::string::npos)){
+        auto& sc = m_registry.emplace<ScreenComponent>(entity);
+        sc.parallax_speed = parallax_speed;
+    }
+    if(texture_path.find("buttons") != std::string::npos){
         m_registry.emplace<ButtonComponent>(entity);
+    } 
+    if(texture_path.find("tutorial") != std::string::npos){
+        m_registry.emplace<TutorialComponent>(entity);
+    }
+    if(texture_path.find("info") != std::string::npos){
+        m_registry.emplace<InfoComponent>(entity);
     }
     return entity;
 }
@@ -360,12 +370,44 @@ void background_factory(){
     ui_factory( "bg.png", {window_size_in_game_units.x / 2, window_size_in_game_units.y/2}, {window_size_in_game_units.x * 7, window_size_in_game_units.y}, "textured", 1.f);
 }
 
+void story_factory(int story_num){
+    if (story_num == 0) {
+        ui_factory("buttons/next.png", next_pos, button_size);
+        ui_factory("buttons/skip.png", skip_pos, button_size);
+    }
+    ui_factory("Story/story" + std::to_string(story_num) + ".png", {tile_matrix_dimension.x*tile_size.x/2, tile_matrix_dimension.y*tile_size.y/2},
+               {tile_matrix_dimension.x*tile_size.x, tile_matrix_dimension.y*tile_size.y});
+    if (story_num == 1) {
+        for (int i = 0; i < 4; i++)
+            unit_factory({tile_matrix_dimension.x*tile_size.x/2 - 200 + i * 100, tile_matrix_dimension.y*tile_size.y-100}, UnitType::ai_terminator);
+    } else if (story_num == 2) {
+        unit_factory({tile_matrix_dimension.x*tile_size.x/2 - 200, tile_matrix_dimension.y*tile_size.y-100}, UnitType::human_monitor);
+        unit_factory({tile_matrix_dimension.x*tile_size.x/2 - 100, tile_matrix_dimension.y*tile_size.y-100}, UnitType::human_archer);
+        unit_factory({tile_matrix_dimension.x*tile_size.x/2, tile_matrix_dimension.y*tile_size.y-100}, UnitType::human_healer);
+        unit_factory({tile_matrix_dimension.x*tile_size.x/2 + 100, tile_matrix_dimension.y*tile_size.y-100}, UnitType::human_terminator);
+    }
+}
+
+void tutorial_factory(int tutorial_num) {
+    ui_factory("tutorial/tutorial" + std::to_string(tutorial_num) + ".png", tutorial_pos, tutorial_size);
+    ui_factory("buttons/skip_tutorial.png", skip_t_pos, button_size);
+    if (tutorial_num == 2) {
+        ui_factory("tutorial/tutorial_click.png", {map_x_min + 80, map_y_min + tile_size.y * 3}, {150, 100});
+        ui_factory("tutorial/tutorial_mark.png", {map_x_min, map_y_min + tile_size.y * 3}, {70, 50});
+    } else if (tutorial_num == 3) {
+        ui_factory("tutorial/tutorial_click.png", {map_x_max - 160, map_y_min + tile_size.y * 5}, {150, 100});
+        ui_factory("tutorial/tutorial_mark.png", {map_x_max - 80, map_y_min + tile_size.y * 5}, {70, 50});
+    }
+}
+
 entt::entity result_factory(bool res) {
     auto entity = m_registry.create();
     if (res) {
         m_registry.emplace<ShadedMeshRef>(entity, create_ui_mesh("win.jpg", "textured"));
+        ui_factory("buttons/next_level.png", result_button_pos, button_size);
     } else {
         m_registry.emplace<ShadedMeshRef>(entity, create_ui_mesh("lose.jpg", "textured"));
+        ui_factory("buttons/replay.png", result_button_pos, button_size);
     }
     auto &position = m_registry.emplace<Position>(entity);
     position.position = {window_size_in_game_units.x/2 - 200, window_size_in_game_units.y/2};
@@ -373,6 +415,81 @@ entt::entity result_factory(bool res) {
     position.scale = {560, 360};
     m_registry.emplace<resultComponent>(entity);
     return entity;
+}
+
+void tile_info_factory(TileType tileType) {
+    entt::entity tile = tile_factory ({390, 270}, tileType);
+    m_registry.emplace<InfoComponent>(tile);
+    m_registry.remove<Tile>(tile);
+    auto &position = m_registry.get<Position>(tile);
+    position.scale = {100,100};
+    switch (tileType) {
+        case TileType::basic:
+            ui_factory("info/info_basic_tile.png", {tile_matrix_dimension.x*tile_size.x/2, tile_matrix_dimension.y*tile_size.y/2}, {900, 600});
+            break;
+        case TileType::forest:
+            ui_factory("info/info_forest_tile.png", {tile_matrix_dimension.x*tile_size.x/2, tile_matrix_dimension.y*tile_size.y/2}, {900, 600});
+            break;
+        case TileType::water:
+            ui_factory("info/info_water_tile.png", {tile_matrix_dimension.x*tile_size.x/2, tile_matrix_dimension.y*tile_size.y/2}, {900, 600});
+            break;
+        default:
+            assert(false);
+            break;
+    }
+//    ui_factory("info/info_bg.png", {tile_matrix_dimension.x*tile_size.x/2, tile_matrix_dimension.y*tile_size.y/2}, {900, 600});
+    ui_factory("buttons/info_done.png", done_pos, button_size);
+}
+
+void unit_info_factory(UnitType unitType) {
+    entt::entity unit = unit_factory ({390, 270}, unitType);
+    m_registry.emplace<InfoComponent>(unit);
+    m_registry.remove<UnitProperty>(unit);
+    auto &position = m_registry.get<Position>(unit);
+    position.scale = {120,120};
+    switch (unitType) {
+        case UnitType::human_terminator:
+            ui_factory("info/info_h_terminator.png", {tile_matrix_dimension.x*tile_size.x/2, tile_matrix_dimension.y*tile_size.y/2}, {900, 600});
+            break;
+        case UnitType::human_monitor:
+            ui_factory("info/info_h_monitor.png", {tile_matrix_dimension.x*tile_size.x/2, tile_matrix_dimension.y*tile_size.y/2}, {900, 600});
+            break;
+        case UnitType::human_archer:
+            ui_factory("info/info_h_archer.png", {tile_matrix_dimension.x*tile_size.x/2, tile_matrix_dimension.y*tile_size.y/2}, {900, 600});
+            break;
+        case UnitType::human_healer:
+            ui_factory("info/info_h_healer.png", {tile_matrix_dimension.x*tile_size.x/2, tile_matrix_dimension.y*tile_size.y/2}, {900, 600});
+            break;
+        case UnitType::ai_terminator:
+            ui_factory("info/info_a_terminator.png", {tile_matrix_dimension.x*tile_size.x/2, tile_matrix_dimension.y*tile_size.y/2}, {900, 600});
+            break;
+        case UnitType::ai_monitor:
+            ui_factory("info/info_a_monitor.png", {tile_matrix_dimension.x*tile_size.x/2, tile_matrix_dimension.y*tile_size.y/2}, {900, 600});
+            break;
+        case UnitType::ai_archer:
+            ui_factory("info/info_a_archer.png", {tile_matrix_dimension.x*tile_size.x/2, tile_matrix_dimension.y*tile_size.y/2}, {900, 600});
+            break;
+        case UnitType::ai_healer:
+            ui_factory("info/info_a_healer.png", {tile_matrix_dimension.x*tile_size.x/2, tile_matrix_dimension.y*tile_size.y/2}, {900, 600});
+            break;
+        default:
+            assert(false);
+            break;
+    }
+//    ui_factory("info/info_bg.png", {tile_matrix_dimension.x*tile_size.x/2, tile_matrix_dimension.y*tile_size.y/2}, {900, 600});
+    ui_factory("buttons/info_done.png", done_pos, button_size);
+}
+
+int button_clicked(double x_pos, double y_pos, vec2 b_pos, vec2 b_size) {
+    bool x_in_button = (x_pos <= b_pos.x + b_size.x/2) && (x_pos >= b_pos.x - b_size.x/2);
+    bool y_in_button = (y_pos <= b_pos.y + b_size.y/2) && (y_pos >= b_pos.y - b_size.y/2);
+    return (x_in_button && y_in_button);
+}
+
+int info_tile(vec2 pos) {
+    bool x = (pos.x == map_x_min);
+    bool y = (pos.y <= map_y_min + tile_size.y * 5) && (pos.y >= map_y_min + tile_size.y * 3);
+    return (x && y);
 }
 
 void swap_tile_texture(entt::entity entity, TileType tileType) {

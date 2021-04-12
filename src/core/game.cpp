@@ -108,12 +108,11 @@ void Game::update(float elapsed_ms, vec2 window_size_in_game_units) {
             if (m_registry.view<Ally>().size() == 0) {
                 battle_result = result_factory(false);
                 battle_over = true;
-                time = elapsed_ms;
                 std::cout << "human fails!!!" << std::endl;
             } else if (m_registry.view<Enemy>().size() == 0) {
                 battle_result = result_factory(true);
                 battle_over = true;
-                time = elapsed_ms;
+                level_res = 1;
                 std::cout << "ai fails!!!" << std::endl;
             }
         }
@@ -127,6 +126,7 @@ void Game::update(float elapsed_ms, vec2 window_size_in_game_units) {
 void Game::restart(Level level) {
     this->level = level;
     battle_over = false;
+    level_res = 0;
 
     for (auto entity : m_registry.view<ShadedMeshRef>()) {
         m_registry.destroy(entity);
@@ -135,13 +135,21 @@ void Game::restart(Level level) {
     current_speed = 1.f;
     has_battle_started = false;
 
-    if (level == Level::start_screen) {
+    if(level == Level::story){
+        story_page = 0;
+        story_factory(story_page);
+        background_factory();
+    } else if (level == Level::start_screen){
         frame = 1.f;
 
         loading_screen_factory();
         background_factory();
         this->level = level;
-    } else {
+    }else{
+        if (level == Level::tutorial) {
+            tutorial_num = 0;
+            tutorial_factory(tutorial_num);
+        }
         background_factory();
         init_level();
         init_map_grid();
@@ -262,6 +270,8 @@ ivec2 Game::get_window_size() {
 }
 
 void Game::on_mouse_click(int button, int action, int mods) {
+    info_on_click(button, action, mods);
+    result_on_click(button, action, mods);
     if (!has_battle_started &&
         (level == Level::level1 || level == Level::level2 || level == Level::level3 || level == Level::level4 ||
          level == Level::level5)) {
@@ -272,7 +282,8 @@ void Game::on_mouse_click(int button, int action, int mods) {
         level == Level::level5) {
         return level_on_click(button, action, mods);
     }
-
+    if (level == Level::story) return story_on_click(button, action, mods);
+    if (level == Level::tutorial) return tutorial_on_click(button, action, mods);
     if (button == GLFW_MOUSE_BUTTON_LEFT) {
 //        TODO restore relocating units
 //        double xpos, ypos;
@@ -389,7 +400,7 @@ void Game::place_an_ally(ivec2 tile_index) {
         unit_factory(get_tile_center_from_index(tile_index), imgui_entity_selection_to_unitType());
         gold[player_index] -= cost;
         show_not_enough_gold_message = false;
-        particles->emitParticle(get_tile_center_from_index(tile_index), 10);
+        particles->emitParticle(get_tile_center_from_index(tile_index), 5);
     } else {
         show_not_enough_gold_message = true;
     }
@@ -418,9 +429,8 @@ void Game::sandbox_on_click(int button, int action, int mods) {
                         //                TODO refactor  sandbox_add_unit
                     } else {
                         place_an_ally(tile_index);
-                        particles->emitParticle(get_tile_center_from_index(tile_index), 20);
                         place_an_enemy(tile_index);
-                        particles->emitParticle(get_tile_center_from_index(tile_index), 20);
+                        particles->emitParticle(get_tile_center_from_index(tile_index), 5);
                     }
                 }
             }
@@ -446,28 +456,154 @@ void Game::level_on_click(int button, int action, int mods) {
 
 void Game::map_on_click(int button, int action, int mods) {
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+        auto cursor_position = get_cursor_position();
+        ivec2 tile_index = get_tile_index(cursor_position);
+        std::cout << "tile_index" << tile_index.x << tile_index.y << !is_tile_out_of_index(tile_index) << '\n';
+        if (!is_tile_out_of_index(tile_index)) {
+            if(RenderSystem::flash_light_type == 1 && number_of_entity_flash_light > 0){
+                particles->emitParticle(cursor_position, rand() % 5 + 1, true);
+                number_of_entity_flash_light--;
 
+            }
+            if(RenderSystem::dark_mode && RenderSystem::flash_light_type==2 && number_of_shader_flash_light > 0){
+                RenderSystem::set_last_firework_time(get_cursor_position());
+                number_of_shader_flash_light --;
+            }
 
-                auto cursor_position = get_cursor_position();
-                ivec2 tile_index = get_tile_index(cursor_position);
-                std::cout << "tile_index" << tile_index.x << tile_index.y << !is_tile_out_of_index(tile_index) << '\n';
-                if (!is_tile_out_of_index(tile_index)) {
-                    if(RenderSystem::flash_light_type == 1 && number_of_entity_flash_light > 0){
-                        particles->emitParticle(cursor_position, rand() % 5 + 1, true);
-                        number_of_entity_flash_light--;
+        }
+    }
+}
 
-                    }
-                    if(RenderSystem::dark_mode && RenderSystem::flash_light_type==2 && number_of_shader_flash_light > 0){
-                        RenderSystem::set_last_firework_time(get_cursor_position());
-                        number_of_shader_flash_light --;
-                    }
-
+void Game::story_on_click(int button, int action, int mods){
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+        double xpos, ypos;
+        glfwGetCursorPos(window, &xpos, &ypos);
+        // check if next button is pressed
+        bool next_pressed = button_clicked(xpos, ypos, next_pos, button_size);
+        // check if skip button is pressed
+        bool skip_pressed = button_clicked(xpos, ypos, skip_pos, button_size);
+        ///
+        if (next_pressed || skip_pressed) {
+            for(entt::entity entity: m_registry.view<ScreenComponent>()){
+                m_registry.destroy(entity);
+            }
+            for (entt::entity entity : m_registry.view<ShadedMeshRef, UnitProperty>())
+            {
+                m_registry.destroy(entity);
+            }
+            // handle next
+            if (next_pressed) {
+                story_page++;
+                if (story_page <= 3) {
+                    story_factory(story_page);
+                    background_factory();
+                } else {
+                    level = Level::tutorial;
+                    restart(level);
                 }
+            // handle skip
+            } else if (skip_pressed) {
+                level = Level::tutorial;
+                restart(level);
+            }
+        }
+        
+    }
+}
 
+void Game::tutorial_on_click(int button, int action, int mods){
+    level_on_click(button, action, mods);
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+        double xpos, ypos;
+        glfwGetCursorPos(window, &xpos, &ypos);
+        if (button_clicked(xpos, ypos, tutorial_pos, tutorial_size)) {
+            for(entt::entity entity: m_registry.view<TutorialComponent>()){
+                m_registry.destroy(entity);
+            }
+            tutorial_num++;
+            if (tutorial_num <= 16) {
+                tutorial_factory(tutorial_num);
+            } else {
+                tutorial_factory(16);
+            }
+        } else if (button_clicked (xpos, ypos, skip_t_pos, button_size)) {
+            level = Level::level1;
+            restart(level);
+        }
+        
+    }
+}
 
+void Game::info_on_click(int button, int action, int mods) {
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+        double xpos, ypos;
+        glfwGetCursorPos(window, &xpos, &ypos);
+        // info for tiles
+        for (entt::entity entity: m_registry.view<Tile>()){
+            auto &position = m_registry.get<Position>(entity);
+            if (info_tile(position.position) && button_clicked(xpos, ypos, position.position, position.scale)) {
+                auto &tile = m_registry.get<Tile>(entity);
+                tile_info_factory(tile.type);
+            }
+        }
+        // info for units
+        for (entt::entity entity: m_registry.view<UnitProperty>()){
+            auto &position = m_registry.get<Position>(entity);
+            if (button_clicked(xpos, ypos, position.position, position.scale)) {
+                UnitProperty &property = m_registry.get<UnitProperty>(entity);
+                unit_info_factory(property.unit_type);
+            }
+        }
+        if (button_clicked(xpos, ypos, done_pos, button_size)) {
+            for(entt::entity entity: m_registry.view<InfoComponent>()){
+                m_registry.destroy(entity);
+            }
+        }
+    }
+    // right click to remove a unit
+    if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
+        double xpos, ypos;
+        glfwGetCursorPos(window, &xpos, &ypos);
+        for (entt::entity entity: m_registry.view<UnitProperty, Ally>()){
+            auto &position = m_registry.get<Position>(entity);
+            if (button_clicked(xpos, ypos, position.position, position.scale)) {
+                UnitProperty &property = m_registry.get<UnitProperty>(entity);
+                int cost = unit_cost[property.unit_type];
+                // after removing the unit, give the gold back
+                gold[player_index] += cost;
+                m_registry.destroy(entity);
+            }
+        }
+    }
+}
 
-
-
+void Game::result_on_click(int button, int action, int mods) {
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS && battle_over) {
+        double xpos, ypos;
+        glfwGetCursorPos(window, &xpos, &ypos);
+        if (button_clicked(xpos, ypos, result_button_pos, button_size)) {
+            if (level_res) {
+                switch (level) {
+                    case Level::level1:
+                        level = Level::level2;
+                        break;
+                    case Level::level2:
+                        level = Level::level3;
+                        break;
+                    case Level::level3:
+                        level = Level::level4;
+                        break;
+                    case Level::level4:
+                        level = Level::level5;
+                        break;
+                    case Level::level5:
+                        return;
+                    default:
+                        break;
+                }
+            }
+            restart(level);
+        }
     }
 }
 
@@ -526,7 +662,7 @@ void Game::init_unit_grid() {
                 auto unit = unit_factory(vec2(xpos, ypos), unitMapState[ivec2(i, j)]);
                 auto property = m_registry.get<UnitProperty>(unit);
                 property.hp = unitHPState[ivec2(i, j)];
-                particles->emitParticle(vec2(xpos, ypos), 20);
+                particles->emitParticle(vec2(xpos, ypos), 1);
             }
         }
     }
@@ -546,7 +682,7 @@ void Game::imgui_game_mode() {
     if (ImGui::CollapsingHeader("Game Mode")) {
         ImGui::Text("Choose a game mode");
         if (ImGui::Button("story mode")) {
-            level = Level::start_screen;
+            level = Level::story;
             restart(level);
             game_mode = GameMode::story_mode;
         }
@@ -587,7 +723,7 @@ void Game::imgui_story() {
 }
 
 void Game::imgui_level_selection_menu() {
-    if (ImGui::CollapsingHeader("Select a level")) {
+    if ((game_mode != GameMode::story_mode) && ImGui::CollapsingHeader("Select a level")) {
         if (ImGui::Button("Sandbox")) {
             level = Level::sandbox;
             restart(level);
@@ -706,12 +842,19 @@ void Game::imgui_load_sandbox_level(){
     init_unit_grid();
 
 }
-void Game::imgui_sandbox_menu() {
-    if (level == Level::sandbox && ImGui::CollapsingHeader("sandbox")) {
+void Game::imgui_save_menu() {
+    if (ImGui::CollapsingHeader("Save and reload")) {
         if (ImGui::Button("Save Level")) imgui_save_sandbox_level();
         if (ImGui::Button("Load Level")) imgui_load_sandbox_level();
-        imgui_tile_menu();
-        imgui_enemy_menu();
+    }
+};
+
+void Game::imgui_sandbox_menu() {
+    if (game_mode == GameMode::free_mode && ImGui::CollapsingHeader("Sandbox")) {
+
+            imgui_tile_menu();
+            imgui_enemy_menu();
+
     }
 };
 
@@ -734,8 +877,15 @@ void Game::imgui_ally_menu() {
 
         ImGui::RadioButton("player one", &player_index, 0);
         ImGui::RadioButton("player two", &player_index, 1);
-        ImGui::Text("player one gold: %d", gold[0]);
-        ImGui::Text("player two gold: %d", gold[1]);
+        if(game_mode == GameMode::story_mode){
+            ImGui::Text("player one gold: %d", gold[0]);
+            ImGui::Text("player two gold: %d", gold[1]);
+        } else{
+            ImGui::SliderInt("player one gold", &gold[0], 100.f, 2000.0f);
+            ImGui::SliderInt("player two gold", &gold[1], 100.f, 2000.0f);
+        }
+
+
 
         ImGui::RadioButton("disabled", &imgui_entity_selection, 0);
         ImGui::RadioButton("terminator", &imgui_entity_selection, 4);
@@ -805,8 +955,15 @@ void Game::imgui_camera_control_menu() {
     }
 };
 
-void Game::imgui() {
-    if (show_imgui) {
+void Game::imgui_tutorial_menu() {
+    if (ImGui::Button("Start tutorial")) {
+        level = Level::tutorial;
+        restart(level);
+    }
+}
+
+void Game::imgui(){
+    if(show_imgui){
         ImGui::Begin("Menu");
         imgui_battle_control_menu();
         imgui_game_mode();
@@ -814,10 +971,12 @@ void Game::imgui() {
         imgui_level_selection_menu();
         imgui_story();
         imgui_ally_menu();
+        imgui_save_menu();
         imgui_sandbox_menu();
         imgui_flash_light_menu();
         imgui_particle_menu();
         imgui_camera_control_menu();
+        imgui_tutorial_menu();
         ImGui::End();
     }
 }
