@@ -321,7 +321,7 @@ entt::entity explosion_factory(vec2 pos) {
     return entity;
 };
 
-entt::entity ui_factory(std::string texture_path, vec2 pos, vec2 size, std::string shader = "textured"){
+entt::entity ui_factory(std::string texture_path, vec2 pos, vec2 size, std::string shader = "textured", float parallax_speed = 0.f){
     auto entity = m_registry.create();
     m_registry.emplace<ShadedMeshRef>(entity, create_ui_mesh(texture_path, shader));
     auto &position = m_registry.emplace<Position>(entity);
@@ -365,7 +365,8 @@ void loading_screen_factory(){
 }
 
 void background_factory(){
-    ui_factory( "bg.png", {window_size_in_game_units.x / 2, window_size_in_game_units.y/2}, {window_size_in_game_units.y/405*540*12, window_size_in_game_units.y});
+    ui_factory("bg_stars.png", { window_size_in_game_units.x / 2, window_size_in_game_units.y / 2 }, { window_size_in_game_units.x * 7, window_size_in_game_units.y }, "textured", 2.f);
+    ui_factory( "bg.png", {window_size_in_game_units.x / 2, window_size_in_game_units.y/2}, {window_size_in_game_units.x * 7, window_size_in_game_units.y}, "textured", 1.f);
 }
 
 void story_factory(int story_num){

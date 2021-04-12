@@ -17,6 +17,7 @@ struct Particle {
     vec4 color;
     float life;
 };
+struct Light{};
 
 
 // ParticleGenerator acts as a container for rendering a large number of
@@ -31,11 +32,17 @@ public:
     void update();
     // render all particles
 //    void Draw();
-	const float MAX_DISTANCE = 30.f;
+	static float max_distance;
 
 	const float FIXED_SPEED = 2;
 
-    void emitParticle(vec2 pos, int amount);
+	bool swarm_behavior_toggle = false;
+	bool gravity_toggle = true;
+	bool elastic_collision_toggle = true;
+
+    void emitParticle(vec2 pos, int amount, bool emit_light = false);
+
+    bool is_precise_collision = false;
 private:
     // state
 //    std::vector<entt::entity> particles;
@@ -49,7 +56,7 @@ private:
     // returns the first Particle index that's currently unused e.g. Life <= 0.0f or 0 if no particle is currently inactive
 //    unsigned int firstUnusedParticle();
     // respawns particle
-    float killSpeed = 0.08f;
+    float killSpeed = 0.5f;
 	//float killSpeed = 0.00005f;
 };
 

@@ -66,12 +66,18 @@ public:
 	// parallax offset
 	float parallax_offset;
 
+	static bool shake;
+
+	static float timeleft;
+
 	// OpenGL window handle
 	GLFWwindow* window;
 
 	void init_level();
     
     ParticleSystem *particles;
+
+
 private:
 	// Input callback functions
     vec2 get_cursor_position();
@@ -83,6 +89,9 @@ private:
     void init_map_grid();
     GameMode game_mode = GameMode::free_mode;
     int gold[2] = {0, 0};
+    int number_of_entity_flash_light = 20;
+    int number_of_shader_flash_light = 1;
+
     bool show_not_enough_gold_message;
     int player_index = 0;
     // Loads the audio
@@ -132,6 +141,7 @@ private:
     void load_grid(std::string);
 
     void imgui_tile_menu();
+    void imgui_particle_menu();
 
     void imgui_ally_menu();
 
@@ -159,7 +169,7 @@ private:
     
     void result_on_click(int button, int action, int mods);
 
-	void update_camera_pos();
+	void update_camera_pos(float time);
 
     void imgui_game_mode();
 
@@ -173,6 +183,14 @@ private:
     };
 
     void imgui_story();
+
+    void map_on_click(int button, int action, int mods);
+
+    void init_dark_mode();
+
+    void imgui_flash_light_menu();
+
+    void imgui_camera_control_menu();
 };
 
 #endif //ALPHAGO_AWAY_GAME_HPP

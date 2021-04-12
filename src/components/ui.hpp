@@ -5,6 +5,7 @@
 #ifndef ALPHAGO_AWAY_UI_HPP
 #define ALPHAGO_AWAY_UI_HPP
 struct ScreenComponent{
+	float parallax_speed = 0.f;
 };
 struct ButtonComponent
 {
