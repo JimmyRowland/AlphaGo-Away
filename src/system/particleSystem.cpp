@@ -224,7 +224,7 @@ void ParticleSystem::emitParticle(vec2 pos, int amount, bool emit_light) {
             }
             resource.mesh.vertices = vertices;
             resource.mesh.vertex_indices = indices;
-            RenderSystem::createColoredMesh(resource, key);
+            RenderSystem::createColoredMesh(resource, key, true);
         }
 
 

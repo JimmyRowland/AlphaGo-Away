@@ -159,6 +159,65 @@ void Effect::load_from_file(std::string vs_path, std::string fs_path)
 	gl_has_errors();
 }
 
+void Effect::load_from_file(std::string vs_path, std::string fs_path, std::string gs_path)
+{
+    // Opening files
+    std::ifstream vs_is(vs_path);
+    std::ifstream fs_is(fs_path);
+    std::ifstream gs_is(gs_path);
+    if (!vs_is.good() || !fs_is.good() || !gs_is.good())
+        throw("Failed to load shader files " + vs_path +", "+ fs_path);
+
+    // Reading sources
+    std::stringstream vs_ss, fs_ss, gs_ss;
+    vs_ss << vs_is.rdbuf();
+    fs_ss << fs_is.rdbuf();
+    gs_ss << gs_is.rdbuf();
+    std::string vs_str = vs_ss.str();
+    std::string fs_str = fs_ss.str();
+    std::string gs_str = gs_ss.str();
+    const char* vs_src = vs_str.c_str();
+    const char* fs_src = fs_str.c_str();
+    const char* gs_src = gs_str.c_str();
+    GLsizei vs_len = (GLsizei)vs_str.size();
+    GLsizei fs_len = (GLsizei)fs_str.size();
+    GLsizei gs_len = (GLsizei)gs_str.size();
+
+    vertex = glCreateShader(GL_VERTEX_SHADER);
+    glShaderSource(vertex, 1, &vs_src, &vs_len);
+    fragment = glCreateShader(GL_FRAGMENT_SHADER);
+    glShaderSource(fragment, 1, &fs_src, &fs_len);
+    geometry =  glCreateShader(GL_GEOMETRY_SHADER);
+    glShaderSource(geometry, 1, &gs_src, &gs_len);
+
+
+    // Compiling
+    gl_compile_shader(vertex);
+    gl_compile_shader(fragment);
+    gl_compile_shader(geometry);
+
+    // Linking
+    program = glCreateProgram();
+    glAttachShader(program, vertex);
+    glAttachShader(program, fragment);
+    glAttachShader(program, geometry);
+    glLinkProgram(program);
+    {
+        GLint is_linked = 0;
+        glGetProgramiv(program, GL_LINK_STATUS, &is_linked);
+        if (is_linked == GL_FALSE)
+        {
+            GLint log_len;
+            glGetProgramiv(program, GL_INFO_LOG_LENGTH, &log_len);
+            std::vector<char> log(log_len);
+            glGetProgramInfoLog(program, log_len, &log_len, log.data());
+
+            throw std::runtime_error("Link error: "+ std::string(log.data()));
+        }
+    }
+    gl_has_errors();
+}
+
 namespace {
 
     std::istream& consumeSlashSlash(std::istream& is){
