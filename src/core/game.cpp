@@ -520,26 +520,25 @@ void Game::init_unit_grid() {
     for (int i = 0; i < tile_matrix_dimension.x; i++) {
         float xpos = tile_size.x / 2 + tile_size.x * i;
         for (int j = 0; j < tile_matrix_dimension.y; j++) {
-            float ypos = tile_size.y/2 + tile_size.y * j;
-            if(unitMapState[ivec2(i,j)] != UnitType::empty){
-                auto unit = unit_factory(vec2(xpos,ypos), unitMapState[ivec2(i,j)]);
+            float ypos = tile_size.y / 2 + tile_size.y * j;
+            if (unitMapState[ivec2(i, j)] != UnitType::empty) {
+                auto unit = unit_factory(vec2(xpos, ypos), unitMapState[ivec2(i, j)]);
                 auto property = m_registry.get<UnitProperty>(unit);
-                property.hp = unitHPState[ivec2(i,j)];   
-                particles->emitParticle(vec2(xpos,ypos), 20);
+                property.hp = unitHPState[ivec2(i, j)];
+                particles->emitParticle(vec2(xpos, ypos), 20);
+            }
         }
     }
 }
 
-namespace {
-    void imgui_help_menu() {
-        if (ImGui::CollapsingHeader("Help")) {
-            ImGui::Text("ABOUT THIS DEMO:");
-            ImGui::BulletText("Click ally dropdown and select a unit. Click map to add a unit");
-            ImGuiHelpImage("help/place_ally.png");
-            ImGui::BulletText("Click sandbox and then ally dropdown and select a unit. Click map to add a unit");
-            ImGuiHelpImage("help/place_enemy.png");
-        }
-    }
+void imgui_help_menu() {
+    if (ImGui::CollapsingHeader("Help")) {
+        ImGui::Text("ABOUT THIS DEMO:");
+        ImGui::BulletText("Click ally dropdown and select a unit. Click map to add a unit");
+        ImGuiHelpImage("help/place_ally.png");
+        ImGui::BulletText("Click sandbox and then ally dropdown and select a unit. Click map to add a unit");
+        ImGuiHelpImage("help/place_enemy.png");
+       }
 }
 
 void Game::imgui_game_mode() {
