@@ -152,8 +152,9 @@ void physics_update(float elapsed_ms) {
         //basic health bar
         vec2 pos = {position.position.x, position.position.y - tile_size.y/2};
         //vec2 scale = {unit_property.hp, 5};
-        vec2 scale = {((tile_size.x-10)/unit_property.maxhp) * unit_property.hp, 5};
-        DebugSystem::createLine(pos, scale);
+        float max_hp_bar_length = (tile_size.x-10);
+        vec2 scale = {max_hp_bar_length/unit_property.maxhp * unit_property.hp, 5};
+        DebugSystem::createLine(vec2(pos.x+(scale.x-max_hp_bar_length)/2, pos.y), scale);
     }
 
     for (auto&&[entity, motion, position, projectile_property]: m_registry.view<Motion, Position, ProjectileProperty>().each()) {
