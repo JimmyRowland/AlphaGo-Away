@@ -179,8 +179,8 @@ void Game::update_camera_pos(float elapsed_ms) {
             parallax_offset += 1 * xpos <= 20? 1 : -1;
             parallax_offset = ((int)parallax_offset % (int)(window_size.x));
             if (current_speed == 1) {
-                for (auto&&[entity, position]: m_registry.view<Position,ScreenComponent>().each()){
-                    position.position.x = window_size_in_game_units.x / 2 + parallax_offset;
+                for (auto&&[entity, position, screenComponent]: m_registry.view<Position,ScreenComponent>().each()){
+                    position.position.x = window_size_in_game_units.x / 2 + screenComponent.parallax_speed * parallax_offset;
                 }
             }
         }
