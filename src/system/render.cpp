@@ -378,25 +378,15 @@ void RenderSystem::draw(vec2 window_size_in_game_units)
         gl_has_errors();
     }
     
-<<<<<<< HEAD
-    for (entt::entity entity : m_registry.view<ShadedMeshRef, Particle>())
-    {
-        drawTexturedMesh(entity, projection_2D);
-        gl_has_errors();
-    }
-    
-    for (entt::entity entity : m_registry.view<TutorialComponent>())
-=======
 //    for (entt::entity entity : m_registry.view<ShadedMeshRef, Particle>())
 //    {
 //        drawTexturedMesh(entity, projection_2D);
 //        gl_has_errors();
 //    }
-
+    
     drawParticle(projection_2D);
-
-    for (entt::entity entity : m_registry.view<ShadedMeshRef, DebugComponent>())
->>>>>>> origin/m3
+    
+    for (entt::entity entity : m_registry.view<TutorialComponent>())
     {
         drawTexturedMesh(entity, projection_2D, off);
         gl_has_errors();
@@ -410,19 +400,19 @@ void RenderSystem::draw(vec2 window_size_in_game_units)
     
     for (entt::entity entity : m_registry.view<ButtonComponent>())
     {
-        drawTexturedMesh(entity, projection_2D);
+        drawTexturedMesh(entity, projection_2D, off);
         gl_has_errors();
     }
     
     for (entt::entity entity : m_registry.view<InfoComponent>())
     {
-        drawTexturedMesh(entity, projection_2D);
+        drawTexturedMesh(entity, projection_2D, off);
         gl_has_errors();
     }
 
     for (entt::entity entity : m_registry.view<ShadedMeshRef, DebugComponent>())
     {
-        drawTexturedMesh(entity, projection_2D);
+        drawTexturedMesh(entity, projection_2D, off);
         gl_has_errors();
     }
 

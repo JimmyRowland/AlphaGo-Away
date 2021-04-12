@@ -134,29 +134,21 @@ void Game::restart(Level level) {
     current_speed = 1.f;
     has_battle_started = false;
 
-<<<<<<< HEAD
     if(level == Level::story){
         story_page = 0;
         story_factory(story_page);
         background_factory();
     } else if (level == Level::start_screen){
-=======
-    if (level == Level::start_screen) {
->>>>>>> origin/m3
         frame = 1.f;
 
         loading_screen_factory();
         background_factory();
         this->level = level;
-<<<<<<< HEAD
     }else{
         if (level == Level::tutorial) {
             tutorial_num = 0;
             tutorial_factory(tutorial_num);
         }
-=======
-    } else {
->>>>>>> origin/m3
         background_factory();
         init_level();
         init_map_grid();
@@ -180,10 +172,6 @@ bool Game::is_over() const {
     return glfwWindowShouldClose(window) > 0;
 }
 
-<<<<<<< HEAD
-void Game::update_camera_pos() {
-    if((level!=Level::start_screen) && (level!=Level::story)){
-=======
 void Game::update_camera_pos(float elapsed_ms) {
 	if (timeleft > 0 && shake) timeleft -= elapsed_ms;
 	if (timeleft < 0) {
@@ -192,7 +180,6 @@ void Game::update_camera_pos(float elapsed_ms) {
 	}
 
     if(level!=Level::start_screen){
->>>>>>> origin/m3
         ivec2 window_size = get_window_size();
         double xpos, ypos;
         glfwGetCursorPos(window, &xpos, &ypos);
@@ -260,16 +247,8 @@ ivec2 Game::get_window_size() {
 }
 
 void Game::on_mouse_click(int button, int action, int mods) {
-<<<<<<< HEAD
     info_on_click(button, action, mods);
     result_on_click(button, action, mods);
-    if(level == Level::sandbox) return sandbox_on_click(button, action, mods);
-    if(level == Level::level1 || level == Level::level2 ||level == Level::level3 ||level == Level::level4 ||level == Level::level5){
-        return level_on_click(button, action, mods);
-    }
-    if (level == Level::story) return story_on_click(button, action, mods);
-    if (level == Level::tutorial) return tutorial_on_click(button, action, mods);
-=======
     if (!has_battle_started &&
         (level == Level::level1 || level == Level::level2 || level == Level::level3 || level == Level::level4 ||
          level == Level::level5)) {
@@ -280,8 +259,8 @@ void Game::on_mouse_click(int button, int action, int mods) {
         level == Level::level5) {
         return level_on_click(button, action, mods);
     }
-
->>>>>>> origin/m3
+    if (level == Level::story) return story_on_click(button, action, mods);
+    if (level == Level::tutorial) return tutorial_on_click(button, action, mods);
     if (button == GLFW_MOUSE_BUTTON_LEFT) {
 //        TODO restore relocating units
 //        double xpos, ypos;
@@ -453,18 +432,33 @@ void Game::level_on_click(int button, int action, int mods) {
     }
 }
 
-<<<<<<< HEAD
+void Game::map_on_click(int button, int action, int mods) {
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
+        auto cursor_position = get_cursor_position();
+        ivec2 tile_index = get_tile_index(cursor_position);
+        std::cout << "tile_index" << tile_index.x << tile_index.y << !is_tile_out_of_index(tile_index) << '\n';
+        if (!is_tile_out_of_index(tile_index)) {
+            if(RenderSystem::flash_light_type == 1 && number_of_entity_flash_light > 0){
+                particles->emitParticle(cursor_position, rand() % 5 + 1, true);
+                number_of_entity_flash_light--;
+
+            }
+            if(RenderSystem::dark_mode && RenderSystem::flash_light_type==2 && number_of_shader_flash_light > 0){
+                RenderSystem::set_last_firework_time(get_cursor_position());
+                number_of_shader_flash_light --;
+            }
+
+        }
+    }
+}
+
 void Game::story_on_click(int button, int action, int mods){
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
         double xpos, ypos;
         glfwGetCursorPos(window, &xpos, &ypos);
         // check if next button is pressed
-//        bool x_in_next = (xpos <= next_pos.x + button_size.x/2) && (xpos >= next_pos.x - button_size.x/2);
-//        bool y_in_next = (ypos <= next_pos.y + button_size.y/2) && (ypos >= next_pos.y - button_size.y/2);
         bool next_pressed = button_clicked(xpos, ypos, next_pos, button_size);
         // check if skip button is pressed
-//        bool x_in_skip = (xpos <= skip_pos.x + button_size.x/2) && (xpos >= skip_pos.x - button_size.x/2);
-//        bool y_in_skip = (ypos <= skip_pos.y + button_size.y/2) && (ypos >= skip_pos.y - button_size.y/2);
         bool skip_pressed = button_clicked(xpos, ypos, skip_pos, button_size);
         ///
         if (next_pressed || skip_pressed) {
@@ -589,40 +583,8 @@ void Game::result_on_click(int button, int action, int mods) {
     }
 }
 
-void Game::on_mouse_move(vec2 mouse_pos)
-{
-		(void)mouse_pos;
-=======
-void Game::map_on_click(int button, int action, int mods) {
-    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-
-
-                auto cursor_position = get_cursor_position();
-                ivec2 tile_index = get_tile_index(cursor_position);
-                std::cout << "tile_index" << tile_index.x << tile_index.y << !is_tile_out_of_index(tile_index) << '\n';
-                if (!is_tile_out_of_index(tile_index)) {
-                    if(RenderSystem::flash_light_type == 1 && number_of_entity_flash_light > 0){
-                        particles->emitParticle(cursor_position, rand() % 5 + 1, true);
-                        number_of_entity_flash_light--;
-
-                    }
-                    if(RenderSystem::dark_mode && RenderSystem::flash_light_type==2 && number_of_shader_flash_light > 0){
-                        RenderSystem::set_last_firework_time(get_cursor_position());
-                        number_of_shader_flash_light --;
-                    }
-
-                }
-
-
-
-
-
-    }
-}
-
 void Game::on_mouse_move(vec2 mouse_pos) {
     (void) mouse_pos;
->>>>>>> origin/m3
 }
 
 void Game::init_gold() {
@@ -908,7 +870,6 @@ void Game::imgui_camera_control_menu() {
     }
 };
 
-<<<<<<< HEAD
 void Game::imgui_tutorial_menu() {
     if (ImGui::Button("Start tutorial")) {
         level = Level::tutorial;
@@ -918,10 +879,6 @@ void Game::imgui_tutorial_menu() {
 
 void Game::imgui(){
     if(show_imgui){
-=======
-void Game::imgui() {
-    if (show_imgui) {
->>>>>>> origin/m3
         ImGui::Begin("Menu");
         imgui_battle_control_menu();
         imgui_game_mode();
@@ -930,13 +887,10 @@ void Game::imgui() {
         imgui_story();
         imgui_ally_menu();
         imgui_sandbox_menu();
-<<<<<<< HEAD
         imgui_tutorial_menu();
-=======
         imgui_flash_light_menu();
         imgui_particle_menu();
         imgui_camera_control_menu();
->>>>>>> origin/m3
         ImGui::End();
     }
 }

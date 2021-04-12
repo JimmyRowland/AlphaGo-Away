@@ -331,7 +331,8 @@ entt::entity ui_factory(std::string texture_path, vec2 pos, vec2 size, std::stri
     if((texture_path.find("buttons") == std::string::npos) &&
        (texture_path.find("tutorial") == std::string::npos) &&
        (texture_path.find("info") == std::string::npos)){
-        m_registry.emplace<ScreenComponent>(entity);
+        auto& sc = m_registry.emplace<ScreenComponent>(entity);
+        sc.parallax_speed = parallax_speed;
     }
     if(texture_path.find("buttons") != std::string::npos){
         m_registry.emplace<ButtonComponent>(entity);
