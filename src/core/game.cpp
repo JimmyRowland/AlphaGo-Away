@@ -172,7 +172,8 @@ void Game::restart_without_loading_level(Level level) {
 }
 
 void Game::init_dark_mode() {
-    RenderSystem::dark_mode = level == Level::level2 ? 1 : 0;
+//    RenderSystem::dark_mode = level == Level::level2 ? 1 : 0;
+    RenderSystem::dark_mode = 0;
 }
 
 // Compute collisions between entities

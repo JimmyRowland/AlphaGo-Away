@@ -1,6 +1,8 @@
 {
   "unit_arr": [
     {
+      "hp": 190,
+      "damage": 12,
       "position": {
         "x": 12,
         "y": 7
@@ -8,13 +10,17 @@
       "unit_type":5
     },
     {
-      "position": {
+      "hp": 1020,
+      "damage": 13,
+ "position": {
         "x": 13,
         "y": 7
       },
       "unit_type": 6
     },
     {
+      "hp": 70,
+      "damage": 32,
       "position": {
         "x": 12,
         "y": 8
@@ -22,6 +28,8 @@
       "unit_type":7
     },
     {
+      "hp": 190,
+      "damage": 16,
       "position": {
         "x": 13,
         "y": 8
