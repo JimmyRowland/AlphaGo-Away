@@ -186,6 +186,7 @@ private:
     };
 
     void imgui_story();
+    void imgui_save_menu();
 
     void map_on_click(int button, int action, int mods);
 

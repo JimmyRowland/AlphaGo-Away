@@ -843,12 +843,19 @@ void Game::imgui_load_sandbox_level(){
     init_unit_grid();
 
 }
-void Game::imgui_sandbox_menu() {
-    if (level == Level::sandbox && ImGui::CollapsingHeader("sandbox")) {
+void Game::imgui_save_menu() {
+    if (ImGui::CollapsingHeader("Save and reload")) {
         if (ImGui::Button("Save Level")) imgui_save_sandbox_level();
         if (ImGui::Button("Load Level")) imgui_load_sandbox_level();
-        imgui_tile_menu();
-        imgui_enemy_menu();
+    }
+};
+
+void Game::imgui_sandbox_menu() {
+    if (game_mode == GameMode::free_mode && ImGui::CollapsingHeader("Save and reload")) {
+
+            imgui_tile_menu();
+            imgui_enemy_menu();
+
     }
 };
 
@@ -871,8 +878,15 @@ void Game::imgui_ally_menu() {
 
         ImGui::RadioButton("player one", &player_index, 0);
         ImGui::RadioButton("player two", &player_index, 1);
-        ImGui::Text("player one gold: %d", gold[0]);
-        ImGui::Text("player two gold: %d", gold[1]);
+        if(game_mode == GameMode::story_mode){
+            ImGui::Text("player one gold: %d", gold[0]);
+            ImGui::Text("player two gold: %d", gold[1]);
+        } else{
+            ImGui::SliderInt("player one gold", &gold[0], 100.f, 2000.0f);
+            ImGui::SliderInt("player two gold", &gold[1], 100.f, 2000.0f);
+        }
+
+
 
         ImGui::RadioButton("disabled", &imgui_entity_selection, 0);
         ImGui::RadioButton("terminator", &imgui_entity_selection, 4);
@@ -958,6 +972,7 @@ void Game::imgui(){
         imgui_level_selection_menu();
         imgui_story();
         imgui_ally_menu();
+        imgui_save_menu();
         imgui_sandbox_menu();
         imgui_flash_light_menu();
         imgui_particle_menu();
