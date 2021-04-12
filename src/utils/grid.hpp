@@ -54,6 +54,14 @@ public:
     return storage[ ivec2.y * size.x +  ivec2.x];
   }
 
+  void reset(Elem elem){
+      for(int x = 0; x < size.x; x++){
+          for(int y = 0; y<size.y; y++){
+              storage[y * size.x +  x]=elem;
+          }
+      }
+  }
+
 private:
    ivec2 size;
    std::vector<Elem> storage;
