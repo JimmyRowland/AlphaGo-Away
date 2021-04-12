@@ -27,9 +27,9 @@ public:
 
 	void level_builder_units(Level level);
 
-	int * get_gold(Level level);
+    ivec2 get_gold(Level level);
 
-	int* get_gold_level_builder(Level level);
+    ivec2 get_gold_level_builder(Level level);
 
 	UnitHPMapState load_units_hp(Level level);
 

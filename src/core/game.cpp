@@ -474,7 +474,7 @@ void Game::on_mouse_move(vec2 mouse_pos) {
     (void) mouse_pos;
 }
 
-void Game::init_gold(int income[2]){
+void Game::init_gold(ivec2 income){
     if(game_mode == GameMode::free_mode){
         gold[0] = 999999999;
         gold[1] = 999999999;
@@ -764,6 +764,12 @@ void Game::imgui_flash_light_menu() {
     }
 }
 
+void imgui_remove_all_units(){
+    for(auto entity: m_registry.view<UnitProperty>()){
+        m_registry.destroy(entity);
+    }
+}
+
 void Game::imgui_enemy_menu() {
     if (ImGui::CollapsingHeader("Enemy")) {
         ImGui::Text("Choose an enemy type and click on map to place the unit");
@@ -776,6 +782,12 @@ void Game::imgui_enemy_menu() {
 //        ImGuiImage(get_tile_texture_id(TileType::forest));
         ImGui::RadioButton("healer", &imgui_entity_selection, 11);
 //        ImGuiImage(get_tile_texture_id(TileType::forest));
+        if(!has_battle_started){
+            if (ImGui::Button("Remove all units")) {
+                imgui_remove_all_units();
+                unitMapState.reset(UnitType::empty);
+            }
+        }
     }
 }
 void Game::imgui_camera_control_menu() {

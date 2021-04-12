@@ -452,7 +452,7 @@ void Loader::level_builder_units(Level level)
 	}
 }
 
-int* Loader::get_gold(Level level)
+ivec2 Loader::get_gold(Level level)
 {
 	nlohmann::json json;
 	std::string fileName;
@@ -484,11 +484,11 @@ int* Loader::get_gold(Level level)
 	}
 	load_json(fileName, json);
 	auto goldArr = json["gold"];
-	int temp[2] = { goldArr["player1"], goldArr["player2"] };
+	ivec2 temp = { goldArr["player1"], goldArr["player2"] };
 	return temp;
 }
 
-int* Loader::get_gold_level_builder(Level level)
+ivec2 Loader::get_gold_level_builder(Level level)
 {
 	nlohmann::json json;
 	std::string fileName;
@@ -520,7 +520,7 @@ int* Loader::get_gold_level_builder(Level level)
 	}
 	load_json(fileName, json);
 	auto goldArr = json["gold"];
-	int temp[2] = { goldArr["player1"], goldArr["player2"] };
+    ivec2 temp = { goldArr["player1"], goldArr["player2"] };
 	return temp;
 }
 
