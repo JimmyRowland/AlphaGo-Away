@@ -501,6 +501,8 @@ void Game::tutorial_on_click(int button, int action, int mods){
             tutorial_num++;
             if (tutorial_num <= 16) {
                 tutorial_factory(tutorial_num);
+            } else {
+                tutorial_factory(16);
             }
         } else if (button_clicked (xpos, ypos, skip_t_pos, button_size)) {
             level = Level::level1;
@@ -887,10 +889,10 @@ void Game::imgui(){
         imgui_story();
         imgui_ally_menu();
         imgui_sandbox_menu();
-        imgui_tutorial_menu();
         imgui_flash_light_menu();
         imgui_particle_menu();
         imgui_camera_control_menu();
+        imgui_tutorial_menu();
         ImGui::End();
     }
 }

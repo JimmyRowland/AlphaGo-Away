@@ -392,12 +392,6 @@ void RenderSystem::draw(vec2 window_size_in_game_units)
         gl_has_errors();
     }
     
-    for (entt::entity entity : m_registry.view<ShadedMeshRef, resultComponent>())
-    {
-        drawTexturedMesh(entity, projection_2D, off);
-        gl_has_errors();
-    }
-    
     for (entt::entity entity : m_registry.view<ButtonComponent>())
     {
         drawTexturedMesh(entity, projection_2D, off);
@@ -411,6 +405,12 @@ void RenderSystem::draw(vec2 window_size_in_game_units)
     }
 
     for (entt::entity entity : m_registry.view<ShadedMeshRef, DebugComponent>())
+    {
+        drawTexturedMesh(entity, projection_2D, off);
+        gl_has_errors();
+    }
+    
+    for (entt::entity entity : m_registry.view<ShadedMeshRef, resultComponent>())
     {
         drawTexturedMesh(entity, projection_2D, off);
         gl_has_errors();
