@@ -668,6 +668,7 @@ void Game::imgui_particle_menu() {
         ImGui::Checkbox("Dark mode", reinterpret_cast<bool *>(&RenderSystem::dark_mode));
         ImGui::SliderFloat("Illumination param", &RenderSystem::illumination_param, 1.f, 150.0f);
         ImGui::SliderFloat("Swam radius param", &ParticleSystem::max_distance, 1.f, 1000.0f);
+        if (ImGui::Button("Explosion")) ParticleSystem::start_explosion_time = glfwGetTime() + 2.f;
 
     }
 }
