@@ -136,7 +136,9 @@ void Game::restart(Level level) {
 
     if (level == Level::start_screen) {
         frame = 1.f;
+
         loading_screen_factory();
+        background_factory();
         this->level = level;
     } else {
         background_factory();

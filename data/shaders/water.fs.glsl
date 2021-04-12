@@ -186,7 +186,7 @@ vec4 shader_particle_flash_light(vec2 uv)
 
     vec3 part_color = vec3(cos(seed*13.1230), cos(seed*15.5310), cos(seed*17.55));
     part_color = normalize(abs(part_color));
-    vec3 color = vec3(0.1, .1, .3)+part_color*acc*brightness;
+    vec3 color = vec3(.01, .01, .01)+part_color*acc*brightness;
 
     //color = max(color,1.);
 
