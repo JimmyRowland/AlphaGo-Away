@@ -35,7 +35,7 @@ MapState Loader::load_map(Level level)
 		fileName = "path_finding_debug_map.json";
 		break;
     case Level::tutorial:
-        fileName = "sandbox_map.json";
+        fileName = "tutorial_map.json";
         break;
 	default:
 		fileName = "sandbox_map.json";

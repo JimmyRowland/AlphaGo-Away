@@ -136,6 +136,8 @@ private:
     void imgui_ally_menu();
 
     void imgui_enemy_menu();
+    
+    void imgui_tutorial_menu();
 
     UnitType imgui_entity_selection_to_unitType();
 
@@ -152,6 +154,8 @@ private:
     void story_on_click(int button, int action, int mods);
     
     void tutorial_on_click(int button, int action, int mods);
+    
+    void info_on_click(int button, int action, int mods);
 
 	void update_camera_pos();
 

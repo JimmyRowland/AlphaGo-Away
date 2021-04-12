@@ -247,6 +247,7 @@ ivec2 Game::get_window_size(){
 }
 
 void Game::on_mouse_click(int button, int action, int mods) {
+    info_on_click(button, action, mods);
     if(level == Level::sandbox) return sandbox_on_click(button, action, mods);
     if(level == Level::level1 || level == Level::level2 ||level == Level::level3 ||level == Level::level4 ||level == Level::level5){
         return level_on_click(button, action, mods);
@@ -415,19 +416,16 @@ void Game::story_on_click(int button, int action, int mods){
         double xpos, ypos;
         glfwGetCursorPos(window, &xpos, &ypos);
         // check if next button is pressed
-        bool x_in_next = (xpos <= next_pos.x + button_size.x/2) && (xpos >= next_pos.x - button_size.x/2);
-        bool y_in_next = (ypos <= next_pos.y + button_size.y/2) && (ypos >= next_pos.y - button_size.y/2);
-        bool next_pressed = x_in_next && y_in_next;
+//        bool x_in_next = (xpos <= next_pos.x + button_size.x/2) && (xpos >= next_pos.x - button_size.x/2);
+//        bool y_in_next = (ypos <= next_pos.y + button_size.y/2) && (ypos >= next_pos.y - button_size.y/2);
+        bool next_pressed = button_clicked(xpos, ypos, next_pos, button_size);
         // check if skip button is pressed
-        bool x_in_skip = (xpos <= skip_pos.x + button_size.x/2) && (xpos >= skip_pos.x - button_size.x/2);
-        bool y_in_skip = (ypos <= skip_pos.y + button_size.y/2) && (ypos >= skip_pos.y - button_size.y/2);
-        bool skip_pressed = x_in_skip && y_in_skip;
+//        bool x_in_skip = (xpos <= skip_pos.x + button_size.x/2) && (xpos >= skip_pos.x - button_size.x/2);
+//        bool y_in_skip = (ypos <= skip_pos.y + button_size.y/2) && (ypos >= skip_pos.y - button_size.y/2);
+        bool skip_pressed = button_clicked(xpos, ypos, skip_pos, button_size);
         ///
         if (next_pressed || skip_pressed) {
             for(entt::entity entity: m_registry.view<ScreenComponent>()){
-                m_registry.destroy(entity);
-            }
-            for(entt::entity entity: m_registry.view<ButtonComponent>()){
                 m_registry.destroy(entity);
             }
             for (entt::entity entity : m_registry.view<ShadedMeshRef, UnitProperty>())
@@ -444,6 +442,7 @@ void Game::story_on_click(int button, int action, int mods){
                     level = Level::tutorial;
                     restart(level);
                 }
+            // handle skip
             } else if (skip_pressed) {
                 level = Level::tutorial;
                 restart(level);
@@ -454,18 +453,61 @@ void Game::story_on_click(int button, int action, int mods){
 }
 
 void Game::tutorial_on_click(int button, int action, int mods){
+    level_on_click(button, action, mods);
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
-        if (tutorial_num == 0) {
+        double xpos, ypos;
+        glfwGetCursorPos(window, &xpos, &ypos);
+        if (button_clicked(xpos, ypos, tutorial_pos, tutorial_size)) {
             for(entt::entity entity: m_registry.view<TutorialComponent>()){
                 m_registry.destroy(entity);
             }
             tutorial_num++;
+            if (tutorial_num <= 16) {
+                tutorial_factory(tutorial_num);
+            }
+        } else if (button_clicked (xpos, ypos, skip_t_pos, button_size)) {
+            level = Level::level1;
+            restart(level);
         }
+        
+    }
+}
+
+void Game::info_on_click(int button, int action, int mods) {
+    if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
         double xpos, ypos;
         glfwGetCursorPos(window, &xpos, &ypos);
-        // check if done button is pressed
-        bool x_in_done = (xpos <= done_pos.x + button_size.x/2) && (xpos >= done_pos.x - button_size.x/2);
-        bool y_in_done = (ypos <= done_pos.y + button_size.y/2) && (ypos >= done_pos.y - button_size.y/2);
+        // info for tiles
+        for (entt::entity entity: m_registry.view<Tile>()){
+            auto &position = m_registry.get<Position>(entity);
+            if (info_tile(position.position) && button_clicked(xpos, ypos, position.position, position.scale)) {
+                auto &tile = m_registry.get<Tile>(entity);
+                tile_info_factory(tile.type);
+            }
+        }
+        // info for units
+        for (entt::entity entity: m_registry.view<UnitProperty>()){
+            auto &position = m_registry.get<Position>(entity);
+            if (button_clicked(xpos, ypos, position.position, position.scale)) {
+                UnitProperty &property = m_registry.get<UnitProperty>(entity);
+                unit_info_factory(property.unit_type);
+            }
+        }
+        if (button_clicked(xpos, ypos, done_pos, button_size)) {
+            for(entt::entity entity: m_registry.view<InfoComponent>()){
+                m_registry.destroy(entity);
+            }
+        }
+    }
+    if (button == GLFW_MOUSE_BUTTON_RIGHT && action == GLFW_PRESS) {
+        double xpos, ypos;
+        glfwGetCursorPos(window, &xpos, &ypos);
+        for (entt::entity entity: m_registry.view<UnitProperty, Ally>()){
+            auto &position = m_registry.get<Position>(entity);
+            if (button_clicked(xpos, ypos, position.position, position.scale)) {
+                m_registry.destroy(entity);
+            }
+        }
     }
 }
 
@@ -700,6 +742,13 @@ void Game::imgui_enemy_menu(){
     }
 }
 
+void Game::imgui_tutorial_menu() {
+    if (ImGui::Button("Start tutorial")) {
+        level = Level::tutorial;
+        restart(level);
+    }
+}
+
 void Game::imgui(){
     if(show_imgui){
         ImGui::Begin("Menu");
@@ -710,6 +759,7 @@ void Game::imgui(){
         imgui_story();
         imgui_ally_menu();
         imgui_sandbox_menu();
+        imgui_tutorial_menu();
         ImGui::End();
     }
 }

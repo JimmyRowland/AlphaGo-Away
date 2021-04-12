@@ -23,6 +23,10 @@ void loading_screen_factory();
 void background_factory();
 void story_factory(int story_num);
 void tutorial_factory(int tutorial_num);
+void tile_info_factory(TileType tileType);
+void unit_info_factory(UnitType unitType);
 entt::entity result_factory(bool res);
 entt::entity explosion_factory(vec2 pos);
+int button_clicked(double x_pos, double y_pos, vec2 button_pos, vec2 button_size);
+int info_tile(vec2 pos);
 #endif //ALPHAGO_AWAY_FACTORIES_HPP
