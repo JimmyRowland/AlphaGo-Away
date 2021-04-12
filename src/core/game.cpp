@@ -261,12 +261,12 @@ ivec2 Game::get_window_size() {
 }
 
 void Game::on_mouse_click(int button, int action, int mods) {
-    if(level == Level::sandbox || game_mode == GameMode::free_mode) return sandbox_on_click(button, action, mods);
     if (!has_battle_started &&
         (level == Level::level1 || level == Level::level2 || level == Level::level3 || level == Level::level4 ||
          level == Level::level5)) {
         map_on_click(button, action, mods);
     }
+    if(level == Level::sandbox || game_mode == GameMode::free_mode) return sandbox_on_click(button, action, mods);
     if (level == Level::level1 || level == Level::level2 || level == Level::level3 || level == Level::level4 ||
         level == Level::level5) {
         return level_on_click(button, action, mods);
@@ -388,7 +388,7 @@ void Game::place_an_ally(ivec2 tile_index) {
         unit_factory(get_tile_center_from_index(tile_index), imgui_entity_selection_to_unitType());
         gold[player_index] -= cost;
         show_not_enough_gold_message = false;
-        particles->emitParticle(get_tile_center_from_index(tile_index), 20);
+        particles->emitParticle(get_tile_center_from_index(tile_index), 10);
     } else {
         show_not_enough_gold_message = true;
     }

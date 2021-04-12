@@ -340,10 +340,10 @@ UnitMapState Loader::initial_units_load(Level level)
 void Loader::level_builder_map(Level level, int gold[2])
 {
 	nlohmann::json json;
-	/*json["gold"] = {
+	json["gold"] = {
 		{"player1", gold[0]},
 		{"player2", gold[1]}
-	};*/
+	};
 	json["map"] = nlohmann::json::array();
 
 	for (auto& entity : m_registry.view<Tile>()) {
