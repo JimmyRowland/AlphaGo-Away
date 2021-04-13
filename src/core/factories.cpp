@@ -294,7 +294,20 @@ entt::entity projectile_factory(entt::entity unit, UnitType unitType, entt::enti
 //        auto &projectile = m_registry.emplace<Projectiles>(unit);
 //        projectile.pro.push_back(entity);
 //    }
-
+    int x_0, x_3;
+    int y_0 = unit_pos.position.y + rand() % 30;
+    int y_3 = target_position.position.y + rand() % 60;
+    if (unit_pos.position.x > target_position.position.x) {
+        x_0 = unit_pos.position.x + rand() % 20;
+        x_3 = target_position.position.x - rand() % 60;
+    } else {
+        x_0 = unit_pos.position.x - rand() % 30;
+        x_3 = target_position.position.x + rand() % 60;
+    }
+    projectile_prop.spoints[0] = {x_0, y_0};
+    projectile_prop.spoints[1] = unit_pos.position;
+    projectile_prop.spoints[2] = target_position.position;
+    projectile_prop.spoints[3] = {x_3, y_3};
     auto& motion = m_registry.emplace<Motion>(entity);
     motion.velocity = glm::normalize(dir) * projectile_speed;
     projectile_prop.actualTarget = target;

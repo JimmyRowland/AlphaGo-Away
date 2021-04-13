@@ -92,30 +92,6 @@ namespace {
         }
     }
 
-    void set_projectile_targets() {
-        for (auto &&[entity, property, position]: m_registry.view<ProjectileProperty, Position, EnemyProjectile>().each()) {
-            float min_dist = 99999999.f;
-            for (auto &&[target_entity, target_property, target_position]: m_registry.view<UnitProperty, Position, Ally>().each()) {
-                auto dist = glm::distance(position.position, target_position.position);
-                if (dist < min_dist) {
-                    min_dist = dist;
-                    property.actualTarget = target_entity;
-                }
-            }
-        }
-
-        for (auto &&[entity, property, position]: m_registry.view<ProjectileProperty, Position, AllyProjectile>().each()) {
-            float min_dist = 99999999.f;
-            for (auto &&[target_entity, target_property, target_position]: m_registry.view<UnitProperty, Position, Enemy>().each()) {
-                auto dist = glm::distance(position.position, target_position.position);
-                if (dist < min_dist) {
-                    min_dist = dist;
-                    property.actualTarget = target_entity;
-                }
-            }
-        }
-    }
-
     void update_state() {
         for (auto &&[entity, property]: m_registry.view<UnitProperty>().each()) {
             if (m_registry.valid(entity)) {
@@ -189,7 +165,6 @@ void ai_update(float elapsed_ms) {
         set_targets();
         group_behavior();
         set_path();
-        set_projectile_targets();
         // set_projectile_path();
         update_state();
 //        clear_projectile(elapsed_ms);
