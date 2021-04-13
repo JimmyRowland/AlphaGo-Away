@@ -918,9 +918,8 @@ void Game::imgui_ally_menu() {
         ImGui::Text("cost: %d", unit_cost[UnitType::human_healer]);
         ImGui::Text("maxhp: 180, damage: 15");
 
-        ImGui::Text("***Press p, then you can drag");
-        ImGui::Text(" to change the unit location ***");
-        ImGui::Checkbox("projectile spline mode", &projectile_spline);
+//        ImGui::Text("***Press p, then you can drag");
+//        ImGui::Text(" to change the unit location ***");
 //        ImGuiImage(get_tile_texture_id(TileType::forest));
     }
 }
