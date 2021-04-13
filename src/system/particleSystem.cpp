@@ -94,6 +94,9 @@ void ParticleSystem::update() {
         {    // particle is alive, thus update
 			auto &curpos = m_registry.get<Position>(cur);
 			auto &curmot = m_registry.get<Motion>(cur);
+            if (gravity_toggle) {
+                acceleration += getGravitationalAcceleration(curpos);
+            }
 			
 			if (p.life < 0.99f) 
 			{
