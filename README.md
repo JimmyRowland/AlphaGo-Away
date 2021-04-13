@@ -4,17 +4,29 @@ Game title: AIphaGo Away
 TODO: set_up script:
 under project dir run
 
-windows with vs:
+# First, go to project dir where cmakeLists is
+
+# Second go to 
+
+## windows with vs:
+
+### Install vcpkg
 
 git clone https://github.com/microsoft/vcpkg
 
 .\vcpkg\bootstrap-vcpkg.bat
 
+### install package
+
 .\vcpkg\vcpkg install entt
+
 .\vcpkg\vcpkg install gl3w
+
 .\vcpkg\vcpkg install imgui
+
 .\vcpkg\vcpkg install nlohmann-json
 
+### vcpkg Integration  with visual studio
 
 .\vcpkg\vcpkg integrate install
 
@@ -22,24 +34,60 @@ Open the CMake Settings Editor, and under CMake toolchain file, add the path to 
 
 -DCMAKE_TOOLCHAIN_FILE=./vcpkg/scripts/buildsystems/vcpkg.cmake
 
-mac/linux with clion:
+## mac/linux with clion:
+
+### Install vcpkg
 
 git clone https://github.com/microsoft/vcpkg
 
 ./vcpkg/bootstrap-vcpkg.sh
 
+### install package
+
 ./vcpkg/vcpkg install entt
+
 ./vcpkg/vcpkg install gl3w
+
 ./vcpkg/vcpkg install imgui
+
 ./vcpkg/vcpkg install nlohmann-json
 
-Open the Toolchains settings (File > Settings on Windows and Linux, CLion > Preferences on macOS), and go to the CMake settings (Build, Execution, Deployment > CMake). Finally, in CMake options, add the following line:
+### clion toolchain
+
+Open the Toolchains settings (File > Settings Linux, CLion > Preferences on macOS), and go to the CMake settings (Build, Execution, Deployment > CMake). Finally, in CMake options, add the following line:
 
 -DCMAKE_TOOLCHAIN_FILE=./vcpkg/scripts/buildsystems/vcpkg.cmake
 
 jetbrains educational license
 
 https://www.jetbrains.com/community/education/#students
+
+## Mac with xCode
+
+### Install vcpkg
+
+git clone https://github.com/microsoft/vcpkg
+
+./vcpkg/bootstrap-vcpkg.sh
+
+### install packge
+
+./vcpkg/vcpkg install entt
+
+./vcpkg/vcpkg install gl3w
+
+./vcpkg/vcpkg install imgui
+
+./vcpkg/vcpkg install nlohmann-json
+
+### Build file
+
+cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE=./vcpkg/scripts/buildsystems/vcpkg.cmake .
+
+### Run game:
+
+./AlphaGo-Away
+
 
 Credit:
 
