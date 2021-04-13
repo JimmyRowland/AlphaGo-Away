@@ -11,4 +11,5 @@
 
 void physics_update(float elapsed_ms);
 bool is_out_of_boundary(entt::entity entity);
+void physics_update_keyframe(float elapsed_ms);
 #endif //ALPHAGO_AWAY_PHYSICS_HPP

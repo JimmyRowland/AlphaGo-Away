@@ -90,14 +90,16 @@ void ParticleSystem::update() {
         p.life -= killSpeed; // reduce life
 //		p.life -= 0.1f; // reduce life
 
-        if (p.life > 0.0f) {    // particle is alive, thus update
-            auto &curpos = m_registry.get<Position>(cur);
-            auto &curmot = m_registry.get<Motion>(cur);
+        if (p.life > 0.0f)
+        {    // particle is alive, thus update
+			auto &curpos = m_registry.get<Position>(cur);
+			auto &curmot = m_registry.get<Motion>(cur);
             if (gravity_toggle) {
                 acceleration += getGravitationalAcceleration(curpos);
             }
-
-            if (p.life < 0.99f && swarm_behavior_toggle) {
+			
+			if (p.life < 0.99f) 
+			{
 
                 int count = 0;
                 vec2 avgSpeed = {0, 0};
