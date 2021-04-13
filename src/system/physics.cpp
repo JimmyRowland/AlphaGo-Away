@@ -115,6 +115,25 @@ namespace {
         return{ tx, ty };
     }
 
+    vec2 get_tangent(std::vector<vec2> points, float t) {
+        int p1 = (int)t + 1;
+        int p2 = p1 + 1;
+        int p3 = p2 + 1;
+        int p0 = p1 - 1;
+        
+        float tt = pow(t, 2);
+
+        float q0 = 3 * tt - 4 * t + 1;
+        float q1 = 6 * tt - 6 * t;
+        float q2 = -6 * tt + 6 * t;
+        float q3 = 3 * tt - 2 * t;
+
+        float tx = (points[p0].x * q0 + points[p1].x * q1 + points[p2].x * q2 + points[p3].x * q3);
+        float ty = (points[p0].y * q0 + points[p1].y * q1 + points[p2].y * q2 + points[p3].y * q3);
+
+        return{ tx, ty };
+    }
+
 }
 
 bool is_out_of_boundary(entt::entity entity) {
@@ -180,11 +199,19 @@ void physics_update(float elapsed_ms) {
     for (auto&&[entity, motion, position, projectile_property]: m_registry.view<Motion, Position, ProjectileProperty>().each()) {
         if (m_registry.valid(projectile_property.actualTarget)) {
            auto& target_position = m_registry.get<Position>(projectile_property.actualTarget);
-            vec2 dir = glm::normalize( target_position.position-position.position);
-            position.angle = atan2(dir.y,dir.x);
-            position.position = get_spos(projectile_property.spoints, projectile_property.t);
-            projectile_property.t += 0.02f;
-            set_transformed_bounding_box(entity);
+            std::cout << "/////////spline in physics     " << projectile_spline << std::endl;
+            if (projectile_spline) {
+                std::cout << "!!!!!!!!!!!spline!!!!!!!!" << std::endl;
+                position.position = get_spos(projectile_property.spoints, projectile_property.t);
+                vec2 tangent = get_tangent(projectile_property.spoints, projectile_property.t);
+                position.angle = atan2(tangent.y,tangent.x);
+                projectile_property.t += 0.02f;
+            } else {
+                vec2 dir = glm::normalize( target_position.position-position.position);
+                position.angle = atan2(dir.y,dir.x);
+                motion.velocity = glm::normalize(dir) * projectile_speed;
+                position.position += motion.velocity * step_seconds;
+            }
             if(is_out_of_boundary(entity)){
                 m_registry.destroy(entity);
             }
