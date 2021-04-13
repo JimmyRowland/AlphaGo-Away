@@ -121,7 +121,9 @@ https://www.taketechease.com/
 
 https://www.kenney.nl/assets/toon-characters-1
 
-https://itch.io/game-assets/free/tag-explosions
+https://ansimuz.itch.io/explosion-animations-pack
+
+https://free-game-assets.itch.io/free-wizard-sprite
 
 - Shaders:
 
