@@ -15,6 +15,7 @@
 #include "entities/unit.hpp"
 #include "enum.hpp"
 #include "loader.hpp"
+#include "system/utils/a_star.hpp";
 
 // stlib
 #include <vector>
@@ -195,6 +196,8 @@ private:
     void imgui_flash_light_menu();
 
     void imgui_camera_control_menu();
+
+    void path_finding_menu();
 };
 
 #endif //ALPHAGO_AWAY_GAME_HPP
