@@ -220,6 +220,10 @@ entt::entity unit_factory(vec2 pos, UnitType unitType) {
     init_unit_flag_components(entity, unitType);
     init_unit_bounding_box(entity, unitType);
     init_unit(entity, resource, pos, unitType);
+    if (m_registry.has<Ally>(entity)) {
+        m_registry.emplace<KeyFrameMotion>(entity);
+        init_key_frames(entity);
+    }
     return entity;
 };
 

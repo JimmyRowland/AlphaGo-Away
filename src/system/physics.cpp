@@ -230,3 +230,33 @@ void physics_update(float elapsed_ms) {
 
 
 }
+
+void physics_update_keyframe(float elapsed_ms) {
+    for (auto&& [entity, pos, keyframe] : m_registry.view<Position, KeyFrameMotion>().each()) {
+        vec3 currFrame, nextFrame;
+        unsigned int frame_index = keyframe.currFrame;
+        int next_frame_index = (frame_index == keyframe.keyframes.size() - 1? -1 : frame_index + 1);
+        currFrame = keyframe.keyframes[frame_index];
+        if (next_frame_index > 0) {
+            // interpolate next position
+            nextFrame = keyframe.keyframes[next_frame_index];
+            float diff_x = nextFrame.x - currFrame.x;
+            float diff_y = nextFrame.y - currFrame.y;
+            float diff_angle = nextFrame.z - currFrame.z;
+            float time_passed = (keyframe.time_gap - keyframe.time_left)/keyframe.time_gap;
+            if (keyframe.time_left <= 0) {
+                keyframe.time_left = keyframe.time_gap;
+                keyframe.currFrame = next_frame_index;
+                continue;
+            }
+            pos.position.y = time_passed * diff_y + currFrame.y;
+            pos.angle = time_passed * diff_angle + currFrame.z;
+            keyframe.time_left -= elapsed_ms;
+        }
+        else {
+            pos.angle = currFrame.z;
+            pos.position = vec2(currFrame.x, currFrame.y);
+            m_registry.remove<KeyFrameMotion>(entity);  
+        }
+    }
+}
