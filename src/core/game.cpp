@@ -58,7 +58,7 @@ Game::Game(ivec2 window_size_px) :
 
     // Playing background music indefinitely
     init_audio();
-//	Mix_PlayMusic(background_music, -1);
+    Mix_PlayMusic(background_music, -1);
     std::cout << "Loaded music\n";
 }
 
@@ -66,6 +66,14 @@ Game::~Game() {
     // Destroy music components
     if (background_music != nullptr)
         Mix_FreeMusic(background_music);
+    if (dead_sound != nullptr)
+        Mix_FreeChunk(dead_sound);
+    if (win_sound != nullptr)
+        Mix_FreeChunk(win_sound);
+    if (lose_sound != nullptr)
+        Mix_FreeChunk(lose_sound);
+    if (battle_sound != nullptr)
+        Mix_FreeChunk(battle_sound);
     Mix_CloseAudio();
 
     // Close the window
@@ -83,11 +91,20 @@ void Game::init_audio() {
     if (Mix_OpenAudio(44100, MIX_DEFAULT_FORMAT, 2, 2048) == -1)
         throw std::runtime_error("Failed to open audio device");
 
-    background_music = Mix_LoadMUS(audio_path("music.wav").c_str());
+    background_music = Mix_LoadMUS(audio_path("background1.wav").c_str());
+    dead_sound = Mix_LoadWAV(audio_path("death.wav").c_str());
+    win_sound = Mix_LoadWAV(audio_path("win.wav").c_str());
+    lose_sound = Mix_LoadWAV(audio_path("lose.wav").c_str());
+    battle_sound = Mix_LoadWAV(audio_path("battle.wav").c_str());
 
-    if (background_music == nullptr)
+
+    if (background_music == nullptr || dead_sound == nullptr || win_sound == nullptr || lose_sound == nullptr || battle_sound == nullptr)
         throw std::runtime_error("Failed to load sounds make sure the data directory is present: " +
-                                 audio_path("music.wav"));
+                                 audio_path("background1.wav")+
+                                 audio_path("death.wav")+
+                                 audio_path("win.wav")+
+                                 audio_path("lose.wav")+
+                                 audio_path("battle.wav"));
 
 }
 
@@ -99,6 +116,9 @@ void Game::update(float elapsed_ms, vec2 window_size_in_game_units) {
     }
     if (has_battle_started) {
         ai_update(elapsed_ms);
+
+        Mix_PlayChannel(-1, battle_sound, -1);
+        Mix_HaltMusic();
         if (battle_start_in > 0) {
             battle_start_in -= elapsed_ms;
         } else {
@@ -106,10 +126,14 @@ void Game::update(float elapsed_ms, vec2 window_size_in_game_units) {
         }
         if (!battle_over) {
             if (m_registry.view<Ally>().size() == 0) {
+                Mix_HaltChannel(-1);
+                Mix_PlayChannel(-1, lose_sound, 0);
                 battle_result = result_factory(false);
                 battle_over = true;
                 std::cout << "human fails!!!" << std::endl;
             } else if (m_registry.view<Enemy>().size() == 0) {
+                Mix_HaltChannel(-1);
+                Mix_PlayChannel(-1, win_sound, 0);
                 battle_result = result_factory(true);
                 battle_over = true;
                 level_res = 1;
@@ -128,6 +152,7 @@ void Game::update(float elapsed_ms, vec2 window_size_in_game_units) {
 
 // Reset the world state to its initial state
 void Game::restart(Level level) {
+    Mix_HaltChannel(-1);
     this->level = level;
     battle_over = false;
     level_res = 0;
@@ -419,6 +444,7 @@ void Game::place_an_enemy(ivec2 tile_index) {
 }
 
 void Game::sandbox_on_click(int button, int action, int mods) {
+
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
         if (!has_battle_started) {
             if (imgui_entity_selection > 0) {
@@ -443,6 +469,7 @@ void Game::sandbox_on_click(int button, int action, int mods) {
 }
 
 void Game::level_on_click(int button, int action, int mods) {
+
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
         if (!has_battle_started) {
             std::cout << imgui_entity_selection << '\n';
@@ -479,6 +506,7 @@ void Game::map_on_click(int button, int action, int mods) {
 }
 
 void Game::story_on_click(int button, int action, int mods){
+
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
         double xpos, ypos;
         glfwGetCursorPos(window, &xpos, &ypos);

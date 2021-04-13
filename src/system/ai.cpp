@@ -34,11 +34,13 @@ namespace {
 
             if (target_property.hp <= 0) {
                 explosion_factory(target_position.position);
+                //Mix_PlayChannel(-1, Game::dead_sound, 0);
                 m_registry.destroy(target_entity);
 
             }
             if (property.hp <= 0) {
                 explosion_factory(position.position);
+                //Mix_PlayChannel(-1, Game::dead_sound, 0);
                 m_registry.destroy(entity);
             }
         }

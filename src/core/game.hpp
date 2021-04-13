@@ -80,6 +80,7 @@ public:
     ParticleSystem *particles;
 
 
+
 private:
 	// Input callback functions
     vec2 get_cursor_position();
@@ -107,6 +108,10 @@ private:
 	
 	// music references
 	Mix_Music* background_music;
+    Mix_Chunk* win_sound;
+    Mix_Chunk* lose_sound;
+    Mix_Chunk* battle_sound;
+   Mix_Chunk* dead_sound;
 
     bool has_battle_started;
     float battle_start_in;
