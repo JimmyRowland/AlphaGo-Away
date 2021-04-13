@@ -7,6 +7,7 @@
 #include "components/motion.hpp"
 #include "system/utils/kd-tree.hpp"
 #include "entities/unit.hpp"
+#include "system/utils/a_star.hpp"
 // A simple physics system that moves rigid bodies and checks for collision
 
 void physics_update(float elapsed_ms);

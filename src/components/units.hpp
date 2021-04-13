@@ -49,7 +49,9 @@ struct ProjectileProperty{
     UnitType unit_type = UnitType::human_terminator;
 //    entt::entity desiredTarget;
     entt::entity actualTarget = entt::null;
+    std::vector<vec2> spoints = {{0,0}, {0,0}, {0,0}, {0,0}};
     float damage;
+    float t = 0.f;
 };
 
 struct ProjectileTimer{

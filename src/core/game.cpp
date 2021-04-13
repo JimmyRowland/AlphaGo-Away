@@ -918,9 +918,8 @@ void Game::imgui_ally_menu() {
         ImGui::Text("cost: %d", unit_cost[UnitType::human_healer]);
         ImGui::Text("maxhp: 180, damage: 15");
 
-        ImGui::Text("***Press p, then you can drag");
-        ImGui::Text(" to change the unit location ***");
-
+//        ImGui::Text("***Press p, then you can drag");
+//        ImGui::Text(" to change the unit location ***");
 //        ImGuiImage(get_tile_texture_id(TileType::forest));
     }
 }
@@ -933,6 +932,12 @@ void Game::imgui_flash_light_menu() {
         ImGui::RadioButton("Mass flash light", &RenderSystem::flash_light_type, 2);
         ImGui::Text("Number of searching flash light: %d", number_of_entity_flash_light);
         ImGui::Text("Number of mass flash light: %d", number_of_shader_flash_light);
+    }
+}
+void Game::imgui_projectile_menu() {
+    if (ImGui::CollapsingHeader("Projectile")) {
+        ImGui::Checkbox("spline", &A_Star::spline);
+        ImGui::Checkbox("path finding", &A_Star::path_finding_projectile);
     }
 }
 
@@ -991,6 +996,7 @@ void Game::imgui(){
         imgui_camera_control_menu();
         imgui_tutorial_menu();
         path_finding_menu();
+        imgui_projectile_menu();
         ImGui::End();
     }
 }
