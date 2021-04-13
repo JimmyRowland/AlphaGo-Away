@@ -161,6 +161,10 @@ void RenderSystem::drawParticle(const mat3& projection)
     glUniform1f(time_uloc, static_cast<float>(glfwGetTime() * 1.0f));
     gl_has_errors();
 
+    GLuint meteor_uloc       = glGetUniformLocation(texmesh.effect.program, "meteor");
+    glUniform1i(meteor_uloc, (int)ParticleSystem::meteor_field);
+    gl_has_errors();
+
     GLuint particle_explosion_time_uloc       = glGetUniformLocation(texmesh.effect.program, "particle_explosion_time");
     glUniform1f(particle_explosion_time_uloc, static_cast<float>(ParticleSystem::start_explosion_time));
     gl_has_errors();
