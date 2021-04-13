@@ -121,9 +121,13 @@ https://www.taketechease.com/
 
 https://www.kenney.nl/assets/toon-characters-1
 
-https://ansimuz.itch.io/explosion-animations-pack
+https://itch.io/game-assets/free/tag-explosions
 
-https://free-game-assets.itch.io/free-wizard-sprite
+https://www.pinterest.ca/pin/42925002684118502/
+
+- Paid spritesheet:
+
+https://tokegameart.net/item/rpg-hero-character-pack/
 
 - Shaders:
 
@@ -133,6 +137,9 @@ https://www.youtube.com/watch?v=RP1MVD4hAJM&list=WL&index=7&t=22s
 
 https://www.shadertoy.com/view/lsS3zc
 
+- Audio asset (paid):
+
+"Huangwuzhishang" & "Jinguzhidi" from the Donghua "The Incarnation"
 
 
 
