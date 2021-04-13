@@ -58,7 +58,7 @@ public:
     }
 
     // a* search algorithm, start is a the starting grid position, end is the target grid position
-    std::vector<std::pair<int, int>> getPath(std::pair<int, int> start, std::pair<int, int> end) {
+    std::vector<std::pair<int, int>> getPath(std::pair<int, int> start, std::pair<int, int> end, bool is_complete_path = false) {
         std::priority_queue<std::pair<int, std::pair<int, int>>, std::vector<std::pair<int, std::pair<int, int>>>, compare> fronteir = {};
         std::map<std::pair<int, int>, int> costSoFar = {};
         std::map<std::pair<int, int>, std::pair<int, int>> cameFrom = {};
@@ -99,6 +99,8 @@ public:
             complete_path.insert(complete_path.begin(), current);
             current = cameFrom[current];
         }
+        if(is_complete_path) return complete_path;
+
         std::vector<std::pair<int, int>> res_path = {};
         for(auto tile_index: complete_path){
             if(costSoFar[tile_index]>99){
