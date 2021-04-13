@@ -15,6 +15,8 @@
 class A_Star {
 public:
     static int unit_cost;
+    static bool path_finding_projectile;
+    static bool spline;
     std::vector<std::vector<int >> unit_grid = {};
     std::vector<std::vector<int >> grid = {};
     // update the map as needed this is just filler
@@ -85,7 +87,7 @@ public:
                 if (neighbour.first >= 0 && neighbour.first < grid.size() && neighbour.second >= 0 &&
                     neighbour.second < grid[0].size()) {
                     int updatedCost = costSoFar[current] + this->grid[neighbour.first][neighbour.second];
-                    if(current==start){updatedCost+=this->unit_grid[neighbour.first][neighbour.second];}
+                    if(current==start && !is_complete_path){updatedCost+=this->unit_grid[neighbour.first][neighbour.second];}
                     if (!costSoFar.count(neighbour) || updatedCost < costSoFar[neighbour]) {
                         costSoFar[neighbour] = updatedCost;
                         int prioirity = updatedCost + heuristic(neighbour, end);

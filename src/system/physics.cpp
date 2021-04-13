@@ -182,8 +182,13 @@ void physics_update(float elapsed_ms) {
            auto& target_position = m_registry.get<Position>(projectile_property.actualTarget);
             vec2 dir = glm::normalize( target_position.position-position.position);
             position.angle = atan2(dir.y,dir.x);
-            position.position = get_spos(projectile_property.spoints, projectile_property.t);
-            projectile_property.t += 0.02f;
+            if(A_Star::spline){
+                position.position = get_spos(projectile_property.spoints, projectile_property.t);
+                projectile_property.t += 0.02f;
+            }else{
+                motion.velocity = glm::normalize(dir) * projectile_speed;
+                position.position += motion.velocity * step_seconds;
+            }
             set_transformed_bounding_box(entity);
             if(is_out_of_boundary(entity)){
                 m_registry.destroy(entity);

@@ -935,6 +935,12 @@ void Game::imgui_flash_light_menu() {
         ImGui::Text("Number of mass flash light: %d", number_of_shader_flash_light);
     }
 }
+void Game::imgui_projectile_menu() {
+    if (ImGui::CollapsingHeader("Projectile")) {
+        ImGui::Checkbox("spline", &A_Star::spline);
+        ImGui::Checkbox("path finding", &A_Star::path_finding_projectile);
+    }
+}
 
 void imgui_remove_all_units(){
     for(auto entity: m_registry.view<UnitProperty>()){
@@ -991,6 +997,7 @@ void Game::imgui(){
         imgui_camera_control_menu();
         imgui_tutorial_menu();
         path_finding_menu();
+        imgui_projectile_menu();
         ImGui::End();
     }
 }
