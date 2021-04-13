@@ -99,7 +99,7 @@ void ParticleSystem::update() {
                 acceleration += getGravitationalAcceleration(curpos);
             }
 			
-			if (p.life < 0.99f) 
+			if (p.life < 0.99f && swarm_behavior_toggle)
 			{
 
                 int count = 0;

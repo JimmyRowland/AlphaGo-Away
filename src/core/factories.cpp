@@ -230,7 +230,7 @@ entt::entity unit_factory(vec2 pos, UnitType unitType) {
 ShadedMesh& create_projectile_mesh(std::string screen_texture_path, std::string shader = "textured"){
     std::string key = screen_texture_path ;
     ShadedMesh &resource = cache_resource(key);
-    RenderSystem::createSprite(resource, textures_path(screen_texture_path), "textured");
+    if (resource.effect.program.resource == 0) RenderSystem::createSprite(resource, textures_path(screen_texture_path), "textured");
     return resource;
 }
 
