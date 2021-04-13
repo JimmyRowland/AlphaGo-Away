@@ -862,6 +862,14 @@ void Game::imgui_sandbox_menu() {
     }
 };
 
+void Game::path_finding_menu() {
+    if (ImGui::CollapsingHeader("Pathfinding")) {
+
+        ImGui::SliderInt("A* nearby units cost", &A_Star::unit_cost, 0, 100);
+
+    }
+};
+
 void Game::imgui_tile_menu() {
     if (ImGui::CollapsingHeader("Tiles")) {
         ImGui::Text("Choose a tile type and click on map to change tiles");
@@ -981,6 +989,7 @@ void Game::imgui(){
         imgui_particle_menu();
         imgui_camera_control_menu();
         imgui_tutorial_menu();
+        path_finding_menu();
         ImGui::End();
     }
 }
