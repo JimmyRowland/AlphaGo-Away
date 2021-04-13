@@ -806,6 +806,7 @@ void Game::imgui_particle_menu() {
         ImGui::Checkbox("Elastic collision", &particles->elastic_collision_toggle);
         ImGui::Checkbox("Precise collision", &particles->is_precise_collision);
         ImGui::Checkbox("Dark mode", reinterpret_cast<bool *>(&RenderSystem::dark_mode));
+        ImGui::Checkbox("Meteor mode", &ParticleSystem::meteor_field);
         ImGui::SliderFloat("Illumination param", &RenderSystem::illumination_param, 1.f, 150.0f);
         ImGui::SliderFloat("Swam radius param", &ParticleSystem::max_distance, 1.f, 1000.0f);
         if (ImGui::Button("Explosion")) ParticleSystem::start_explosion_time = glfwGetTime() + 2.f;

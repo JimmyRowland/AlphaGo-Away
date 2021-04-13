@@ -79,6 +79,7 @@ Position get_mesh_bounding_box(entt::entity entity){
 
 float ParticleSystem::max_distance = 30.f;
 float ParticleSystem::start_explosion_time = -10000.f;
+bool ParticleSystem::meteor_field = false;
 
 
 void ParticleSystem::update() {
