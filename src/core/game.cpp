@@ -920,7 +920,7 @@ void Game::imgui_ally_menu() {
 
         ImGui::Text("***Press p, then you can drag");
         ImGui::Text(" to change the unit location ***");
-
+        ImGui::Checkbox("projectile spline mode", &projectile_spline);
 //        ImGuiImage(get_tile_texture_id(TileType::forest));
     }
 }
