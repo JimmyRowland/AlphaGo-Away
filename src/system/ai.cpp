@@ -155,6 +155,36 @@ namespace {
         set_best_target<Healer>();
         set_best_target<Monitor>();
     }
+
+    void set_projectile_path() {
+        A_Star a = A_Star(std::make_pair(tile_matrix_dimension.x, tile_matrix_dimension.y));
+        for (auto &&[entity, property, position]: m_registry.view<ProjectileProperty, Position>().each()) {
+            if (!m_registry.valid(property.actualTarget) || property.actualTarget == entity) {
+                return m_registry.destroy(entity);
+            } else {
+                if (m_registry.valid(property.actualTarget)) {
+                    auto&&[target_position, target_property] = m_registry.get<Position, UnitProperty>(
+                            property.actualTarget);
+                    auto target_tile_index = target_property.path.empty() ? get_tile_index(target_position.position) :
+                                             rand() % 10 > 5 ? ivec2(target_property.path[0].first,
+                                                                     target_property.path[0].second) : get_tile_index(
+                                                     target_position.position);
+                    auto entity_tile_index = get_tile_index(position.position);
+                    auto path = a.getPath(std::make_pair(entity_tile_index.x, entity_tile_index.y),
+                                              std::make_pair(target_tile_index.x, target_tile_index.y), true);
+                    if(path.size()>=3 && !property.spoints.empty()){
+                        property.spoints[0] = property.spoints[1];
+                        property.spoints[1] = position.position;
+                        auto midpoint = path[floor(path.size()/2)];
+                        property.spoints[2] = get_tile_center_from_index(vec2(midpoint.first,midpoint.second));
+                        property.spoints[3] = target_position.position;
+                    }
+
+
+                }
+            }
+        }
+    }
 }
 
 void ai_update(float elapsed_ms) {
@@ -165,7 +195,7 @@ void ai_update(float elapsed_ms) {
         set_targets();
         group_behavior();
         set_path();
-        // set_projectile_path();
+        if(A_Star::path_finding_projectile && A_Star::spline) set_projectile_path();
         update_state();
 //        clear_projectile(elapsed_ms);
 

@@ -198,6 +198,8 @@ private:
     void imgui_camera_control_menu();
 
     void path_finding_menu();
+
+    void imgui_projectile_menu();
 };
 
 #endif //ALPHAGO_AWAY_GAME_HPP

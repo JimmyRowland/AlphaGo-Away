@@ -120,7 +120,7 @@ namespace {
         int p2 = p1 + 1;
         int p3 = p2 + 1;
         int p0 = p1 - 1;
-        
+
         float tt = pow(t, 2);
 
         float q0 = 3 * tt - 4 * t + 1;
@@ -199,19 +199,18 @@ void physics_update(float elapsed_ms) {
     for (auto&&[entity, motion, position, projectile_property]: m_registry.view<Motion, Position, ProjectileProperty>().each()) {
         if (m_registry.valid(projectile_property.actualTarget)) {
            auto& target_position = m_registry.get<Position>(projectile_property.actualTarget);
-            std::cout << "/////////spline in physics     " << projectile_spline << std::endl;
-            if (projectile_spline) {
-                std::cout << "!!!!!!!!!!!spline!!!!!!!!" << std::endl;
+            if(A_Star::spline){
                 position.position = get_spos(projectile_property.spoints, projectile_property.t);
                 vec2 tangent = get_tangent(projectile_property.spoints, projectile_property.t);
                 position.angle = atan2(tangent.y,tangent.x);
                 projectile_property.t += 0.02f;
-            } else {
+            }else{
                 vec2 dir = glm::normalize( target_position.position-position.position);
                 position.angle = atan2(dir.y,dir.x);
                 motion.velocity = glm::normalize(dir) * projectile_speed;
                 position.position += motion.velocity * step_seconds;
             }
+            set_transformed_bounding_box(entity);
             if(is_out_of_boundary(entity)){
                 m_registry.destroy(entity);
             }
