@@ -34,6 +34,7 @@ public:
 //    void Draw();
 	static float max_distance;
 	static float start_explosion_time;
+	static bool meteor_field;
 
 	const float FIXED_SPEED = 2;
 

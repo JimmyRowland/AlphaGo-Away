@@ -14,6 +14,7 @@
 
 class A_Star {
 public:
+    static int unit_cost;
     std::vector<std::vector<int >> unit_grid = {};
     std::vector<std::vector<int >> grid = {};
     // update the map as needed this is just filler
@@ -23,6 +24,7 @@ public:
             {TileType::forest, 99999},
             {TileType::water,  99999}
     };
+
 
     // comparator class for priority queue
     class compare {
@@ -53,7 +55,7 @@ public:
         }
         for (auto&&[entity, unit_prop, unit_pos] : m_registry.view<UnitProperty, Position>().each()) {
             ivec2 tile_index = get_tile_index(unit_pos.position);
-            this->unit_grid[tile_index.x][tile_index.y] = 100;
+            this->unit_grid[tile_index.x][tile_index.y] = unit_cost;
         }
     }
 
@@ -121,5 +123,7 @@ public:
 
 
 };
+
+
 
 #endif
