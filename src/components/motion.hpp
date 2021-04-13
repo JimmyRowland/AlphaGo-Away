@@ -24,6 +24,12 @@ struct BoundingBox {
     void translate(vec2 offset);
 };
 
+struct KeyFrameMotion {
+    std::vector<vec3> keyframes = {};
+    unsigned int currFrame = 0;
+    float time_gap = 0;
+    float time_left = 0;
+};
 
 
 //struct Projectiles {

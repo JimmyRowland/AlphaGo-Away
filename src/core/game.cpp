@@ -117,6 +117,10 @@ void Game::update(float elapsed_ms, vec2 window_size_in_game_units) {
             }
         }
     }
+    if (!has_battle_started && this->level != Level::start_screen) {
+        // update keyframe animation
+        physics_update_keyframe(elapsed_ms);
+    }
     update_camera_pos(elapsed_ms);
     imgui();
 

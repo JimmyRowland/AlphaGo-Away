@@ -20,6 +20,16 @@ void init_unit_resources(){
 
 }
 
+void init_key_frames(entt::entity entity) {
+    auto& keyframe = m_registry.get<KeyFrameMotion>(entity);
+    auto pos = m_registry.get<Position>(entity);
+	std::vector<vec3> keyframes = 
+    { vec3(pos.position, pos.angle), vec3(pos.position + vec2(0, -40), pos.angle + PI), vec3(pos.position, pos.angle + 2 * PI) };
+    keyframe.keyframes = keyframes;
+    keyframe.time_gap = 500;
+    keyframe.time_left = keyframe.time_gap;
+}
+
 ShadedMesh &create_unit_mesh_resource(UnitType unitType, std::string unit_state) {
     nlohmann::json stand_mesh_json = unit_meshes[get_unit_mesh_key[unitType]][unit_state];
     std::string tile_texture_path = stand_mesh_json["texture"];
