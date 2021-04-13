@@ -149,7 +149,7 @@ https://www.shadertoy.com/view/lsS3zc
 
 - Audio asset (paid):
 
-"Huangwuzhishang" & "Jinguzhidi" from the Donghua "Incarnation"
+《Huangwuzhishang》 & 《Jinguzhidi》 from the Donghua "Ling Long: Incarnation"
 
 
 
