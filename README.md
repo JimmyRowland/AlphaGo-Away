@@ -88,6 +88,7 @@ cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_TOOLCHAIN_FILE=./vcpkg/scripts/buildsyste
 
 ./AlphaGo-Away
 
+*Remark: if your mac is stopping you from running the game from terminal due to some permission issue, please go to the file finder and launch the executable from there. You might get aborted right away but don't worry. Close it and get back to the original termnial(which still should be in the project directory) and rerun "./AlphaGo-Away". Now it should work.
 
 Credit:
 
@@ -124,14 +125,6 @@ https://www.kenney.nl/assets/toon-characters-1
 https://itch.io/game-assets/free/tag-explosions
 
 https://www.pinterest.ca/pin/42925002684118502/
-
-https://www.clipartkey.com/view/iixxTxo_pixel-laser-beam-png/
-
-https://www.pinterest.ca/pin/698269117220803900/
-
-https://www.nicepng.com/ourpic/u2r5w7q8e6u2r5q8_laser-eyes-meme-maker-glowing-eyes-png-lens/
-
-https://www.stockunlimited.com/vector-illustration/pixel-art-arrow_1957532.html
 
 - Paid spritesheet:
 
