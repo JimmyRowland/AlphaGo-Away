@@ -151,7 +151,24 @@ https://www.shadertoy.com/view/lsS3zc
 
 《Huangwuzhishang》 & 《Jinguzhidi》 from the Donghua "Ling Long: Incarnation"
 
+- Algorithm
 
+Physics-based animation:
 
+Fluid Simulation from code train
 
+https://www.youtube.com/watch?v=alhpH6ECFvQ&t=523s
 
+Swarm behavior:
+
+https://eater.net/boids
+
+https://github.com/beneater/boids
+
+Advanced shader, geometry shader (should avoid):
+
+https://www.youtube.com/watch?v=RP1MVD4hAJM&t=126s
+
+https://learnopengl.com/Advanced-OpenGL/Geometry-Shader
+
+https://github.com/JoeyDeVries/LearnOpenGL/tree/master/src/4.advanced_opengl/9.1.geometry_shader_houses
