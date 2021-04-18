@@ -25,5 +25,5 @@ constexpr vec2 done_pos = {tile_matrix_dimension.x*tile_size.x-160, map_y_max-10
 constexpr vec2 result_button_pos = {window_size_in_game_units.x/2 - 200, map_y_max-10};
 constexpr float unit_speed = 100;
 constexpr float cool_down_unit = tile_size.x / unit_speed * 1000;
-constexpr float projectile_speed = 500;
+constexpr float projectile_speed = 350;
 #endif //ALPHAGO_AWAY_CONSTANTS_HPP

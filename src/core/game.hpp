@@ -80,6 +80,7 @@ public:
     
     ParticleSystem *particles;
 
+    bool should_place = false;
 
 private:
 	// Input callback functions

@@ -179,6 +179,48 @@ void physics_update(float elapsed_ms) {
             }
         }
     }
+//    for (auto &entity: m_registry.view<UnitProperty>()) {
+//        auto &property = m_registry.get<UnitProperty>(entity);
+//        std::cout << "test" << std::endl;
+//        if (property.selected) {
+//            // Mark the selected unit
+//            auto& bb = m_registry.get<BoundingBox>(entity);
+//            for (auto& vertices : bb.transformed_vertices) {
+//                auto dotSize = vec2(5.f, 5.f);
+//                std::cout << "draw" << std::endl;
+//                DebugSystem::createLine(vertices, dotSize);
+//            }
+//        }else if(property.selected_release){
+//            //draw the moving  trajectory
+//            auto &motion= m_registry.get<Motion>(entity);
+//            auto &position = m_registry.get<Position>(entity);
+//            vec2 tri_pos = {(position.position.x-property.init_pos.x)/2+property.init_pos.x, (position.position.y-property.init_pos.y)/2+property.init_pos.y};
+//            float x1 = position.position.x-property.init_pos.x;
+//            float y1 = position.position.y-property.init_pos.y;
+//            // use dot product to calculate the angle
+//
+//            vec2 v1 = normalize(vec2({x1, y1}));
+//
+//            float angle = acos(dot(v1, {1.f, 0.f}));
+//            if (y1 < 0.f) {
+//                //clock wise
+//                angle *= -1.f;
+//            }
+//            if (y1==0){
+//
+//                DebugSystem::createDirectTri(tri_pos,{x1/2,30},0.f);
+//                std::cout << "tri" << std::endl;
+//            } else if (x1==0){
+//                DebugSystem::createDirectTri(tri_pos,{30,y1/2},M_PI/2*y1/abs(y1));
+//                std::cout << "tri" << std::endl;
+//            }else {
+//                DebugSystem::createDirectTri(tri_pos, {abs((position.position.x-property.init_pos.x)/2),abs((position.position.y-property.init_pos.y)/2)},angle);
+//                std::cout << "tri" << std::endl;
+//            }
+//            property.selected_release = false;
+//        }
+//    }
+
     float step_seconds = 1.0f * (elapsed_ms / 1000.f);
     for (auto&&[entity, motion, position, unit_property, bounding_box]: m_registry.view<Motion, Position, UnitProperty, BoundingBox>().each()) {
         if (m_registry.valid(unit_property.actualTarget) &&

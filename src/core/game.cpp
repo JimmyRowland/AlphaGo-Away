@@ -2,7 +2,6 @@
 #include "game.hpp"
 #include <tuple>
 
-
 // Game configuration
 const size_t TURTLE_DELAY_MS = 2000;
 
@@ -13,6 +12,7 @@ float Game::timeleft = 500.f;
 // Note, this has a lot of OpenGL specific things, could be moved to the renderer; but it also defines the callbacks to the mouse and keyboard. That is why it is called here.
 Game::Game(ivec2 window_size_px) :
         points(0) {
+
     // Seeding rng with random device
     rng = std::default_random_engine(std::random_device()());
 
@@ -43,6 +43,7 @@ Game::Game(ivec2 window_size_px) :
     // Input is handled using GLFW, for more info see
     // http://www.glfw.org/docs/latest/input_guide.html
     glfwSetWindowUserPointer(window, this);
+
     auto key_redirect = [](GLFWwindow *wnd, int _0, int _1, int _2, int _3) {
         ((Game *) glfwGetWindowUserPointer(wnd))->on_key(_0, _1, _2, _3);
     };
@@ -62,6 +63,7 @@ Game::Game(ivec2 window_size_px) :
     std::cout << "Loaded music\n";
 }
 
+
 Game::~Game() {
     // Destroy music components
     if (background_music != nullptr)
@@ -75,6 +77,7 @@ Game::~Game() {
 }
 
 void Game::init_audio() {
+
     //////////////////////////////////////
     // Loading music and sounds with SDL
     if (SDL_Init(SDL_INIT_AUDIO) < 0)
@@ -131,6 +134,7 @@ void Game::restart(Level level) {
     this->level = level;
     battle_over = false;
     level_res = 0;
+
 
     for (auto entity : m_registry.view<ShadedMeshRef>()) {
         m_registry.destroy(entity);
@@ -229,7 +233,6 @@ void Game::on_key(int key, int, int action, int mod) {
     if (action == GLFW_RELEASE && key == GLFW_KEY_R) {
         int w, h;
         glfwGetWindowSize(window, &w, &h);
-
 //		restart();
     }
 
@@ -238,6 +241,12 @@ void Game::on_key(int key, int, int action, int mod) {
         show_imgui = !show_imgui;
     }
 
+    //place units
+    if (action == GLFW_PRESS && key == GLFW_KEY_P)
+    {
+        should_place = !should_place;
+        //physicsSystem->should_pause = should_place;
+    }
     // Debugging
     if (key == GLFW_KEY_B)
         DebugSystem::in_debug_mode = (action != GLFW_RELEASE);
@@ -251,8 +260,6 @@ void Game::on_key(int key, int, int action, int mod) {
         current_speed += 0.1f;
         std::cout << "Current speed = " << current_speed << std::endl;
     }
-
-
     current_speed = std::max(0.f, current_speed);
 }
 
@@ -274,88 +281,204 @@ ivec2 Game::get_window_size() {
 }
 
 void Game::on_mouse_click(int button, int action, int mods) {
-    info_on_click(button, action, mods);
     result_on_click(button, action, mods);
-    if (!has_battle_started &&
-        (level == Level::level1 || level == Level::level2 || level == Level::level3 || level == Level::level4 ||
-         level == Level::level5)) {
-        map_on_click(button, action, mods);
+    if (!should_place) {
+        info_on_click(button, action, mods);
+
+        if (!has_battle_started &&
+            (level == Level::level1 || level == Level::level2 || level == Level::level3 || level == Level::level4 ||
+             level == Level::level5)) {
+            map_on_click(button, action, mods);
+        }
+        if(level == Level::sandbox || game_mode == GameMode::free_mode) return sandbox_on_click(button, action, mods);
+        if (level == Level::level1 || level == Level::level2 || level == Level::level3 || level == Level::level4 ||
+            level == Level::level5) {
+            return level_on_click(button, action, mods);
+        }
+
     }
-    if(level == Level::sandbox || game_mode == GameMode::free_mode) return sandbox_on_click(button, action, mods);
-    if (level == Level::level1 || level == Level::level2 || level == Level::level3 || level == Level::level4 ||
-        level == Level::level5) {
-        return level_on_click(button, action, mods);
+
+    if (button == GLFW_MOUSE_BUTTON_LEFT) {
+        double xpos, ypos;
+        glfwGetCursorPos(window, &xpos, &ypos);
+        int winWidth, winHeight;
+        glfwGetWindowSize(window, &winWidth, &winHeight);
+        //auto& selected_unit = ECS::registry<Unit>.entities[0];
+        if (should_place && !has_battle_started) {
+            if (action == GLFW_PRESS) {
+                for (auto &entity: m_registry.view<UnitProperty>()) {
+                    auto &motion = m_registry.get<Motion>(entity);
+                    auto &position = m_registry.get<Position>(entity);
+                    auto dis_x = abs(position.position.x - xpos);
+                    auto dis_y = abs(position.position.y - ypos);
+                    auto &property = m_registry.get<UnitProperty>(entity);
+                    if(property.is_human){
+                        if (dis_x < tile_size.x/2 && dis_y < tile_size.y/2) {
+                            //Propertyed_unit = entity;
+
+                            DebugSystem::in_debug_mode = true;
+                            property.selected = true;
+                            property.init_pos = position.position;
+                            glfwGetCursorPos(window, &xpos, &ypos);
+                            position.position.x = xpos;
+                            position.position.y = ypos;
+
+
+                        }
+
+                        if (property.selected) {
+                            // Mark the selected unit
+
+                            auto& bb = m_registry.get<BoundingBox>(entity);
+                            std::cout << bb.vertices.size() << std::endl;
+                            for (auto& vertices : bb.vertices) {
+                                auto dotSize = vec2(5.f, 5.f);
+                                std::cout << "draw" << std::endl;
+                                DebugSystem::createLine(vertices, dotSize);
+                            }
+                            break;
+                        }
+
+                    }
+
+                }
+            } else if (action == GLFW_RELEASE) {
+                for (auto &entity: m_registry.view<UnitProperty>()) {
+                    auto &property = m_registry.get<UnitProperty>(entity);
+                    if(property.is_human){
+                        if (property.selected) {
+                            auto &motion = m_registry.get<Motion>(entity);
+                            auto &position = m_registry.get<Position>(entity);
+                            int grid_pos_x = 1200;
+                            int grid_pos_y = 800;
+                            glfwGetCursorPos(window, &xpos, &ypos);
+                            auto dis_x = xpos - grid_pos_x;
+                            auto dis_y = ypos - grid_pos_y;
+                            if (dis_x > tile_size.x/2 || dis_y > tile_size.x/2) {
+
+                                property.selected = false;
+                                property.selected_release = true;
+                            } else {
+                                for (int i = 0; i < tile_matrix_dimension.x; i++) {
+                                    float grid_pos_x = tile_size.x/2 + tile_size.x * i;
+                                    for (int j = 0; j < tile_matrix_dimension.y; j++) {
+                                        float  grid_pos_y = tile_size.y/2 + tile_size.y * j;
+                                        glfwGetCursorPos(window, &xpos, &ypos);
+                                        dis_x = abs(xpos - grid_pos_x);
+                                        dis_y = abs(ypos - grid_pos_y);
+                                        if (dis_x < tile_size.x/2 && dis_y < tile_size.x/2) {
+                                            position.position.x = grid_pos_x;
+                                            position.position.y = grid_pos_y;
+
+                                            DebugSystem::in_debug_mode = false;
+                                            property.selected = false;
+                                            property.selected_release = true;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+
+
+                        }
+                    }
+
+                }
+            } else if (action == GLFW_REPEAT) {
+                for (auto &entity: m_registry.view<UnitProperty>()) {
+                    auto &property = m_registry.get<UnitProperty>(entity);
+                    if(property.is_human){
+                        if (property.selected) {
+                            auto &motion = m_registry.get<Motion>(entity);
+                            auto &position = m_registry.get<Position>(entity);
+                            int grid_pos_x = 1200;
+                            int grid_pos_y = 800;
+                            glfwGetCursorPos(window, &xpos, &ypos);
+                            auto dis_x = xpos - grid_pos_x;
+                            auto dis_y = ypos - grid_pos_y;
+                            if (dis_x > tile_size.x/2 || dis_y > tile_size.x/2) {
+
+                                property.selected = false;
+                                property.selected_release = true;
+                            } else {
+                                for (int i = 0; i < tile_matrix_dimension.x; i++) {
+                                    float grid_pos_x = tile_size.x/2 + tile_size.x * i;
+                                    for (int j = 0; j < tile_matrix_dimension.y; j++) {
+                                        float  grid_pos_y = tile_size.y/2 + tile_size.y * j;
+                                        glfwGetCursorPos(window, &xpos, &ypos);
+                                        dis_x = abs(xpos - grid_pos_x);
+                                        dis_y = abs(ypos - grid_pos_y);
+                                        if (dis_x <  tile_size.x/2 && dis_y <  tile_size.y/2) {
+                                            position.position.x = grid_pos_x;
+                                            position.position.y = grid_pos_y;
+
+                                            DebugSystem::in_debug_mode = false;
+                                            //property.selected = false;
+                                            property.selected_release = true;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+
+
+                        }
+                    }
+
+                }
+            }
+            //draw moving trajetory
+            for (auto &entity: m_registry.view<UnitProperty>()) {
+                auto &property = m_registry.get<UnitProperty>(entity);
+                // std::cout << "test" << std::endl;
+//                if (property.selected) {
+//                    // Mark the selected unit
+//                    auto& bb = m_registry.get<BoundingBox>(entity);
+//                    for (auto& vertices : bb.transformed_vertices) {
+//                        auto dotSize = vec2(5.f, 5.f);
+//                        std::cout << "draw" << std::endl;
+//                        DebugSystem::createLine(vertices, dotSize);
+//                    }
+//                }else
+
+                if(property.is_human){
+                    if(property.selected){
+                        //draw the moving  trajectory
+                        auto &motion= m_registry.get<Motion>(entity);
+                        auto &position = m_registry.get<Position>(entity);
+                        vec2 tri_pos = {(position.position.x-property.init_pos.x)/2+property.init_pos.x, (position.position.y-property.init_pos.y)/2+property.init_pos.y};
+                        float x1 = position.position.x-property.init_pos.x;
+                        float y1 = position.position.y-property.init_pos.y;
+                        // use dot product to calculate the angle
+
+                        vec2 v1 = normalize(vec2({x1, y1}));
+
+                        float angle = acos(dot(v1, {1.f, 0.f}));
+                        if (y1 < 0.f) {
+                            //clock wise
+                            angle *= -1.f;
+                        }
+                        if (y1==0){
+
+                            DebugSystem::createDirectTri(tri_pos,{x1/2,30},0.f);
+                            std::cout << "tri" << std::endl;
+                        } else if (x1==0){
+                            DebugSystem::createDirectTri(tri_pos,{30,y1/2},M_PI/2*y1/abs(y1));
+                            std::cout << "tri" << std::endl;
+                        }else {
+                            DebugSystem::createDirectTri(tri_pos, {abs((position.position.x-property.init_pos.x)/2),abs((position.position.y-property.init_pos.y)/2)},angle);
+                            std::cout << "tri" << std::endl;
+                        }
+                        property.selected_release = false;
+                    }
+                }
+
+            }
+        }
     }
     if (level == Level::story) return story_on_click(button, action, mods);
     if (level == Level::tutorial) return tutorial_on_click(button, action, mods);
-    if (button == GLFW_MOUSE_BUTTON_LEFT) {
-//        TODO restore relocating units
-//        double xpos, ypos;
-//        glfwGetCursorPos(window, &xpos, &ypos);
-//        int winWidth, winHeight;
-//        glfwGetWindowSize(window, &winWidth, &winHeight);
-//        auto gridWidth = (floor((winWidth - 20) / grid.size())) / 2;
-//        auto gridHeight = (floor((winWidth - 20) / grid[0].size())) / 2;
-//        //auto& selected_unit = ECS::registry<Unit>.entities[0];
-//        if (physicsSystem->should_pause) {
-//            if (action == GLFW_PRESS) {
-//                for (auto entity : ECS::registry<Property>.entities) {
-//                    auto &motion = ECS::registry<Motion>.get(entity);
-//                    auto dis_x = abs(motion.position.x - xpos);
-//                    auto dis_y = abs(motion.position.y - ypos);
-//                    if (dis_x < gridWidth && dis_y < gridHeight) {
-//                        //Propertyed_unit = entity;
-//                        auto &property = ECS::registry<Property>.get(entity);
-//                        property.selected = true;
-//                        glfwGetCursorPos(window, &xpos, &ypos);
-//                        motion.position.x = xpos;
-//                        motion.position.y = ypos;
-//                        break;
-//                    }
-//                }
-//            } else if (action == GLFW_RELEASE) {
-//                for (auto entity : ECS::registry<Unit>.entities) {
-//                    auto &property = ECS::registry<Property>.get(entity);
-//                    if (property.selected) {
-//                        auto &motion = ECS::registry<Motion>.get(entity);
-//                        int grid_pos_x = std::get<0>(grid[grid[0].size() - 1][0]);
-//                        int grid_pos_y = std::get<1>(grid[0][grid[0].size() - 1]);
-//                        glfwGetCursorPos(window, &xpos, &ypos);
-//                        auto dis_x = xpos - grid_pos_x;
-//                        auto dis_y = ypos - grid_pos_y;
-//                        if (dis_x > gridWidth || dis_y > gridHeight) {
-//
-//                            property.selected = false;
-//                        } else {
-//                            for (int i = 0; i < grid[0].size(); i++) {
-//                                for (int j = 0; j < grid[0].size(); j++) {
-//                                    grid_pos_x = std::get<0>(grid[i][j]);
-//                                    grid_pos_y = std::get<1>(grid[i][j]);
-//                                    glfwGetCursorPos(window, &xpos, &ypos);
-//                                    dis_x = abs(xpos - grid_pos_x);
-//                                    dis_y = abs(ypos - grid_pos_y);
-//                                    if (dis_x < gridWidth && dis_y < gridHeight) {
-//                                        motion.position.x = grid_pos_x;
-//                                        motion.position.y = grid_pos_y;
-//                                        property.selected = false;
-//                                        break;
-//                                    }
-//                                }
-//                            }
-//                        }
-//
-//
-//                    }
-//                }
-//
-//
-//            }
-//        } else {
-//            if (action==GLFW_PRESS && xpos > 30.f && xpos < 570.f && ypos > 30.f && ypos < 570.f) {
-//                unitFactory.create_unit({xpos, ypos});
-//            }
-//        }
-    }
+
 }
 
 TileType Game::imgui_entity_selection_to_tileType() {
@@ -516,7 +639,9 @@ void Game::story_on_click(int button, int action, int mods){
 }
 
 void Game::tutorial_on_click(int button, int action, int mods){
-    level_on_click(button, action, mods);
+    if(!should_place) {
+        level_on_click(button, action, mods);
+    }
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
         double xpos, ypos;
         glfwGetCursorPos(window, &xpos, &ypos);
@@ -983,6 +1108,7 @@ void Game::imgui_tutorial_menu() {
 void Game::imgui(){
     if(show_imgui){
         ImGui::Begin("Menu");
+        // ImGui::SetCursorScreenPos(ImVec2( 200,  200));
         imgui_battle_control_menu();
         imgui_game_mode();
         imgui_help_menu();
@@ -998,6 +1124,6 @@ void Game::imgui(){
         path_finding_menu();
         imgui_projectile_menu();
         ImGui::End();
+
     }
 }
-

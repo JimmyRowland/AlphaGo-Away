@@ -75,10 +75,12 @@ namespace {
                 property.hp = 200;
                 property.maxhp = 200;
                 property.close_combat_damage_modifier = 1.f;
+                property.is_human = true;
                 return property;
             case UnitType::human_monitor:
                 property.attackRange = 2;
                 property.damage = 15;
+                property.is_human = true;
                 property.hp = 1010;
                 property.maxhp = 1010;
                 property.close_combat_damage_modifier = .8f;
@@ -89,9 +91,11 @@ namespace {
                 property.hp = 75;
                 property.maxhp = 75;
                 property.close_combat_damage_modifier = .1f;
+                property.is_human = true;
                 return property ;
             case UnitType::human_healer:
                 property.attackRange = 3;
+                property.is_human = true;
                 property.damage = 15;
                 property.hp = 180;
                 property.maxhp = 180;
