@@ -1,32 +1,67 @@
 {
-  "unit_arr": [
-    {
-      "position": {
-        "x": 0,
-        "y": 2
-      },
-      "unit_type": 2
-    },
-    {
-      "position": {
-        "x": 0,
-        "y": 6
-      },
-      "unit_type": 3
-    },
-    {
-      "position": {
-        "x": 14,
-        "y": 6
-      },
-      "unit_type": 5
-    },
-    {
-      "position": {
-        "x": 14,
-        "y": 1
-      },
-      "unit_type": 6
-    }
-  ]
+    "unit_arr": [
+        {
+            "damage": 30,
+            "hp": 70,
+            "position": {
+                "x": 13,
+                "y": 8
+            },
+            "unit_type": 7
+        },
+        {
+            "damage": 12,
+            "hp": 190,
+            "position": {
+                "x": 13,
+                "y": 7
+            },
+            "unit_type": 6
+        },
+        {
+            "damage": 12,
+            "hp": 190,
+            "position": {
+                "x": 13,
+                "y": 6
+            },
+            "unit_type": 6
+        },
+        {
+            "damage": 12,
+            "hp": 1000,
+            "position": {
+                "x": 13,
+                "y": 4
+            },
+            "unit_type": 5
+        },
+        {
+            "damage": 12,
+            "hp": 1000,
+            "position": {
+                "x": 13,
+                "y": 3
+            },
+            "unit_type": 5
+        },
+        {
+            "damage": 12,
+            "hp": 1000,
+            "position": {
+                "x": 13,
+                "y": 2
+            },
+            "unit_type": 5
+        },
+        {
+            "damage": 12,
+            "hp": 1000,
+            "position": {
+                "x": 13,
+                "y": 1
+            },
+            "unit_type": 5
+        }
+    ]
 }

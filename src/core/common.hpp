@@ -27,6 +27,12 @@
 #include <iostream>
 
 #include <entt/entt.hpp>
+#include <fstream>
+#include <filesystem>
+#include <string>
+
+
+namespace fs = std::filesystem;
 
 
 
@@ -34,7 +40,17 @@ using namespace glm;
 static const float PI = 3.14159265359f;
 
 // Simple utility functions to avoid mistyping directory name
+
+// be sure to change this to your own path! I can't figure out how to get the relative path.
+
+
+//inline std::string data_path() { return "C:/Users/billz/OneDrive/Desktop/school/cpsc427/AIphaGo-Away/data"; };
 inline std::string data_path() { return "data"; };
+//std::string temp = std::filesystem::current_path().string();
+/*std::string path = path_full.substr(0, path_full.size() - 21);
+inline std::string data_path() {
+	return path;
+};*/
 inline std::string shader_path(const std::string& name) { return data_path() + "/shaders/" + name;};
 inline std::string textures_path(const std::string& name) { return data_path() + "/textures/" + name; };
 inline std::string audio_path(const std::string& name) { return data_path() + "/audio/" + name; };

@@ -31,15 +31,21 @@ public:
 
 	// Expose the creating of visual representations to other systems
 	static void createSprite(ShadedMesh& mesh_container, std::string texture_path, std::string shader_name);
-	static void createColoredMesh(ShadedMesh& mesh_container, std::string shader_name);
-
+	static void createColoredMesh(ShadedMesh& mesh_container, std::string shader_name, bool has_geometry_shader=false);
+	static float last_firework_time;
+    static vec2 cursor_position;
+	static void set_last_firework_time(vec2 cursor_position);
+    static int dark_mode;
+    static float illumination_param;
+    static void set_dark_mode(bool is_dark_mode);
+    static int flash_light_type;
 private:
 	// Initialize the screeen texture used as intermediate render target
 	// The draw loop first renders to this texture, then it is used for the water shader
     void initScreenTexture();
 
 	// Internal drawing functions for each entity type
-    void drawTexturedMesh(entt::entity, const mat3 &projection);
+	void drawTexturedMesh(entt::entity, const mat3 &projection, vec2 off);
 	void drawToScreen();
 
 	// Window handle
@@ -51,5 +57,7 @@ private:
 	GLResource<RENDER_BUFFER> depth_render_buffer_id;
     entt::entity screen_state_entity;
     float frame_num = 0.f;
+
+    void drawParticle(const mat3 &projection);
 };
 #endif //ALPHAGO_AWAY_RENDER_HPP

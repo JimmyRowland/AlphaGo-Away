@@ -94,8 +94,10 @@ struct Effect
 	GLResource<SHADER> vertex;
 	GLResource<SHADER> fragment;
 	GLResource<PROGRAM> program;
+	GLResource<SHADER> geometry;
 
 	void load_from_file(std::string vs_path, std::string fs_path); // load shaders from files and link into program
+    void load_from_file(std::string vs_path, std::string fs_path, std::string gs_path);
 };
 
 // Mesh datastructure for storing vertex and index buffers

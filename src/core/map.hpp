@@ -15,6 +15,8 @@ enum TileType{
 
 using MapState = Grid<TileType>;
 //using UnitMapState = Grid<UnitType>;
+TileType int_to_tileType(const int i);
+int tileType_to_int(const TileType tt);
 TileType char_to_tileType(const char c);
 MapState makeMapState(Level level);
 //UnitMapState makeUnitState();

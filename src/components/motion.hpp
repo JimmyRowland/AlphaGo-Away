@@ -14,6 +14,7 @@ struct Position {
     vec2 position = { 0, 0 };
     float angle = 0;
     vec2 scale = { 10, 10 };
+	vec2 off = { 0, 0 };
 };
 struct BoundingBox {
     std::vector<vec2> vertices;
@@ -22,6 +23,14 @@ struct BoundingBox {
     void rotate(float radians);
     void translate(vec2 offset);
 };
+
+struct KeyFrameMotion {
+    std::vector<vec3> keyframes = {};
+    unsigned int currFrame = 0;
+    float time_gap = 0;
+    float time_left = 0;
+};
+
 
 //struct Projectiles {
 //    std::vector<entt::entity> pro = {} ;

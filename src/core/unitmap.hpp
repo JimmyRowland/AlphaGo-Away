@@ -30,7 +30,9 @@ static const std::string get_unit_mesh_key[] =
         };
 
 using UnitMapState = Grid<UnitType>;
+using UnitHPMapState = Grid<int>;
 UnitMapState makeUnitState(Level level);
 UnitType char_to_unitType(const char c);
 UnitType int_to_unitType(int i);
+int unitType_to_int(UnitType unit);
 #endif

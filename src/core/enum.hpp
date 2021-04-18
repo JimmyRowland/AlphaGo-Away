@@ -12,7 +12,9 @@ enum Level{
     level4,
     level5,
     start_screen,
-    path_finding_debug
+    path_finding_debug,
+    story,
+    tutorial,
 };
 enum GameMode {
     story_mode,

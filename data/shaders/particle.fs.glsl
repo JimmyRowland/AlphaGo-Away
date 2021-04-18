@@ -1,17 +1,8 @@
 #version 330
-
-// From vertex shader
-in vec2 texcoord;
-//in vec4 ParticleColor;
-
-// Application data
-uniform sampler2D sampler0;
-uniform vec4 particleColor;
-
 // Output color
-layout(location = 0) out  vec4 color;
-
+layout(location = 0) out vec4 color;
+in vec2 TexCoords;
 void main()
 {
-	color = particleColor * texture(sampler0, vec2(texcoord.x, texcoord.y));
+	color = vec4(sin(TexCoords.x*9.0),sin(TexCoords.y*9.0),cos((TexCoords.x+TexCoords.y)*9.0), 1.0);
 }

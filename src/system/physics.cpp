@@ -96,9 +96,43 @@ namespace {
         }
     }
 
+    vec2 get_spos(std::vector<vec2> points, float t) {
+        int p1 = (int)t + 1;
+        int p2 = p1 + 1;
+        int p3 = p2 + 1;
+        int p0 = p1 - 1;
+        
+        float tt = pow(t, 2);
 
+        float q0 = t * (t - 1.f) * (t - 1.f);
+        float q1 = tt * (2.f * t - 3) + 1.0f;
+        float q2 = -(tt * (2.f * t - 3));
+        float q3 = tt * (t - 1.f);
 
+        float tx = (points[p0].x * q0 + points[p1].x * q1 + points[p2].x * q2 + points[p3].x * q3);
+        float ty = (points[p0].y * q0 + points[p1].y * q1 + points[p2].y * q2 + points[p3].y * q3);
 
+        return{ tx, ty };
+    }
+
+    vec2 get_tangent(std::vector<vec2> points, float t) {
+        int p1 = (int)t + 1;
+        int p2 = p1 + 1;
+        int p3 = p2 + 1;
+        int p0 = p1 - 1;
+
+        float tt = pow(t, 2);
+
+        float q0 = 3 * tt - 4 * t + 1;
+        float q1 = 6 * tt - 6 * t;
+        float q2 = -6 * tt + 6 * t;
+        float q3 = 3 * tt - 2 * t;
+
+        float tx = (points[p0].x * q0 + points[p1].x * q1 + points[p2].x * q2 + points[p3].x * q3);
+        float ty = (points[p0].y * q0 + points[p1].y * q1 + points[p2].y * q2 + points[p3].y * q3);
+
+        return{ tx, ty };
+    }
 
 }
 
@@ -135,16 +169,16 @@ bool is_out_of_boundary(entt::entity entity) {
 
 void physics_update(float elapsed_ms) {
 
-//    if (DebugSystem::in_debug_mode) {
-//        for (auto&&[entity, boundingBox] :m_registry.view<BoundingBox>().each()) {
-//            if (m_registry.valid(entity)) {
-//                for (auto &vertices : boundingBox.transformed_vertices) {
-//                    auto dotSize = vec2(5.f, 5.f);
-//                    DebugSystem::createLine(vertices, dotSize);
-//                }
-//            }
-//        }
-//    }
+    if (DebugSystem::in_debug_mode) {
+        for (auto&&[entity, boundingBox] :m_registry.view<BoundingBox>().each()) {
+            if (m_registry.valid(entity)) {
+                for (auto &vertices : boundingBox.transformed_vertices) {
+                    auto dotSize = vec2(5.f, 5.f);
+                    DebugSystem::createLine(vertices, dotSize);
+                }
+            }
+        }
+    }
 //    for (auto &entity: m_registry.view<UnitProperty>()) {
 //        auto &property = m_registry.get<UnitProperty>(entity);
 //        std::cout << "test" << std::endl;
@@ -196,15 +230,28 @@ void physics_update(float elapsed_ms) {
         }
         set_transformed_bounding_box(entity);
         is_out_of_boundary(entity);
+        //basic health bar
+        vec2 pos = {position.position.x, position.position.y - tile_size.y/2};
+        //vec2 scale = {unit_property.hp, 5};
+        float max_hp_bar_length = (tile_size.x-10);
+        vec2 scale = {max_hp_bar_length/unit_property.maxhp * unit_property.hp, 5};
+        DebugSystem::createLine(vec2(pos.x+(scale.x-max_hp_bar_length)/2, pos.y), scale);
     }
 
     for (auto&&[entity, motion, position, projectile_property]: m_registry.view<Motion, Position, ProjectileProperty>().each()) {
         if (m_registry.valid(projectile_property.actualTarget)) {
            auto& target_position = m_registry.get<Position>(projectile_property.actualTarget);
-            vec2 dir = glm::normalize( target_position.position-position.position);
-            position.angle = atan2(dir.y,dir.x);
-            motion.velocity = glm::normalize(dir) * projectile_speed;
-            position.position += motion.velocity * step_seconds;
+            if(A_Star::spline){
+                position.position = get_spos(projectile_property.spoints, projectile_property.t);
+                vec2 tangent = get_tangent(projectile_property.spoints, projectile_property.t);
+                position.angle = atan2(tangent.y,tangent.x);
+                projectile_property.t += 0.02f;
+            }else{
+                vec2 dir = glm::normalize( target_position.position-position.position);
+                position.angle = atan2(dir.y,dir.x);
+                motion.velocity = glm::normalize(dir) * projectile_speed;
+                position.position += motion.velocity * step_seconds;
+            }
             set_transformed_bounding_box(entity);
             if(is_out_of_boundary(entity)){
                 m_registry.destroy(entity);
@@ -222,4 +269,35 @@ void physics_update(float elapsed_ms) {
 
     }
 
+
+}
+
+void physics_update_keyframe(float elapsed_ms) {
+    for (auto&& [entity, pos, keyframe] : m_registry.view<Position, KeyFrameMotion>().each()) {
+        vec3 currFrame, nextFrame;
+        unsigned int frame_index = keyframe.currFrame;
+        int next_frame_index = (frame_index == keyframe.keyframes.size() - 1? -1 : frame_index + 1);
+        currFrame = keyframe.keyframes[frame_index];
+        if (next_frame_index > 0) {
+            // interpolate next position
+            nextFrame = keyframe.keyframes[next_frame_index];
+            float diff_x = nextFrame.x - currFrame.x;
+            float diff_y = nextFrame.y - currFrame.y;
+            float diff_angle = nextFrame.z - currFrame.z;
+            float time_passed = (keyframe.time_gap - keyframe.time_left)/keyframe.time_gap;
+            if (keyframe.time_left <= 0) {
+                keyframe.time_left = keyframe.time_gap;
+                keyframe.currFrame = next_frame_index;
+                continue;
+            }
+            pos.position.y = time_passed * diff_y + currFrame.y;
+            pos.angle = time_passed * diff_angle + currFrame.z;
+            keyframe.time_left -= elapsed_ms;
+        }
+        else {
+            pos.angle = currFrame.z;
+            pos.position = vec2(currFrame.x, currFrame.y);
+            m_registry.remove<KeyFrameMotion>(entity);  
+        }
+    }
 }

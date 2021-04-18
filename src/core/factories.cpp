@@ -72,58 +72,62 @@ namespace {
             case UnitType::human_terminator:
                 property.attackRange = 1;
                 property.damage = 10;
-                property.hp = 1000;
-                property.maxhp = 1000;
+                property.hp = 200;
+                property.maxhp = 200;
                 property.close_combat_damage_modifier = 1.f;
+                property.is_human = true;
                 return property;
             case UnitType::human_monitor:
                 property.attackRange = 2;
                 property.damage = 15;
-                property.hp = 180;
-                property.maxhp = 180;
-                property.close_combat_damage_modifier = .5f;
+                property.is_human = true;
+                property.hp = 1010;
+                property.maxhp = 1010;
+                property.close_combat_damage_modifier = .8f;
                 return property;
             case UnitType::human_archer:
                 property.attackRange = 5;
-                property.damage = 25;
+                property.damage = 35;
                 property.hp = 75;
                 property.maxhp = 75;
                 property.close_combat_damage_modifier = .1f;
+                property.is_human = true;
                 return property ;
             case UnitType::human_healer:
                 property.attackRange = 3;
-                property.damage = 7;
-                property.hp = 95;
-                property.maxhp = 95;
-                property.close_combat_damage_modifier = .2f;
+                property.is_human = true;
+                property.damage = 15;
+                property.hp = 180;
+                property.maxhp = 180;
+                property.close_combat_damage_modifier = .5f;
                 return property ;
             case UnitType::ai_terminator:
                 property.attackRange = 1;
                 property.damage = 12;
-                property.hp = 1000;
-                property.maxhp = 1000;
+                property.hp = 190;
+                property.maxhp = 190;
                 property.close_combat_damage_modifier = 1.f;
                 return property ;
             case UnitType::ai_monitor:
                 property.attackRange = 2;
-                property.damage = 12;
-                property.hp = 190;
-                property.maxhp = 190;
-                property.close_combat_damage_modifier = .5f;
+                property.damage = 13;
+                property.hp = 1020;
+                property.maxhp = 1020;
+                property.close_combat_damage_modifier = .8f;
                 return property ;
             case UnitType::ai_archer:
                 property.attackRange = 5;
-                property.damage = 30;
+                property.damage = 32;
                 property.hp = 70;
                 property.maxhp = 70;
                 property.close_combat_damage_modifier = .1f;
                 return property ;
             case UnitType::ai_healer:
                 property.attackRange = 3;
-                property.damage = 5;
-                property.hp = 100;
-                property.maxhp = 100;
-                property.close_combat_damage_modifier = .2f;
+                property.damage = 16;
+                property.hp = 190;
+                property.maxhp = 190;
+                property.close_combat_damage_modifier = .5f;
                 return property;
             default:
                 assert(false);
@@ -220,13 +224,17 @@ entt::entity unit_factory(vec2 pos, UnitType unitType) {
     init_unit_flag_components(entity, unitType);
     init_unit_bounding_box(entity, unitType);
     init_unit(entity, resource, pos, unitType);
+    if (m_registry.has<Ally>(entity)) {
+        m_registry.emplace<KeyFrameMotion>(entity);
+        init_key_frames(entity);
+    }
     return entity;
 };
 
 ShadedMesh& create_projectile_mesh(std::string screen_texture_path, std::string shader = "textured"){
     std::string key = screen_texture_path ;
     ShadedMesh &resource = cache_resource(key);
-    RenderSystem::createSprite(resource, textures_path(screen_texture_path), "textured");
+    if (resource.effect.program.resource == 0) RenderSystem::createSprite(resource, textures_path(screen_texture_path), "textured");
     return resource;
 }
 
@@ -294,7 +302,20 @@ entt::entity projectile_factory(entt::entity unit, UnitType unitType, entt::enti
 //        auto &projectile = m_registry.emplace<Projectiles>(unit);
 //        projectile.pro.push_back(entity);
 //    }
-
+    int x_0, x_3;
+    int y_0 = unit_pos.position.y + rand() % 30;
+    int y_3 = target_position.position.y + rand() % 60;
+    if (unit_pos.position.x > target_position.position.x) {
+        x_0 = unit_pos.position.x + rand() % 20;
+        x_3 = target_position.position.x - rand() % 60;
+    } else {
+        x_0 = unit_pos.position.x - rand() % 30;
+        x_3 = target_position.position.x + rand() % 60;
+    }
+    projectile_prop.spoints[0] = {x_0, y_0};
+    projectile_prop.spoints[1] = unit_pos.position;
+    projectile_prop.spoints[2] = target_position.position;
+    projectile_prop.spoints[3] = {x_3, y_3};
     auto& motion = m_registry.emplace<Motion>(entity);
     motion.velocity = glm::normalize(dir) * projectile_speed;
     projectile_prop.actualTarget = target;
@@ -321,16 +342,27 @@ entt::entity explosion_factory(vec2 pos) {
     return entity;
 };
 
-entt::entity ui_factory(std::string texture_path, vec2 pos, vec2 size, std::string shader = "textured"){
+entt::entity ui_factory(std::string texture_path, vec2 pos, vec2 size, std::string shader = "textured", float parallax_speed = 0.f){
     auto entity = m_registry.create();
     m_registry.emplace<ShadedMeshRef>(entity, create_ui_mesh(texture_path, shader));
     auto &position = m_registry.emplace<Position>(entity);
     position.position = pos;
     position.angle = 0.f;
     position.scale = size;
-    m_registry.emplace<ScreenComponent>(entity);
-    if(texture_path == "buttons/PlayButton.jpg"){
+    if((texture_path.find("buttons") == std::string::npos) &&
+       (texture_path.find("tutorial") == std::string::npos) &&
+       (texture_path.find("info") == std::string::npos)){
+        auto& sc = m_registry.emplace<ScreenComponent>(entity);
+        sc.parallax_speed = parallax_speed;
+    }
+    if(texture_path.find("buttons") != std::string::npos){
         m_registry.emplace<ButtonComponent>(entity);
+    } 
+    if(texture_path.find("tutorial") != std::string::npos){
+        m_registry.emplace<TutorialComponent>(entity);
+    }
+    if(texture_path.find("info") != std::string::npos){
+        m_registry.emplace<InfoComponent>(entity);
     }
     return entity;
 }
@@ -355,7 +387,130 @@ void loading_screen_factory(){
 }
 
 void background_factory(){
-    ui_factory( "bg.png", {window_size_in_game_units.x / 2, window_size_in_game_units.y/2}, {window_size_in_game_units.y/405*540*12, window_size_in_game_units.y});
+    ui_factory("bg_stars.png", { window_size_in_game_units.x / 2, window_size_in_game_units.y / 2 }, { window_size_in_game_units.x * 7, window_size_in_game_units.y }, "textured", 2.f);
+    ui_factory( "bg.png", {window_size_in_game_units.x / 2, window_size_in_game_units.y/2}, {window_size_in_game_units.x * 7, window_size_in_game_units.y}, "textured", 1.f);
+}
+
+void story_factory(int story_num){
+    if (story_num == 0) {
+        ui_factory("buttons/next.png", next_pos, button_size);
+        ui_factory("buttons/skip.png", skip_pos, button_size);
+    }
+    ui_factory("Story/story" + std::to_string(story_num) + ".png", {tile_matrix_dimension.x*tile_size.x/2, tile_matrix_dimension.y*tile_size.y/2},
+               {tile_matrix_dimension.x*tile_size.x, tile_matrix_dimension.y*tile_size.y});
+    if (story_num == 1) {
+        for (int i = 0; i < 4; i++)
+            unit_factory({tile_matrix_dimension.x*tile_size.x/2 - 200 + i * 100, tile_matrix_dimension.y*tile_size.y-100}, UnitType::ai_terminator);
+    } else if (story_num == 2) {
+        unit_factory({tile_matrix_dimension.x*tile_size.x/2 - 200, tile_matrix_dimension.y*tile_size.y-100}, UnitType::human_monitor);
+        unit_factory({tile_matrix_dimension.x*tile_size.x/2 - 100, tile_matrix_dimension.y*tile_size.y-100}, UnitType::human_archer);
+        unit_factory({tile_matrix_dimension.x*tile_size.x/2, tile_matrix_dimension.y*tile_size.y-100}, UnitType::human_healer);
+        unit_factory({tile_matrix_dimension.x*tile_size.x/2 + 100, tile_matrix_dimension.y*tile_size.y-100}, UnitType::human_terminator);
+    }
+}
+
+void tutorial_factory(int tutorial_num) {
+    ui_factory("tutorial/tutorial" + std::to_string(tutorial_num) + ".png", tutorial_pos, tutorial_size);
+    ui_factory("buttons/skip_tutorial.png", skip_t_pos, button_size);
+    if (tutorial_num == 2) {
+        ui_factory("tutorial/tutorial_click.png", {map_x_min + 80, map_y_min + tile_size.y * 3}, {150, 100});
+        ui_factory("tutorial/tutorial_mark.png", {map_x_min, map_y_min + tile_size.y * 3}, {70, 50});
+    } else if (tutorial_num == 3) {
+        ui_factory("tutorial/tutorial_click.png", {map_x_max - 160, map_y_min + tile_size.y * 5}, {150, 100});
+        ui_factory("tutorial/tutorial_mark.png", {map_x_max - 80, map_y_min + tile_size.y * 5}, {70, 50});
+    }
+}
+
+entt::entity result_factory(bool res) {
+    auto entity = m_registry.create();
+    if (res) {
+        m_registry.emplace<ShadedMeshRef>(entity, create_ui_mesh("win.jpg", "textured"));
+        ui_factory("buttons/next_level.png", result_button_pos, button_size);
+    } else {
+        m_registry.emplace<ShadedMeshRef>(entity, create_ui_mesh("lose.jpg", "textured"));
+        ui_factory("buttons/replay.png", result_button_pos, button_size);
+    }
+    auto &position = m_registry.emplace<Position>(entity);
+    position.position = {window_size_in_game_units.x/2 - 200, window_size_in_game_units.y/2};
+    position.angle = 0.f;
+    position.scale = {560, 360};
+    m_registry.emplace<resultComponent>(entity);
+    return entity;
+}
+
+void tile_info_factory(TileType tileType) {
+    entt::entity tile = tile_factory ({390, 270}, tileType);
+    m_registry.emplace<InfoComponent>(tile);
+    m_registry.remove<Tile>(tile);
+    auto &position = m_registry.get<Position>(tile);
+    position.scale = {100,100};
+    switch (tileType) {
+        case TileType::basic:
+            ui_factory("info/info_basic_tile.png", {tile_matrix_dimension.x*tile_size.x/2, tile_matrix_dimension.y*tile_size.y/2}, {900, 600});
+            break;
+        case TileType::forest:
+            ui_factory("info/info_forest_tile.png", {tile_matrix_dimension.x*tile_size.x/2, tile_matrix_dimension.y*tile_size.y/2}, {900, 600});
+            break;
+        case TileType::water:
+            ui_factory("info/info_water_tile.png", {tile_matrix_dimension.x*tile_size.x/2, tile_matrix_dimension.y*tile_size.y/2}, {900, 600});
+            break;
+        default:
+            assert(false);
+            break;
+    }
+//    ui_factory("info/info_bg.png", {tile_matrix_dimension.x*tile_size.x/2, tile_matrix_dimension.y*tile_size.y/2}, {900, 600});
+    ui_factory("buttons/info_done.png", done_pos, button_size);
+}
+
+void unit_info_factory(UnitType unitType) {
+    entt::entity unit = unit_factory ({390, 270}, unitType);
+    m_registry.emplace<InfoComponent>(unit);
+    m_registry.remove<UnitProperty>(unit);
+    auto &position = m_registry.get<Position>(unit);
+    position.scale = {120,120};
+    switch (unitType) {
+        case UnitType::human_terminator:
+            ui_factory("info/info_h_terminator.png", {tile_matrix_dimension.x*tile_size.x/2, tile_matrix_dimension.y*tile_size.y/2}, {900, 600});
+            break;
+        case UnitType::human_monitor:
+            ui_factory("info/info_h_monitor.png", {tile_matrix_dimension.x*tile_size.x/2, tile_matrix_dimension.y*tile_size.y/2}, {900, 600});
+            break;
+        case UnitType::human_archer:
+            ui_factory("info/info_h_archer.png", {tile_matrix_dimension.x*tile_size.x/2, tile_matrix_dimension.y*tile_size.y/2}, {900, 600});
+            break;
+        case UnitType::human_healer:
+            ui_factory("info/info_h_healer.png", {tile_matrix_dimension.x*tile_size.x/2, tile_matrix_dimension.y*tile_size.y/2}, {900, 600});
+            break;
+        case UnitType::ai_terminator:
+            ui_factory("info/info_a_terminator.png", {tile_matrix_dimension.x*tile_size.x/2, tile_matrix_dimension.y*tile_size.y/2}, {900, 600});
+            break;
+        case UnitType::ai_monitor:
+            ui_factory("info/info_a_monitor.png", {tile_matrix_dimension.x*tile_size.x/2, tile_matrix_dimension.y*tile_size.y/2}, {900, 600});
+            break;
+        case UnitType::ai_archer:
+            ui_factory("info/info_a_archer.png", {tile_matrix_dimension.x*tile_size.x/2, tile_matrix_dimension.y*tile_size.y/2}, {900, 600});
+            break;
+        case UnitType::ai_healer:
+            ui_factory("info/info_a_healer.png", {tile_matrix_dimension.x*tile_size.x/2, tile_matrix_dimension.y*tile_size.y/2}, {900, 600});
+            break;
+        default:
+            assert(false);
+            break;
+    }
+//    ui_factory("info/info_bg.png", {tile_matrix_dimension.x*tile_size.x/2, tile_matrix_dimension.y*tile_size.y/2}, {900, 600});
+    ui_factory("buttons/info_done.png", done_pos, button_size);
+}
+
+int button_clicked(double x_pos, double y_pos, vec2 b_pos, vec2 b_size) {
+    bool x_in_button = (x_pos <= b_pos.x + b_size.x/2) && (x_pos >= b_pos.x - b_size.x/2);
+    bool y_in_button = (y_pos <= b_pos.y + b_size.y/2) && (y_pos >= b_pos.y - b_size.y/2);
+    return (x_in_button && y_in_button);
+}
+
+int info_tile(vec2 pos) {
+    bool x = (pos.x == map_x_min);
+    bool y = (pos.y <= map_y_min + tile_size.y * 5) && (pos.y >= map_y_min + tile_size.y * 3);
+    return (x && y);
 }
 
 void swap_tile_texture(entt::entity entity, TileType tileType) {
