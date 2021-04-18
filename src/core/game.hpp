@@ -15,6 +15,7 @@
 #include "entities/unit.hpp"
 #include "enum.hpp"
 #include "loader.hpp"
+#include "system/utils/a_star.hpp";
 
 // stlib
 #include <vector>
@@ -50,6 +51,8 @@ public:
 
 	// restart level
     void restart(Level level= Level::start_screen);
+
+    void restart_without_loading_level(Level level = Level::start_screen);
 
 	// Steps the game ahead by ms milliseconds
 	void update(float elapsed_ms, vec2 window_size_in_game_units);
@@ -110,18 +113,20 @@ private:
     bool has_battle_started;
     float battle_start_in;
     bool battle_over = false;
-    float time = 0.f;
     entt::entity battle_result;
     
     float frame = 1.f;
-
+    int story_page = 0;
+    int tutorial_num = 0;
 
 	// C++ random number generator
 	std::default_random_engine rng;
 	std::uniform_real_distribution<float> uniform_dist; // number between 0..1
 	MapState mapState;
-	UnitMapState unitMapState;
+    UnitMapState unitMapState;
+    UnitHPMapState unitHPState;
     Level level = Level::sandbox;
+    int level_res = 0;
     Loader loader = Loader();
     bool is_paused = true;
     bool show_imgui = true;
@@ -146,6 +151,8 @@ private:
     void imgui_ally_menu();
 
     void imgui_enemy_menu();
+    
+    void imgui_tutorial_menu();
 
     UnitType imgui_entity_selection_to_unitType();
 
@@ -158,21 +165,30 @@ private:
     void place_an_enemy(ivec2 tile_index);
 
     void level_on_click(int button, int action, int mods);
+    
+    void story_on_click(int button, int action, int mods);
+    
+    void tutorial_on_click(int button, int action, int mods);
+    
+    void info_on_click(int button, int action, int mods);
+    
+    void result_on_click(int button, int action, int mods);
 
 	void update_camera_pos(float time);
 
     void imgui_game_mode();
 
-    void init_gold();
+    void init_gold(ivec2);
 
     std::map<UnitType, int> unit_cost = {
             {UnitType::human_terminator,  100},
-            {UnitType::human_archer, 150},
-            {UnitType::human_monitor,  120},
-            {UnitType::human_healer,  200},
+            {UnitType::human_archer, 200},
+            {UnitType::human_monitor,  150},
+            {UnitType::human_healer,  120},
     };
 
     void imgui_story();
+    void imgui_save_menu();
 
     void map_on_click(int button, int action, int mods);
 
@@ -181,6 +197,10 @@ private:
     void imgui_flash_light_menu();
 
     void imgui_camera_control_menu();
+
+    void path_finding_menu();
+
+    void imgui_projectile_menu();
 };
 
 #endif //ALPHAGO_AWAY_GAME_HPP

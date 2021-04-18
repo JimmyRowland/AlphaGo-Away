@@ -14,6 +14,9 @@
 
 class A_Star {
 public:
+    static int unit_cost;
+    static bool path_finding_projectile;
+    static bool spline;
     std::vector<std::vector<int >> unit_grid = {};
     std::vector<std::vector<int >> grid = {};
     // update the map as needed this is just filler
@@ -23,6 +26,7 @@ public:
             {TileType::forest, 99999},
             {TileType::water,  99999}
     };
+
 
     // comparator class for priority queue
     class compare {
@@ -53,12 +57,12 @@ public:
         }
         for (auto&&[entity, unit_prop, unit_pos] : m_registry.view<UnitProperty, Position>().each()) {
             ivec2 tile_index = get_tile_index(unit_pos.position);
-            this->unit_grid[tile_index.x][tile_index.y] = 100;
+            this->unit_grid[tile_index.x][tile_index.y] = unit_cost;
         }
     }
 
     // a* search algorithm, start is a the starting grid position, end is the target grid position
-    std::vector<std::pair<int, int>> getPath(std::pair<int, int> start, std::pair<int, int> end) {
+    std::vector<std::pair<int, int>> getPath(std::pair<int, int> start, std::pair<int, int> end, bool is_complete_path = false) {
         std::priority_queue<std::pair<int, std::pair<int, int>>, std::vector<std::pair<int, std::pair<int, int>>>, compare> fronteir = {};
         std::map<std::pair<int, int>, int> costSoFar = {};
         std::map<std::pair<int, int>, std::pair<int, int>> cameFrom = {};
@@ -83,7 +87,7 @@ public:
                 if (neighbour.first >= 0 && neighbour.first < grid.size() && neighbour.second >= 0 &&
                     neighbour.second < grid[0].size()) {
                     int updatedCost = costSoFar[current] + this->grid[neighbour.first][neighbour.second];
-                    if(current==start){updatedCost+=this->unit_grid[neighbour.first][neighbour.second];}
+                    if(current==start && !is_complete_path){updatedCost+=this->unit_grid[neighbour.first][neighbour.second];}
                     if (!costSoFar.count(neighbour) || updatedCost < costSoFar[neighbour]) {
                         costSoFar[neighbour] = updatedCost;
                         int prioirity = updatedCost + heuristic(neighbour, end);
@@ -99,6 +103,8 @@ public:
             complete_path.insert(complete_path.begin(), current);
             current = cameFrom[current];
         }
+        if(is_complete_path) return complete_path;
+
         std::vector<std::pair<int, int>> res_path = {};
         for(auto tile_index: complete_path){
             if(costSoFar[tile_index]>99){
@@ -119,5 +125,7 @@ public:
 
 
 };
+
+
 
 #endif

@@ -30,6 +30,23 @@ UnitType int_to_unitType(int i) {
     }
 }
 
+int unitType_to_int(UnitType unit) {
+    switch (unit) {
+    case UnitType::empty: return 0;
+    case UnitType::human_terminator: return 1;
+    case UnitType::human_monitor: return 2;
+    case UnitType::human_archer: return 3;
+    case UnitType::human_healer: return 4;
+    case UnitType::ai_terminator: return 5;
+    case UnitType::ai_monitor: return 6;
+    case UnitType::ai_archer: return 7;
+    case UnitType::ai_healer: return 8;
+    default:
+        assert(false);
+        return {};
+    }
+}
+
 UnitType char_to_unitType(const char c) {
     switch (c) {
         case ' ': return UnitType::empty;

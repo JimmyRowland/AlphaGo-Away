@@ -4,6 +4,7 @@
 #include "core/registry.hpp"
 #include  <entt/entt.hpp>
 #include "components/motion.hpp"
+#include "core/constants.hpp"
 // will be replaced with imgui
 
 namespace DebugSystem {

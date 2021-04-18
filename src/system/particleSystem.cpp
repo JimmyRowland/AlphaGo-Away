@@ -78,6 +78,8 @@ Position get_mesh_bounding_box(entt::entity entity){
 }
 
 float ParticleSystem::max_distance = 30.f;
+float ParticleSystem::start_explosion_time = -10000.f;
+bool ParticleSystem::meteor_field = false;
 
 
 void ParticleSystem::update() {
@@ -89,14 +91,16 @@ void ParticleSystem::update() {
         p.life -= killSpeed; // reduce life
 //		p.life -= 0.1f; // reduce life
 
-        if (p.life > 0.0f) {    // particle is alive, thus update
-            auto &curpos = m_registry.get<Position>(cur);
-            auto &curmot = m_registry.get<Motion>(cur);
+        if (p.life > 0.0f)
+        {    // particle is alive, thus update
+			auto &curpos = m_registry.get<Position>(cur);
+			auto &curmot = m_registry.get<Motion>(cur);
             if (gravity_toggle) {
                 acceleration += getGravitationalAcceleration(curpos);
             }
 
-            if (p.life < 0.99f && swarm_behavior_toggle) {
+			if (p.life < 0.99f && swarm_behavior_toggle)
+			{
 
                 int count = 0;
                 vec2 avgSpeed = {0, 0};
@@ -224,7 +228,7 @@ void ParticleSystem::emitParticle(vec2 pos, int amount, bool emit_light) {
             }
             resource.mesh.vertices = vertices;
             resource.mesh.vertex_indices = indices;
-            RenderSystem::createColoredMesh(resource, key);
+            RenderSystem::createColoredMesh(resource, key, true);
         }
 
 

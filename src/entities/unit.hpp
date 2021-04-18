@@ -15,5 +15,6 @@ void unit_attack(entt::entity entity, UnitType unitType);
 void unit_stand(entt::entity entity, UnitType unitType);
 void unit_walk(entt::entity entity, UnitType unitType);
 void unit_die(entt::entity entity, UnitType unitType);
+void init_key_frames(entt::entity entity);
 
 #endif //ALPHAGO_AWAY_UNIT_HPP
