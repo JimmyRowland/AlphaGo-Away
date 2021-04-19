@@ -421,13 +421,21 @@ void tutorial_factory(int tutorial_num) {
     }
 }
 
-entt::entity result_factory(bool res) {
+entt::entity result_factory(bool res, int level_num, int lost_num) {
     auto entity = m_registry.create();
     if (res) {
-        m_registry.emplace<ShadedMeshRef>(entity, create_ui_mesh("win.jpg", "textured"));
-        ui_factory("buttons/next_level.png", result_button_pos, button_size);
+        if (level_num == 5) {
+            m_registry.emplace<ShadedMeshRef>(entity, create_ui_mesh("final_win.png", "textured"));
+        } else {
+            m_registry.emplace<ShadedMeshRef>(entity, create_ui_mesh("win.png", "textured"));
+            ui_factory("buttons/next_level.png", result_button_pos, button_size);
+        }
     } else {
-        m_registry.emplace<ShadedMeshRef>(entity, create_ui_mesh("lose.jpg", "textured"));
+        if (lost_num < 3) {
+            m_registry.emplace<ShadedMeshRef>(entity, create_ui_mesh("lose.png", "textured"));
+        } else {
+            m_registry.emplace<ShadedMeshRef>(entity, create_ui_mesh("lose_hint.png", "textured"));
+        }
         ui_factory("buttons/replay.png", result_button_pos, button_size);
     }
     auto &position = m_registry.emplace<Position>(entity);
@@ -499,6 +507,29 @@ void unit_info_factory(UnitType unitType) {
     }
 //    ui_factory("info/info_bg.png", {tile_matrix_dimension.x*tile_size.x/2, tile_matrix_dimension.y*tile_size.y/2}, {900, 600});
     ui_factory("buttons/info_done.png", done_pos, button_size);
+}
+
+void level_info_factory(int level_num) {
+    ui_factory("info/level" + std::to_string(level_num) + ".png", {tile_matrix_dimension.x*tile_size.x/2, tile_matrix_dimension.y*tile_size.y/2},
+               {1200, 650});
+    ui_factory("buttons/info_done.png", done_pos, button_size);
+}
+
+int get_level_num(Level l) {
+    switch (l) {
+        case Level::level1:
+            return 1;
+        case Level::level2:
+            return 2;
+        case Level::level3:
+            return 3;
+        case Level::level4:
+            return 4;
+        case Level::level5:
+            return 5;
+        default:
+            return 0;
+    }
 }
 
 int button_clicked(double x_pos, double y_pos, vec2 b_pos, vec2 b_size) {

@@ -134,13 +134,14 @@ void Game::update(float elapsed_ms, vec2 window_size_in_game_units) {
             if (m_registry.view<Ally>().size() == 0) {
                 Mix_HaltChannel(-1);
                 Mix_PlayChannel(-1, lose_sound, 0);
-                battle_result = result_factory(false);
+                lost_num++;
+                battle_result = result_factory(false, get_level_num(level), lost_num);
                 battle_over = true;
                 std::cout << "human fails!!!" << std::endl;
             } else if (m_registry.view<Enemy>().size() == 0) {
                 Mix_HaltChannel(-1);
                 Mix_PlayChannel(-1, win_sound, 0);
-                battle_result = result_factory(true);
+                battle_result = result_factory(true, get_level_num(level), lost_num);
                 battle_over = true;
                 level_res = 1;
                 std::cout << "ai fails!!!" << std::endl;
@@ -162,7 +163,6 @@ void Game::restart(Level level) {
     this->level = level;
     battle_over = false;
     level_res = 0;
-
 
     for (auto entity : m_registry.view<ShadedMeshRef>()) {
         m_registry.destroy(entity);
@@ -316,6 +316,7 @@ ivec2 Game::get_window_size() {
 
 void Game::on_mouse_click(int button, int action, int mods) {
     result_on_click(button, action, mods);
+    if (level == Level::tutorial) return tutorial_on_click(button, action, mods);
     if (!should_place) {
         info_on_click(button, action, mods);
 
@@ -511,7 +512,6 @@ void Game::on_mouse_click(int button, int action, int mods) {
         }
     }
     if (level == Level::story) return story_on_click(button, action, mods);
-    if (level == Level::tutorial) return tutorial_on_click(button, action, mods);
 
 }
 
@@ -725,6 +725,9 @@ void Game::info_on_click(int button, int action, int mods) {
             for(entt::entity entity: m_registry.view<InfoComponent>()){
                 m_registry.destroy(entity);
             }
+            if ((level == Level::level4)  && (!has_battle_started)) {
+                RenderSystem::dark_mode = 1;
+            }
         }
     }
     // right click to remove a unit
@@ -768,6 +771,7 @@ void Game::result_on_click(int button, int action, int mods) {
                     default:
                         break;
                 }
+                lost_num = 0;
             }
             restart(level);
         }
@@ -788,7 +792,7 @@ void Game::init_gold(ivec2 income){
         gold[0] = income[0];
         gold[1] = income[1];
         number_of_entity_flash_light = 20;
-        number_of_shader_flash_light = 1;
+        number_of_shader_flash_light = 35;
     }
 }
 
@@ -800,6 +804,10 @@ void Game::init_level() {
     }
     mapState = makeMapState(level);
     unitMapState = makeUnitState(level);*/
+    if ((level == Level::level1 || level == Level::level2 || level == Level::level3
+         || level == Level::level4 || level == Level::level5)) {
+        level_info_factory(get_level_num(level));
+    }
 
         mapState = loader.initial_map_load(level);
         auto income = loader.get_gold_level_builder(level);
@@ -1015,7 +1023,7 @@ void Game::imgui_load_sandbox_level(){
 
 }
 void Game::imgui_save_menu() {
-    if (ImGui::CollapsingHeader("Save and reload")) {
+    if (game_mode == GameMode::free_mode && ImGui::CollapsingHeader("Save and reload")) {
         if (ImGui::Button("Save Level")) imgui_save_sandbox_level();
         if (ImGui::Button("Load Level")) imgui_load_sandbox_level();
     }
@@ -1031,7 +1039,7 @@ void Game::imgui_sandbox_menu() {
 };
 
 void Game::path_finding_menu() {
-    if (ImGui::CollapsingHeader("Pathfinding")) {
+    if (game_mode == GameMode::free_mode && ImGui::CollapsingHeader("Pathfinding")) {
 
         ImGui::SliderInt("A* nearby units cost", &A_Star::unit_cost, 0, 100);
 
@@ -1155,7 +1163,7 @@ void Game::imgui(){
         // ImGui::SetCursorScreenPos(ImVec2( 200,  200));
         imgui_battle_control_menu();
         imgui_game_mode();
-        imgui_help_menu();
+//        imgui_help_menu();
         imgui_level_selection_menu();
         imgui_story();
         imgui_ally_menu();
@@ -1164,9 +1172,9 @@ void Game::imgui(){
         imgui_flash_light_menu();
         imgui_particle_menu();
         imgui_camera_control_menu();
-        imgui_tutorial_menu();
         path_finding_menu();
         imgui_projectile_menu();
+        imgui_tutorial_menu();
         ImGui::End();
 
     }

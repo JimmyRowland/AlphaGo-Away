@@ -123,6 +123,7 @@ private:
     float frame = 1.f;
     int story_page = 0;
     int tutorial_num = 0;
+    int lost_num = 0;
 
 	// C++ random number generator
 	std::default_random_engine rng;
