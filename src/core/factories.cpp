@@ -75,10 +75,12 @@ namespace {
                 property.hp = 200;
                 property.maxhp = 200;
                 property.close_combat_damage_modifier = 1.f;
+                property.is_human = true;
                 return property;
             case UnitType::human_monitor:
                 property.attackRange = 2;
                 property.damage = 15;
+                property.is_human = true;
                 property.hp = 1010;
                 property.maxhp = 1010;
                 property.close_combat_damage_modifier = .8f;
@@ -89,9 +91,11 @@ namespace {
                 property.hp = 75;
                 property.maxhp = 75;
                 property.close_combat_damage_modifier = .1f;
+                property.is_human = true;
                 return property ;
             case UnitType::human_healer:
                 property.attackRange = 3;
+                property.is_human = true;
                 property.damage = 15;
                 property.hp = 180;
                 property.maxhp = 180;
@@ -230,7 +234,7 @@ entt::entity unit_factory(vec2 pos, UnitType unitType) {
 ShadedMesh& create_projectile_mesh(std::string screen_texture_path, std::string shader = "textured"){
     std::string key = screen_texture_path ;
     ShadedMesh &resource = cache_resource(key);
-    RenderSystem::createSprite(resource, textures_path(screen_texture_path), "textured");
+    if (resource.effect.program.resource == 0) RenderSystem::createSprite(resource, textures_path(screen_texture_path), "textured");
     return resource;
 }
 
@@ -298,7 +302,20 @@ entt::entity projectile_factory(entt::entity unit, UnitType unitType, entt::enti
 //        auto &projectile = m_registry.emplace<Projectiles>(unit);
 //        projectile.pro.push_back(entity);
 //    }
-
+    int x_0, x_3;
+    int y_0 = unit_pos.position.y + rand() % 30;
+    int y_3 = target_position.position.y + rand() % 60;
+    if (unit_pos.position.x > target_position.position.x) {
+        x_0 = unit_pos.position.x + rand() % 20;
+        x_3 = target_position.position.x - rand() % 60;
+    } else {
+        x_0 = unit_pos.position.x - rand() % 30;
+        x_3 = target_position.position.x + rand() % 60;
+    }
+    projectile_prop.spoints[0] = {x_0, y_0};
+    projectile_prop.spoints[1] = unit_pos.position;
+    projectile_prop.spoints[2] = target_position.position;
+    projectile_prop.spoints[3] = {x_3, y_3};
     auto& motion = m_registry.emplace<Motion>(entity);
     motion.velocity = glm::normalize(dir) * projectile_speed;
     projectile_prop.actualTarget = target;

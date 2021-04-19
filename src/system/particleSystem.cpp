@@ -79,6 +79,7 @@ Position get_mesh_bounding_box(entt::entity entity){
 
 float ParticleSystem::max_distance = 30.f;
 float ParticleSystem::start_explosion_time = -10000.f;
+bool ParticleSystem::meteor_field = false;
 
 
 void ParticleSystem::update() {
@@ -97,8 +98,8 @@ void ParticleSystem::update() {
             if (gravity_toggle) {
                 acceleration += getGravitationalAcceleration(curpos);
             }
-			
-			if (p.life < 0.99f) 
+
+			if (p.life < 0.99f && swarm_behavior_toggle)
 			{
 
                 int count = 0;
