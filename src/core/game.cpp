@@ -59,6 +59,7 @@ Game::Game(ivec2 window_size_px) :
     // Playing background music indefinitely
     init_audio();
     Mix_PlayMusic(background_music, -1);
+    Mix_VolumeMusic(20);
     std::cout << "Loaded music\n";
 }
 
@@ -96,6 +97,7 @@ void Game::init_audio() {
     win_sound = Mix_LoadWAV(audio_path("win.wav").c_str());
     lose_sound = Mix_LoadWAV(audio_path("lose.wav").c_str());
     battle_sound = Mix_LoadWAV(audio_path("battle.wav").c_str());
+    Mix_VolumeMusic(20);
 
 
     if (background_music == nullptr || dead_sound == nullptr || win_sound == nullptr || lose_sound == nullptr || battle_sound == nullptr)
@@ -116,9 +118,10 @@ void Game::update(float elapsed_ms, vec2 window_size_in_game_units) {
     }
     if (has_battle_started) {
         ai_update(elapsed_ms);
-
-        Mix_PlayChannel(-1, battle_sound, -1);
         Mix_HaltMusic();
+        Mix_PlayChannel(-1, battle_sound, -1);
+        Mix_Volume(-1,2);
+
         if (battle_start_in > 0) {
             battle_start_in -= elapsed_ms;
         } else {
@@ -165,10 +168,14 @@ void Game::restart(Level level) {
     has_battle_started = false;
 
     if(level == Level::story){
+        Mix_PlayMusic(background_music, -1);
+        Mix_VolumeMusic(20);
         story_page = 0;
         story_factory(story_page);
         background_factory();
     } else if (level == Level::start_screen){
+        Mix_PlayMusic(background_music, -1);
+        Mix_VolumeMusic(20);
         frame = 1.f;
 
         loading_screen_factory();
@@ -199,6 +206,8 @@ void Game::restart_without_loading_level(Level level) {
     has_battle_started = false;
 
     if (level == Level::start_screen) {
+        Mix_PlayMusic(background_music, -1);
+        Mix_VolumeMusic(20);
         frame = 1.f;
         loading_screen_factory();
         this->level = level;
@@ -507,6 +516,7 @@ void Game::map_on_click(int button, int action, int mods) {
 
 void Game::story_on_click(int button, int action, int mods){
 
+
     if (button == GLFW_MOUSE_BUTTON_LEFT && action == GLFW_PRESS) {
         double xpos, ypos;
         glfwGetCursorPos(window, &xpos, &ypos);
@@ -715,11 +725,15 @@ void Game::imgui_game_mode() {
         ImGui::Text("Choose a game mode");
         if (ImGui::Button("story mode")) {
             level = Level::story;
+            Mix_PlayMusic(background_music, -1);
+            Mix_VolumeMusic(20);
             restart(level);
             game_mode = GameMode::story_mode;
         }
         if (ImGui::Button("free mode")) {
             level = Level::sandbox;
+            Mix_PlayMusic(background_music, -1);
+            Mix_VolumeMusic(20);
             restart(level);
             game_mode = GameMode::free_mode;
         }
@@ -994,6 +1008,8 @@ void Game::imgui_tutorial_menu() {
     }
 }
 
+
+
 void Game::imgui(){
     if(show_imgui){
         ImGui::Begin("Menu");
@@ -1009,6 +1025,7 @@ void Game::imgui(){
         imgui_particle_menu();
         imgui_camera_control_menu();
         imgui_tutorial_menu();
+
         ImGui::End();
     }
 }

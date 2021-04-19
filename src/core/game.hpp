@@ -200,6 +200,7 @@ private:
     void imgui_flash_light_menu();
 
     void imgui_camera_control_menu();
+    
 };
 
 #endif //ALPHAGO_AWAY_GAME_HPP
