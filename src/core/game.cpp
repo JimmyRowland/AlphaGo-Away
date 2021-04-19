@@ -316,7 +316,6 @@ ivec2 Game::get_window_size() {
 
 void Game::on_mouse_click(int button, int action, int mods) {
     result_on_click(button, action, mods);
-    if (level == Level::tutorial) return tutorial_on_click(button, action, mods);
     if (!should_place) {
         info_on_click(button, action, mods);
 
@@ -330,7 +329,9 @@ void Game::on_mouse_click(int button, int action, int mods) {
             level == Level::level5) {
             return level_on_click(button, action, mods);
         }
-
+    }
+    if (level == Level::tutorial) {
+        tutorial_on_click(button, action, mods);
     }
 
     if (button == GLFW_MOUSE_BUTTON_LEFT) {
