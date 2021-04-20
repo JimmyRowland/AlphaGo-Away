@@ -976,7 +976,7 @@ void Game::imgui_save_sandbox_level(){
 }
 
 void Game::imgui_particle_menu() {
-    if (ImGui::CollapsingHeader("Particle settings")) {
+    if (game_mode == GameMode::free_mode && ImGui::CollapsingHeader("Particle settings")) {
         ImGui::Checkbox("Swarm behavior", &particles->swarm_behavior_toggle);
         ImGui::Checkbox("Gravitational force", &particles->gravity_toggle);
         ImGui::Checkbox("Elastic collision", &particles->elastic_collision_toggle);
@@ -1101,7 +1101,7 @@ void Game::imgui_ally_menu() {
 }
 
 void Game::imgui_flash_light_menu() {
-    if (ImGui::CollapsingHeader("Flash Light")) {
+    if ((game_mode == GameMode::free_mode || level == Level::level4) && ImGui::CollapsingHeader("Flash Light")) {
         ImGui::Text("Choose a flash light type");
         ImGui::RadioButton("disabled", &RenderSystem::flash_light_type, 0);
         ImGui::RadioButton("Searching flash light", &RenderSystem::flash_light_type, 1);
