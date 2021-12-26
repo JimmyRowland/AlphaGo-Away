@@ -12,8 +12,6 @@ under project dir run
 
 ### Install vcpkg
 
-git clone https://github.com/microsoft/vcpkg
-
 .\vcpkg\bootstrap-vcpkg.bat
 
 ### install package
@@ -37,8 +35,6 @@ Open the CMake Settings Editor, and under CMake toolchain file, add the path to 
 ## mac/linux with clion:
 
 ### Install vcpkg
-
-git clone https://github.com/microsoft/vcpkg
 
 ./vcpkg/bootstrap-vcpkg.sh
 
@@ -65,8 +61,6 @@ https://www.jetbrains.com/community/education/#students
 ## Mac with xCode
 
 ### Install vcpkg
-
-git clone https://github.com/microsoft/vcpkg
 
 ./vcpkg/bootstrap-vcpkg.sh
 
